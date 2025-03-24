@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import BuyerList from '../buyers/BuyerList';
+import BuyerTable from '../buyers/BuyerTable';
 import SavedList from '../buyers/SavedList';
 
 interface ListingDetailsProps {
@@ -77,7 +77,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         </TabsList>
         
         <TabsContent value="buyer-list" className="mt-6">
-          <BuyerList listingId={id} />
+          <BuyerTable listingId={id} />
         </TabsContent>
         
         <TabsContent value="saved-list" className="mt-6">

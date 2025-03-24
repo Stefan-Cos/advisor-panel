@@ -6,20 +6,27 @@ import {
   ListFilter, 
   MessageSquare, 
   Settings, 
+  Users,
+  BarChart,
   LogOut 
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 const Sidebar = () => {
   const location = useLocation();
   const { toast } = useToast();
+  const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   
   const navItems = [
     { path: '/dashboard', label: 'Overview', icon: <LayoutDashboard className="h-5 w-5" /> },
     { path: '/listings', label: 'Listings', icon: <ListFilter className="h-5 w-5" /> },
     { path: '/messages', label: 'Messages', icon: <MessageSquare className="h-5 w-5" /> },
-    { path: '/settings', label: 'Settings', icon: <Settings className="h-5 w-5" /> },
   ];
   
   const handleMessagesClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -32,14 +39,11 @@ const Sidebar = () => {
     }
   };
   
-  const handleSettingsClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (location.pathname !== '/settings') {
-      e.preventDefault();
-      toast({
-        title: "Settings",
-        description: "Settings features coming soon",
-      });
-    }
+  const handleSettingsItemClick = (settingType: string) => {
+    toast({
+      title: `${settingType} Settings`,
+      description: `${settingType} settings features coming soon`,
+    });
   };
   
   const handleLogout = () => {
@@ -65,7 +69,7 @@ const Sidebar = () => {
                   ? "bg-blueknight-500 text-white" 
                   : "text-gray-600 hover:bg-gray-100"
               )}
-              onClick={item.path === '/messages' ? handleMessagesClick : item.path === '/settings' ? handleSettingsClick : undefined}
+              onClick={item.path === '/messages' ? handleMessagesClick : undefined}
             >
               {React.cloneElement(item.icon, {
                 className: cn(
@@ -78,6 +82,43 @@ const Sidebar = () => {
               <span>{item.label}</span>
             </Link>
           ))}
+          
+          <Collapsible
+            open={isSettingsOpen}
+            onOpenChange={setIsSettingsOpen}
+            className="w-full"
+          >
+            <CollapsibleTrigger className={cn(
+              "nav-link group w-full text-left",
+              isSettingsOpen
+                ? "bg-blueknight-500 text-white" 
+                : "text-gray-600 hover:bg-gray-100"
+            )}>
+              <Settings className={cn(
+                "h-5 w-5",
+                isSettingsOpen
+                  ? "text-white" 
+                  : "text-gray-500 group-hover:text-gray-600"
+              )} />
+              <span>Settings</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-5 space-y-1 mt-1">
+              <button 
+                onClick={() => handleSettingsItemClick('Account')}
+                className="nav-link w-full text-left text-gray-600 hover:bg-gray-100"
+              >
+                <Users className="h-4 w-4 text-gray-500" />
+                <span>Account</span>
+              </button>
+              <button 
+                onClick={() => handleSettingsItemClick('Analytics')}
+                className="nav-link w-full text-left text-gray-600 hover:bg-gray-100"
+              >
+                <BarChart className="h-4 w-4 text-gray-500" />
+                <span>Analytics</span>
+              </button>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
       </div>
       

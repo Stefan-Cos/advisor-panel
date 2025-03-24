@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, ChevronDown } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface Listing {
   id: string;
@@ -10,6 +11,8 @@ interface Listing {
   date: string;
   status: 'active' | 'inactive' | 'pending';
   notifications: number;
+  savedBuyers?: number;
+  advisorCreated?: string;
 }
 
 interface ListingTableProps {
@@ -29,6 +32,17 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
     listing.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
     listing.projectTitle.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // Format the date string to DD/MM/YYYY
+  const formatDateString = (dateString: string) => {
+    try {
+      const date = new Date(dateString);
+      return format(date, 'dd/MM/yyyy');
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString; // Return original if can't parse
+    }
+  };
 
   return (
     <div className="animate-fade-in">
@@ -61,15 +75,16 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
       
       <div className="bg-white shadow-sm overflow-hidden rounded-lg border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-blueknight-500 text-white">
+          <thead className="bg-blueknight-500">
             <tr>
-              <th scope="col" className="table-header">ID</th>
-              <th scope="col" className="table-header">Company Name</th>
-              <th scope="col" className="table-header">Project Title</th>
-              <th scope="col" className="table-header">Date</th>
-              <th scope="col" className="table-header">Status</th>
-              <th scope="col" className="table-header">Notification</th>
-              <th scope="col" className="table-header">
+              <th scope="col" className="table-header text-white font-medium">Company Name</th>
+              <th scope="col" className="table-header text-white font-medium">Project Title</th>
+              <th scope="col" className="table-header text-white font-medium">Advisor Created</th>
+              <th scope="col" className="table-header text-white font-medium">Saved Buyers</th>
+              <th scope="col" className="table-header text-white font-medium">Status</th>
+              <th scope="col" className="table-header text-white font-medium">Date Created</th>
+              <th scope="col" className="table-header text-white font-medium">Notification</th>
+              <th scope="col" className="table-header text-white font-medium">
                 <span className="sr-only">Action</span>
               </th>
             </tr>
@@ -77,15 +92,16 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredListings.map((listing) => (
               <tr key={listing.id} className="hover:bg-gray-50">
-                <td className="table-cell font-medium text-gray-900">{listing.id}</td>
                 <td className="table-cell">{listing.companyName}</td>
                 <td className="table-cell">{listing.projectTitle}</td>
-                <td className="table-cell">{listing.date}</td>
+                <td className="table-cell">{listing.advisorCreated || 'Admin'}</td>
+                <td className="table-cell">{listing.savedBuyers || 0}</td>
                 <td className="table-cell">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[listing.status]}`}>
                     {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
                   </span>
                 </td>
+                <td className="table-cell">{formatDateString(listing.date)}</td>
                 <td className="table-cell">
                   <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-gray-200 text-xs">
                     {listing.notifications}

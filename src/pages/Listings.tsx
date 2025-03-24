@@ -12,41 +12,51 @@ const mockListings = [
     id: '229',
     companyName: 'Stefan Ltd',
     projectTitle: 'Stefan',
-    date: '15 June 2024',
+    date: '2024-06-15',
     status: 'inactive' as const,
-    notifications: 0
+    notifications: 0,
+    savedBuyers: 3,
+    advisorCreated: 'John Smith'
   },
   {
     id: '228',
     companyName: 'sdsdvscxz',
     projectTitle: '22esass',
-    date: '15 June 2024',
+    date: '2024-06-15',
     status: 'inactive' as const,
-    notifications: 0
+    notifications: 0,
+    savedBuyers: 0,
+    advisorCreated: 'Jane Doe'
   },
   {
     id: '227',
     companyName: 'jsdsds',
     projectTitle: 'susdsh',
-    date: '15 June 2024',
+    date: '2024-06-15',
     status: 'inactive' as const,
-    notifications: 0
+    notifications: 0,
+    savedBuyers: 2,
+    advisorCreated: 'Adam Johnson'
   },
   {
     id: '225',
     companyName: '12345sss',
     projectTitle: 'nosa',
-    date: '15 June 2024',
+    date: '2024-06-15',
     status: 'inactive' as const,
-    notifications: 0
+    notifications: 0,
+    savedBuyers: 0,
+    advisorCreated: 'Sarah Williams'
   },
   {
     id: '224',
     companyName: 'exam',
     projectTitle: 'exam',
-    date: '15 June 2024',
+    date: '2024-06-15',
     status: 'inactive' as const,
-    notifications: 0
+    notifications: 0,
+    savedBuyers: 1,
+    advisorCreated: 'Michael Brown'
   }
 ];
 
