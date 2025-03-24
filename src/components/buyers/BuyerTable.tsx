@@ -304,7 +304,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Country
+                  HQ
                 </label>
                 <select className="input-field">
                   <option value="">All Countries</option>
@@ -323,6 +323,41 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                   <option value="50">$50M+</option>
                   <option value="100">$100M+</option>
                   <option value="250">$250M+</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Minimum Cash ($M)
+                </label>
+                <select className="input-field">
+                  <option value="0">Any</option>
+                  <option value="10">$10M+</option>
+                  <option value="25">$25M+</option>
+                  <option value="50">$50M+</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Minimum Employees
+                </label>
+                <select className="input-field">
+                  <option value="0">Any</option>
+                  <option value="100">100+</option>
+                  <option value="500">500+</option>
+                  <option value="1000">1000+</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  PE/VC Backed
+                </label>
+                <select className="input-field">
+                  <option value="">Any</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
                 </select>
               </div>
               
@@ -365,115 +400,115 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
               </button>
             </div>
             
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="countries">
-                <AccordionTrigger className="text-sm font-medium text-gray-700">
-                  Preferred Countries
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm text-gray-600">United States</label>
-                      <RadioGroup defaultValue="high" className="flex space-x-2">
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="high" id="us-high" />
-                          <label htmlFor="us-high" className="text-xs">High</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="medium" id="us-medium" />
-                          <label htmlFor="us-medium" className="text-xs">Medium</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="low" id="us-low" />
-                          <label htmlFor="us-low" className="text-xs">Low</label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm text-gray-600">United Kingdom</label>
-                      <RadioGroup defaultValue="medium" className="flex space-x-2">
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="high" id="uk-high" />
-                          <label htmlFor="uk-high" className="text-xs">High</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="medium" id="uk-medium" />
-                          <label htmlFor="uk-medium" className="text-xs">Medium</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="low" id="uk-low" />
-                          <label htmlFor="uk-low" className="text-xs">Low</label>
-                        </div>
-                      </RadioGroup>
-                    </div>
+            <div className="space-y-6">
+              <div className="border-b border-gray-200 pb-4">
+                <h4 className="text-sm font-medium text-gray-800 mb-3">What are your preferred countries for potential buyers?</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-gray-600">United States</label>
+                    <RadioGroup defaultValue="high" className="flex space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="high" id="us-high" />
+                        <label htmlFor="us-high" className="text-xs">High</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="medium" id="us-medium" />
+                        <label htmlFor="us-medium" className="text-xs">Medium</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="low" id="us-low" />
+                        <label htmlFor="us-low" className="text-xs">Low</label>
+                      </div>
+                    </RadioGroup>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="industries">
-                <AccordionTrigger className="text-sm font-medium text-gray-700">
-                  Industry Focus
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm text-gray-600">Technology</label>
-                      <RadioGroup defaultValue="high" className="flex space-x-2">
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="high" id="tech-high" />
-                          <label htmlFor="tech-high" className="text-xs">High</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="medium" id="tech-medium" />
-                          <label htmlFor="tech-medium" className="text-xs">Medium</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="low" id="tech-low" />
-                          <label htmlFor="tech-low" className="text-xs">Low</label>
-                        </div>
-                      </RadioGroup>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm text-gray-600">Healthcare</label>
-                      <RadioGroup defaultValue="medium" className="flex space-x-2">
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="high" id="health-high" />
-                          <label htmlFor="health-high" className="text-xs">High</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="medium" id="health-medium" />
-                          <label htmlFor="health-medium" className="text-xs">Medium</label>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <RadioGroupItem value="low" id="health-low" />
-                          <label htmlFor="health-low" className="text-xs">Low</label>
-                        </div>
-                      </RadioGroup>
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-gray-600">United Kingdom</label>
+                    <RadioGroup defaultValue="medium" className="flex space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="high" id="uk-high" />
+                        <label htmlFor="uk-high" className="text-xs">High</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="medium" id="uk-medium" />
+                        <label htmlFor="uk-medium" className="text-xs">Medium</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="low" id="uk-low" />
+                        <label htmlFor="uk-low" className="text-xs">Low</label>
+                      </div>
+                    </RadioGroup>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-              <AccordionItem value="keywords">
-                <AccordionTrigger className="text-sm font-medium text-gray-700">
-                  Sector Keywords
-                </AccordionTrigger>
-                <AccordionContent>
-                  <div className="flex flex-wrap gap-2">
-                    <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
-                      Software
-                    </div>
-                    <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
-                      Healthcare IT
-                    </div>
-                    <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
-                      Enterprise
-                    </div>
-                    <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
-                      SaaS
-                    </div>
+                </div>
+              </div>
+
+              <div className="border-b border-gray-200 pb-4">
+                <h4 className="text-sm font-medium text-gray-800 mb-3">What industries should the buyer operate in?</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-gray-600">Technology</label>
+                    <RadioGroup defaultValue="high" className="flex space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="high" id="tech-high" />
+                        <label htmlFor="tech-high" className="text-xs">High</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="medium" id="tech-medium" />
+                        <label htmlFor="tech-medium" className="text-xs">Medium</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="low" id="tech-low" />
+                        <label htmlFor="tech-low" className="text-xs">Low</label>
+                      </div>
+                    </RadioGroup>
                   </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-gray-600">Healthcare</label>
+                    <RadioGroup defaultValue="medium" className="flex space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="high" id="health-high" />
+                        <label htmlFor="health-high" className="text-xs">High</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="medium" id="health-medium" />
+                        <label htmlFor="health-medium" className="text-xs">Medium</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="low" id="health-low" />
+                        <label htmlFor="health-low" className="text-xs">Low</label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-b border-gray-200 pb-4">
+                <h4 className="text-sm font-medium text-gray-800 mb-3">What sector keywords are most relevant?</h4>
+                <div className="flex flex-wrap gap-2">
+                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                    Software
+                  </div>
+                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                    Healthcare IT
+                  </div>
+                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                    Enterprise
+                  </div>
+                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                    SaaS
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-b border-gray-200 pb-4">
+                <h4 className="text-sm font-medium text-gray-800 mb-3">What is the most likely reason for acquisition?</h4>
+                <select className="input-field w-full">
+                  <option value="market-expansion">Market Expansion</option>
+                  <option value="tech-acquisition">Technology Acquisition</option>
+                  <option value="talent-acquisition">Talent Acquisition</option>
+                  <option value="portfolio-diversification">Portfolio Diversification</option>
+                </select>
+              </div>
+            </div>
             
             <div className="mt-4 flex justify-end">
               <button
