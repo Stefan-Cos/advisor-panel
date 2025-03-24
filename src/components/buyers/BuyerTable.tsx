@@ -15,6 +15,18 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { format } from 'date-fns';
 
 interface BuyerTableProps {
@@ -159,6 +171,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const { toast } = useToast();
   
@@ -176,6 +189,12 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   
   const toggleFilters = () => {
     setShowFilters(!showFilters);
+    if (showPreferences) setShowPreferences(false);
+  };
+  
+  const togglePreferences = () => {
+    setShowPreferences(!showPreferences);
+    if (showFilters) setShowFilters(false);
   };
   
   const toggleRationale = (buyerId: string) => {
@@ -192,6 +211,14 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
       description: "Your search filters have been applied",
     });
     setShowFilters(false);
+  };
+
+  const handlePreferencesApply = () => {
+    toast({
+      title: "Preferences Applied",
+      description: "Your buyer preferences have been applied",
+    });
+    setShowPreferences(false);
   };
 
   // Format the date string to MMM-YY
@@ -232,20 +259,38 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
             </button>
           </div>
           
-          <button
-            onClick={toggleFilters}
-            className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-          >
-            <Filter className="h-4 w-4" />
-            <span>Filters</span>
-          </button>
+          <div className="flex space-x-3">
+            <button
+              onClick={toggleFilters}
+              className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
+                showFilters 
+                  ? 'bg-blueknight-500 text-white' 
+                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+              } rounded-md`}
+            >
+              <Filter className="h-4 w-4" />
+              <span>Filters</span>
+            </button>
+            
+            <button
+              onClick={togglePreferences}
+              className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
+                showPreferences 
+                  ? 'bg-blueknight-500 text-white' 
+                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+              } rounded-md`}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Buyer Preferences</span>
+            </button>
+          </div>
         </div>
         
         {showFilters && (
           <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-700 flex items-center">
-                <SlidersHorizontal className="h-4 w-4 mr-2" />
+                <Filter className="h-4 w-4 mr-2" />
                 Filter Options
               </h3>
               <button 
@@ -305,12 +350,147 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
           </div>
         )}
         
+        {showPreferences && (
+          <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-700 flex items-center">
+                <SlidersHorizontal className="h-4 w-4 mr-2" />
+                Buyer Preferences
+              </h3>
+              <button 
+                onClick={() => setShowPreferences(false)}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Close
+              </button>
+            </div>
+            
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="countries">
+                <AccordionTrigger className="text-sm font-medium text-gray-700">
+                  Preferred Countries
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm text-gray-600">United States</label>
+                      <RadioGroup defaultValue="high" className="flex space-x-2">
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="high" id="us-high" />
+                          <label htmlFor="us-high" className="text-xs">High</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="medium" id="us-medium" />
+                          <label htmlFor="us-medium" className="text-xs">Medium</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="low" id="us-low" />
+                          <label htmlFor="us-low" className="text-xs">Low</label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm text-gray-600">United Kingdom</label>
+                      <RadioGroup defaultValue="medium" className="flex space-x-2">
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="high" id="uk-high" />
+                          <label htmlFor="uk-high" className="text-xs">High</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="medium" id="uk-medium" />
+                          <label htmlFor="uk-medium" className="text-xs">Medium</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="low" id="uk-low" />
+                          <label htmlFor="uk-low" className="text-xs">Low</label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="industries">
+                <AccordionTrigger className="text-sm font-medium text-gray-700">
+                  Industry Focus
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm text-gray-600">Technology</label>
+                      <RadioGroup defaultValue="high" className="flex space-x-2">
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="high" id="tech-high" />
+                          <label htmlFor="tech-high" className="text-xs">High</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="medium" id="tech-medium" />
+                          <label htmlFor="tech-medium" className="text-xs">Medium</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="low" id="tech-low" />
+                          <label htmlFor="tech-low" className="text-xs">Low</label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm text-gray-600">Healthcare</label>
+                      <RadioGroup defaultValue="medium" className="flex space-x-2">
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="high" id="health-high" />
+                          <label htmlFor="health-high" className="text-xs">High</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="medium" id="health-medium" />
+                          <label htmlFor="health-medium" className="text-xs">Medium</label>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <RadioGroupItem value="low" id="health-low" />
+                          <label htmlFor="health-low" className="text-xs">Low</label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="keywords">
+                <AccordionTrigger className="text-sm font-medium text-gray-700">
+                  Sector Keywords
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-wrap gap-2">
+                    <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                      Software
+                    </div>
+                    <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                      Healthcare IT
+                    </div>
+                    <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                      Enterprise
+                    </div>
+                    <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                      SaaS
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+            
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handlePreferencesApply}
+                className="px-4 py-2 bg-blueknight-500 text-white rounded-md text-sm font-medium hover:bg-blueknight-600"
+              >
+                Apply Preferences
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow className="bg-blueknight-500">
                 <TableHead className="text-white font-medium">Company Name</TableHead>
-                <TableHead className="text-white font-medium">Website</TableHead>
                 <TableHead className="text-white font-medium">Short Description</TableHead>
                 <TableHead className="text-white font-medium">HQ</TableHead>
                 <TableHead className="text-white font-medium">Employees</TableHead>
@@ -327,9 +507,10 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
             <TableBody>
               {buyers.map((buyer) => (
                 <React.Fragment key={buyer.id}>
-                  <TableRow className="hover:bg-gray-50">
+                  <TableRow 
+                    className={`${savedBuyers.includes(buyer.id) ? 'bg-green-50 hover:bg-green-100' : 'hover:bg-gray-50'}`}
+                  >
                     <TableCell className="font-medium">{buyer.name}</TableCell>
-                    <TableCell>{buyer.website}</TableCell>
                     <TableCell>{buyer.description}</TableCell>
                     <TableCell>{buyer.hq}</TableCell>
                     <TableCell>{buyer.employees.toLocaleString()}</TableCell>
@@ -363,26 +544,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                             <ChevronDown className="h-4 w-4 ml-1" />
                           )}
                         </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-2 p-3 bg-gray-50 rounded-md border border-gray-100">
-                          <div className="space-y-2">
-                            <div>
-                              <h4 className="text-xs font-semibold text-gray-700">Offering</h4>
-                              <p className="text-xs text-gray-600">{buyer.rationale.offering}</p>
-                            </div>
-                            <div>
-                              <h4 className="text-xs font-semibold text-gray-700">Customers</h4>
-                              <p className="text-xs text-gray-600">{buyer.rationale.customers}</p>
-                            </div>
-                            <div>
-                              <h4 className="text-xs font-semibold text-gray-700">Financial Strength</h4>
-                              <p className="text-xs text-gray-600">{buyer.rationale.financialStrength}</p>
-                            </div>
-                            <div>
-                              <h4 className="text-xs font-semibold text-gray-700">Overall Rationale</h4>
-                              <p className="text-xs text-gray-600">{buyer.rationale.overall}</p>
-                            </div>
-                          </div>
-                        </CollapsibleContent>
                       </Collapsible>
                     </TableCell>
                     <TableCell>
@@ -411,6 +572,32 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                       )}
                     </TableCell>
                   </TableRow>
+                  {expandedRationales.includes(buyer.id) && (
+                    <TableRow className={savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-gray-50'}>
+                      <TableCell colSpan={12} className="p-0">
+                        <div className="p-4 space-y-4">
+                          <div className="grid grid-cols-1 gap-4">
+                            <div>
+                              <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
+                              <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
+                              <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
+                              <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
+                            </div>
+                            <div>
+                              <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
+                              <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </React.Fragment>
               ))}
             </TableBody>
