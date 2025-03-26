@@ -53,6 +53,19 @@ const BuyerPreferencesForm = () => {
     potentialBuyer: '',
   });
 
+  // State for editing mode and edited item
+  const [editingItems, setEditingItems] = useState({
+    countries: {} as Record<string, boolean>,
+    industries: {} as Record<string, boolean>,
+    endUserSectors: {} as Record<string, boolean>,
+  });
+  
+  const [editedValues, setEditedValues] = useState({
+    countries: {} as Record<string, string>,
+    industries: {} as Record<string, string>,
+    endUserSectors: {} as Record<string, string>,
+  });
+
   // State for importance rankings
   const [importanceValues, setImportanceValues] = useState({
     countries: {
@@ -83,19 +96,19 @@ const BuyerPreferencesForm = () => {
       
       const newItem = inputValues[key];
       
-      setFormState(prev => ({
-        ...prev,
-        [formKey]: [...prev[formKey] as string[], newItem]
+      setFormState(prevState => ({
+        ...prevState,
+        [formKey]: [...prevState[formKey as keyof typeof prevState] as string[], newItem]
       }));
       
       // Set default importance for the new item
       if (formKey !== 'keywords') {
-        setImportanceValues(prev => {
+        setImportanceValues(prevValues => {
           const importanceKey = formKey as keyof typeof importanceValues;
           return {
-            ...prev,
+            ...prevValues,
             [importanceKey]: {
-              ...prev[importanceKey],
+              ...prevValues[importanceKey] as Record<string, string>,
               [newItem]: 'medium'
             }
           };
@@ -111,23 +124,97 @@ const BuyerPreferencesForm = () => {
 
   // Handle removing items
   const handleRemoveItem = (key: keyof typeof formState, item: string) => {
-    setFormState(prev => ({
-      ...prev,
-      [key]: (prev[key] as string[]).filter(i => i !== item)
+    setFormState(prevState => ({
+      ...prevState,
+      [key]: (prevState[key] as string[]).filter(i => i !== item)
     }));
     
     // Remove importance value for this item
     if (key !== 'keywords') {
-      setImportanceValues(prev => {
+      setImportanceValues(prevValues => {
         const importanceKey = key as keyof typeof importanceValues;
-        const newImportance = { ...prev[importanceKey] } as Record<string, string>;
+        const newImportance = { ...prevValues[importanceKey] as Record<string, string> };
         delete newImportance[item];
+        
         return {
-          ...prev,
+          ...prevValues,
           [importanceKey]: newImportance
         };
       });
     }
+  };
+
+  // Toggle edit mode for an item
+  const toggleEditMode = (category: 'countries' | 'industries' | 'endUserSectors', item: string) => {
+    setEditingItems(prev => ({
+      ...prev,
+      [category]: {
+        ...prev[category],
+        [item]: !prev[category][item]
+      }
+    }));
+    
+    // Initialize edit value
+    if (!editedValues[category][item]) {
+      setEditedValues(prev => ({
+        ...prev,
+        [category]: {
+          ...prev[category],
+          [item]: item
+        }
+      }));
+    }
+  };
+
+  // Handle edit change
+  const handleEditChange = (category: 'countries' | 'industries' | 'endUserSectors', item: string, value: string) => {
+    setEditedValues(prev => ({
+      ...prev,
+      [category]: {
+        ...prev[category],
+        [item]: value
+      }
+    }));
+  };
+
+  // Save edited item
+  const saveEditedItem = (category: 'countries' | 'industries' | 'endUserSectors', item: string) => {
+    const editedValue = editedValues[category][item];
+    
+    if (editedValue && editedValue !== item) {
+      // Replace the item in the array
+      setFormState(prevState => {
+        const items = [...prevState[category]];
+        const index = items.indexOf(item);
+        
+        if (index !== -1) {
+          items[index] = editedValue;
+        }
+        
+        return {
+          ...prevState,
+          [category]: items
+        };
+      });
+      
+      // Update importance values
+      setImportanceValues(prevValues => {
+        const currentImportance = (prevValues[category] as Record<string, string>)[item];
+        const newImportance = { ...prevValues[category] as Record<string, string> };
+        delete newImportance[item];
+        
+        return {
+          ...prevValues,
+          [category]: {
+            ...newImportance,
+            [editedValue]: currentImportance
+          }
+        };
+      });
+    }
+    
+    // Exit edit mode
+    toggleEditMode(category, item);
   };
 
   // Handle checkbox changes
@@ -148,7 +235,7 @@ const BuyerPreferencesForm = () => {
       return {
         ...prev,
         [categoryKey]: {
-          ...prev[categoryKey],
+          ...(prev[categoryKey] as Record<string, string>),
           [item]: value
         }
       };
@@ -213,8 +300,22 @@ const BuyerPreferencesForm = () => {
             <div className="space-y-3">
               {formState.countries.map((country) => (
                 <div key={country} className="flex items-center justify-between border-b border-gray-100 pb-2">
-                  <div className="flex-1">
-                    {country}
+                  <div className="flex-1 flex items-center">
+                    {editingItems.countries[country] ? (
+                      <input
+                        type="text"
+                        value={editedValues.countries[country] || country}
+                        onChange={(e) => handleEditChange('countries', country, e.target.value)}
+                        onBlur={() => saveEditedItem('countries', country)}
+                        onKeyPress={(e) => e.key === 'Enter' && saveEditedItem('countries', country)}
+                        className="input-field mr-2"
+                        autoFocus
+                      />
+                    ) : (
+                      <span className="cursor-pointer hover:text-blueknight-600" onClick={() => toggleEditMode('countries', country)}>
+                        {country}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-4">
                     <RadioGroup 
@@ -268,8 +369,22 @@ const BuyerPreferencesForm = () => {
             <div className="space-y-3">
               {formState.industries.map((industry) => (
                 <div key={industry} className="flex items-center justify-between border-b border-gray-100 pb-2">
-                  <div className="flex-1">
-                    {industry}
+                  <div className="flex-1 flex items-center">
+                    {editingItems.industries[industry] ? (
+                      <input
+                        type="text"
+                        value={editedValues.industries[industry] || industry}
+                        onChange={(e) => handleEditChange('industries', industry, e.target.value)}
+                        onBlur={() => saveEditedItem('industries', industry)}
+                        onKeyPress={(e) => e.key === 'Enter' && saveEditedItem('industries', industry)}
+                        className="input-field mr-2"
+                        autoFocus
+                      />
+                    ) : (
+                      <span className="cursor-pointer hover:text-blueknight-600" onClick={() => toggleEditMode('industries', industry)}>
+                        {industry}
+                      </span>
+                    )}
                   </div>
                   <div className="flex items-center gap-4">
                     <RadioGroup 
