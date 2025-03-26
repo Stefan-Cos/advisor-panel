@@ -48,6 +48,7 @@ interface Buyer {
   rationale: {
     offering: string;
     customers: string;
+    previousTransactions: string;
     financialStrength: string;
     overall: string;
   };
@@ -82,6 +83,7 @@ const strategicBuyers: Buyer[] = [
     rationale: {
       offering: 'Their software solutions align perfectly with our client\'s technology stack, providing an opportunity for seamless integration and expansion of service offerings.',
       customers: 'Strong overlap in customer base within the healthcare and financial sectors, which could lead to cross-selling opportunities.',
+      previousTransactions: 'Acquired three complementary software companies in the last 2 years, demonstrating experience in successful post-merger integration.',
       financialStrength: 'Solid balance sheet with consistent revenue growth over the past 5 years and strong cash reserves for potential acquisitions.',
       overall: 'Tech Innovations Inc. presents a strong strategic fit due to complementary technology, overlapping customer base, and financial capability to execute the acquisition.'
     },
@@ -108,6 +110,7 @@ const strategicBuyers: Buyer[] = [
     rationale: {
       offering: 'Their healthcare solutions complement our client\'s products, allowing for a more comprehensive offering to the market.',
       customers: 'Strong presence in European healthcare systems which would open new markets for our client.',
+      previousTransactions: 'Completed one strategic acquisition in the clinical workflow space last year, showing appetite for growth through acquisition.',
       financialStrength: 'Steady growth and good profitability metrics, though cash reserves are moderate.',
       overall: 'Global HealthTech offers excellent geographic expansion opportunities and product synergies, despite somewhat limited acquisition funds.'
     },
@@ -134,6 +137,7 @@ const strategicBuyers: Buyer[] = [
     rationale: {
       offering: 'Their medical software platforms would gain significant feature enhancement from our client\'s technology.',
       customers: 'Strong position in DACH region healthcare providers, complementing our client\'s North American focus.',
+      previousTransactions: 'No recent acquisition history, but their parent company has completed several technology acquisitions in the past 3 years.',
       financialStrength: 'Recently received PE backing, providing acquisition capabilities despite smaller size.',
       overall: 'MediSoft presents an interesting opportunity for international expansion with their strong regional presence and newly available capital for acquisitions.'
     },
@@ -163,6 +167,7 @@ const peBuyers: Buyer[] = [
     rationale: {
       offering: 'Looking to expand their healthcare technology portfolio with companies like our client.',
       customers: 'Their portfolio companies serve similar customer segments, creating potential synergies.',
+      previousTransactions: 'Completed 5 healthcare technology acquisitions in the past 3 years, with a focus on software and digital health platforms.',
       financialStrength: 'Recently raised a new fund with significant capital to deploy in this sector.',
       overall: 'Healthcare Capital Partners has a strong track record in the healthcare technology space and is actively seeking acquisitions in our client\'s sector.'
     },
@@ -189,6 +194,7 @@ const peBuyers: Buyer[] = [
     rationale: {
       offering: 'Actively seeking to invest in innovative medical technology solutions.',
       customers: 'Portfolio focused on solutions for hospital systems and clinics.',
+      previousTransactions: 'Made 3 investments in similar companies over the past 18 months, with typical deal sizes of $30-50M.',
       financialStrength: 'Mid-sized fund with adequate capital for this acquisition size.',
       overall: 'Medtech Growth Fund specializes in exactly our client\'s market segment and has a successful history of growing similar companies.'
     },
@@ -625,7 +631,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-blueknight-500">
+              <TableRow className="bg-blueknight-500 [&>th]:text-white [&>th]:font-medium hover:bg-blueknight-500">
                 <TableHead className="text-white font-medium">Company Name</TableHead>
                 <TableHead className="text-white font-medium">Short Description</TableHead>
                 <TableHead className="text-white font-medium">HQ</TableHead>
@@ -772,6 +778,10 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
                                 <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
+                              </div>
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Previous Transactions</h4>
+                                <p className="text-sm text-gray-600">{buyer.rationale.previousTransactions}</p>
                               </div>
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
