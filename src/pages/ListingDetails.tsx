@@ -24,11 +24,13 @@ const ListingDetailsPage = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
       
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         
-        <main className="flex-1 p-6">
-          <ListingDetails {...listingData} />
+        <main className="flex-1 p-6 overflow-x-auto">
+          <div className="w-full" style={{ minWidth: '1024px' }}>
+            <ListingDetails {...listingData} />
+          </div>
         </main>
       </div>
     </div>

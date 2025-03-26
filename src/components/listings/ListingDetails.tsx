@@ -31,7 +31,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   };
 
   return (
-    <div className="animate-fade-in space-y-8">
+    <div className="animate-fade-in space-y-8 w-full overflow-x-hidden">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
         <div className="flex justify-between items-start">
           <div>
@@ -71,15 +71,15 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           </TabsTrigger>
         </TabsList>
         
-        <TabsContent value="buyer-list" className="mt-6">
+        <TabsContent value="buyer-list" className="mt-6 w-full">
           <BuyerTable listingId={id} />
         </TabsContent>
         
-        <TabsContent value="saved-list" className="mt-6">
+        <TabsContent value="saved-list" className="mt-6 w-full">
           <SavedList listingId={id} />
         </TabsContent>
         
-        <TabsContent value="crm" className="mt-6">
+        <TabsContent value="crm" className="mt-6 w-full">
           <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-12 text-center">
             <h3 className="text-xl font-medium text-gray-700">CRM Features Coming Soon</h3>
             <p className="text-gray-500 mt-2">

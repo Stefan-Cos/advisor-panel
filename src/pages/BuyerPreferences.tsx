@@ -9,10 +9,10 @@ const BuyerPreferences = () => {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
       
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-x-auto">
           <div className="max-w-3xl mx-auto">
             <h1 className="text-2xl font-bold text-blueknight-800 mb-2">Buyer Preferences</h1>
             <p className="text-gray-600 mb-8">Define buyer preferences for company names, offerings, sectors, and customer types.</p>
