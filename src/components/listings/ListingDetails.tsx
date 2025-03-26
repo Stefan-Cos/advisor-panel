@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BuyerTable from '../buyers/BuyerTable';
 import SavedList from '../buyers/SavedList';
+import BuyerPreferencesForm from '../forms/BuyerPreferencesForm';
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 interface ListingDetailsProps {
   id: string;
@@ -37,9 +39,22 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
             <p className="text-gray-600 mt-1">{companyName}</p>
           </div>
           
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
-          </span>
+          <div className="flex items-center gap-3">
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="px-3 py-1 text-sm border border-blueknight-300 rounded-md text-blueknight-700 hover:bg-blueknight-50">
+                  Buyer Preferences
+                </button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <BuyerPreferencesForm />
+              </DialogContent>
+            </Dialog>
+            
+            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
+              {status.charAt(0).toUpperCase() + status.slice(1)}
+            </span>
+          </div>
         </div>
       </div>
       
