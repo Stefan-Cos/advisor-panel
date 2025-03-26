@@ -31,7 +31,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   };
 
   return (
-    <div className="animate-fade-in space-y-8 w-full overflow-x-hidden">
+    <div className="animate-fade-in space-y-8 w-full">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
         <div className="flex justify-between items-start">
           <div>

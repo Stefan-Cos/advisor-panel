@@ -27,8 +27,8 @@ const ListingDetailsPage = () => {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         
-        <main className="flex-1 p-6 overflow-x-auto">
-          <div className="w-full" style={{ minWidth: '1024px' }}>
+        <main className="flex-1 p-6 overflow-auto">
+          <div className="w-full">
             <ListingDetails {...listingData} />
           </div>
         </main>
