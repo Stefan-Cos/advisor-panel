@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, SlidersHorizontal, Filter, Bot, X } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -15,6 +15,18 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface SavedListProps {
   listingId: string;
@@ -172,6 +184,9 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
   const [strategicBuyers, setStrategicBuyers] = useState<SavedBuyer[]>(sampleStrategicBuyers);
   const [peBuyers, setPEBuyers] = useState<SavedBuyer[]>(samplePEBuyers);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [showPreferences, setShowPreferences] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const { toast } = useToast();
   
   const buyers = activeTab === 'strategic' ? strategicBuyers : peBuyers;
@@ -208,6 +223,24 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
     }
   };
   
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+    if (showPreferences) setShowPreferences(false);
+    if (showAIAssistant) setShowAIAssistant(false);
+  };
+  
+  const togglePreferences = () => {
+    setShowPreferences(!showPreferences);
+    if (showFilters) setShowFilters(false);
+    if (showAIAssistant) setShowAIAssistant(false);
+  };
+  
+  const toggleAIAssistant = () => {
+    setShowAIAssistant(!showAIAssistant);
+    if (showFilters) setShowFilters(false);
+    if (showPreferences) setShowPreferences(false);
+  };
+  
   const handleContacting = () => {
     toast({
       title: "Feature Coming Soon",
@@ -221,6 +254,35 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
         ? prev.filter(id => id !== buyerId) 
         : [...prev, buyerId]
     );
+  };
+  
+  const handleFilterApply = () => {
+    toast({
+      title: "Filters Applied",
+      description: "Your search filters have been applied",
+    });
+    setShowFilters(false);
+  };
+
+  const handlePreferencesApply = () => {
+    toast({
+      title: "Preferences Applied",
+      description: "Your buyer preferences have been applied",
+    });
+    setShowPreferences(false);
+  };
+  
+  const handleAIAssistantQuery = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const input = form.elements.namedItem('aiQuery') as HTMLInputElement;
+    if (input.value.trim()) {
+      toast({
+        title: "AI Assistant",
+        description: "Your query has been sent to the AI Assistant",
+      });
+      input.value = '';
+    }
   };
 
   // Format the date string to MMM-YY
@@ -260,7 +322,319 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
               PE Funds
             </button>
           </div>
+          
+          <div className="flex space-x-3">
+            <button
+              onClick={toggleAIAssistant}
+              className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
+                showAIAssistant 
+                  ? 'bg-blueknight-500 text-white' 
+                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+              } rounded-md`}
+            >
+              <Bot className="h-4 w-4" />
+              <span>AI Assistant</span>
+            </button>
+            
+            <button
+              onClick={toggleFilters}
+              className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
+                showFilters 
+                  ? 'bg-blueknight-500 text-white' 
+                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+              } rounded-md`}
+            >
+              <Filter className="h-4 w-4" />
+              <span>Filters</span>
+            </button>
+            
+            <button
+              onClick={togglePreferences}
+              className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
+                showPreferences 
+                  ? 'bg-blueknight-500 text-white' 
+                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+              } rounded-md`}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              <span>Buyer Preferences</span>
+            </button>
+          </div>
         </div>
+        
+        {showAIAssistant && (
+          <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-700 flex items-center">
+                <Bot className="h-4 w-4 mr-2" />
+                AI Assistant
+              </h3>
+              <button 
+                onClick={() => setShowAIAssistant(false)}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="p-3 bg-blue-50 text-blue-700 rounded-lg text-sm">
+                <p className="mb-2 font-medium">AI Assistant</p>
+                <p>I can help you analyze your saved buyers and provide insights. What would you like to know about these potential buyers?</p>
+              </div>
+              
+              <form onSubmit={handleAIAssistantQuery} className="flex space-x-2">
+                <input 
+                  type="text" 
+                  name="aiQuery"
+                  placeholder="Ask anything about these saved buyers..." 
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400"
+                />
+                <button 
+                  type="submit"
+                  className="px-4 py-2 bg-blueknight-500 text-white rounded-md hover:bg-blueknight-600"
+                >
+                  Send
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+        
+        {showFilters && (
+          <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-700 flex items-center">
+                <Filter className="h-4 w-4 mr-2" />
+                Filter Options
+              </h3>
+              <button 
+                onClick={() => setShowFilters(false)}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Close
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  HQ
+                </label>
+                <select className="input-field">
+                  <option value="">All Countries</option>
+                  <option value="USA">USA</option>
+                  <option value="UK">UK</option>
+                  <option value="Germany">Germany</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Minimum Revenue ($M)
+                </label>
+                <select className="input-field">
+                  <option value="0">Any</option>
+                  <option value="50">$50M+</option>
+                  <option value="100">$100M+</option>
+                  <option value="250">$250M+</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Minimum Cash ($M)
+                </label>
+                <select className="input-field">
+                  <option value="0">Any</option>
+                  <option value="10">$10M+</option>
+                  <option value="25">$25M+</option>
+                  <option value="50">$50M+</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Minimum Employees
+                </label>
+                <select className="input-field">
+                  <option value="0">Any</option>
+                  <option value="100">100+</option>
+                  <option value="500">500+</option>
+                  <option value="1000">1000+</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  PE/VC Backed
+                </label>
+                <select className="input-field">
+                  <option value="">Any</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Minimum Match Score
+                </label>
+                <select className="input-field">
+                  <option value="0">Any</option>
+                  <option value="70">70%+</option>
+                  <option value="80">80%+</option>
+                  <option value="90">90%+</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handleFilterApply}
+                className="px-4 py-2 bg-blueknight-500 text-white rounded-md text-sm font-medium hover:bg-blueknight-600"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {showPreferences && (
+          <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-700 flex items-center">
+                <SlidersHorizontal className="h-4 w-4 mr-2" />
+                Buyer Preferences
+              </h3>
+              <button 
+                onClick={() => setShowPreferences(false)}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Close
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              <div className="border-b border-gray-200 pb-4">
+                <h4 className="text-sm font-medium text-gray-800 mb-3">What are your preferred countries for potential buyers?</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-gray-600">United States</label>
+                    <RadioGroup defaultValue="high" className="flex space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="high" id="us-high" />
+                        <label htmlFor="us-high" className="text-xs">High</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="medium" id="us-medium" />
+                        <label htmlFor="us-medium" className="text-xs">Medium</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="low" id="us-low" />
+                        <label htmlFor="us-low" className="text-xs">Low</label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-gray-600">United Kingdom</label>
+                    <RadioGroup defaultValue="medium" className="flex space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="high" id="uk-high" />
+                        <label htmlFor="uk-high" className="text-xs">High</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="medium" id="uk-medium" />
+                        <label htmlFor="uk-medium" className="text-xs">Medium</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="low" id="uk-low" />
+                        <label htmlFor="uk-low" className="text-xs">Low</label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-b border-gray-200 pb-4">
+                <h4 className="text-sm font-medium text-gray-800 mb-3">What industries should the buyer operate in?</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-gray-600">Technology</label>
+                    <RadioGroup defaultValue="high" className="flex space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="high" id="tech-high" />
+                        <label htmlFor="tech-high" className="text-xs">High</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="medium" id="tech-medium" />
+                        <label htmlFor="tech-medium" className="text-xs">Medium</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="low" id="tech-low" />
+                        <label htmlFor="tech-low" className="text-xs">Low</label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm text-gray-600">Healthcare</label>
+                    <RadioGroup defaultValue="medium" className="flex space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="high" id="health-high" />
+                        <label htmlFor="health-high" className="text-xs">High</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="medium" id="health-medium" />
+                        <label htmlFor="health-medium" className="text-xs">Medium</label>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <RadioGroupItem value="low" id="health-low" />
+                        <label htmlFor="health-low" className="text-xs">Low</label>
+                      </div>
+                    </RadioGroup>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-b border-gray-200 pb-4">
+                <h4 className="text-sm font-medium text-gray-800 mb-3">What sector keywords are most relevant?</h4>
+                <div className="flex flex-wrap gap-2">
+                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                    Software
+                  </div>
+                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                    Healthcare IT
+                  </div>
+                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                    Enterprise
+                  </div>
+                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
+                    SaaS
+                  </div>
+                </div>
+              </div>
+
+              <div className="border-b border-gray-200 pb-4">
+                <h4 className="text-sm font-medium text-gray-800 mb-3">What is the most likely reason for acquisition?</h4>
+                <select className="input-field w-full">
+                  <option value="market-expansion">Market Expansion</option>
+                  <option value="tech-acquisition">Technology Acquisition</option>
+                  <option value="talent-acquisition">Talent Acquisition</option>
+                  <option value="portfolio-diversification">Portfolio Diversification</option>
+                </select>
+              </div>
+            </div>
+            
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handlePreferencesApply}
+                className="px-4 py-2 bg-blueknight-500 text-white rounded-md text-sm font-medium hover:bg-blueknight-600"
+              >
+                Apply Preferences
+              </button>
+            </div>
+          </div>
+        )}
         
         {buyers.length === 0 ? (
           <div className="text-center py-12">

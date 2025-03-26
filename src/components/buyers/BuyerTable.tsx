@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Filter, ChevronDown, ChevronUp, SlidersHorizontal } from 'lucide-react';
+import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -37,7 +37,6 @@ interface Buyer {
   id: string;
   name: string;
   type: 'strategic' | 'pe';
-  website: string;
   description: string;
   hq: string;
   employees: number;
@@ -173,6 +172,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [showPreferences, setShowPreferences] = useState(false);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const { toast } = useToast();
   
   const handleAddToSaved = (buyerId: string) => {
@@ -190,11 +190,19 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   const toggleFilters = () => {
     setShowFilters(!showFilters);
     if (showPreferences) setShowPreferences(false);
+    if (showAIAssistant) setShowAIAssistant(false);
   };
   
   const togglePreferences = () => {
     setShowPreferences(!showPreferences);
     if (showFilters) setShowFilters(false);
+    if (showAIAssistant) setShowAIAssistant(false);
+  };
+  
+  const toggleAIAssistant = () => {
+    setShowAIAssistant(!showAIAssistant);
+    if (showFilters) setShowFilters(false);
+    if (showPreferences) setShowPreferences(false);
   };
   
   const toggleRationale = (buyerId: string) => {
@@ -219,6 +227,19 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
       description: "Your buyer preferences have been applied",
     });
     setShowPreferences(false);
+  };
+
+  const handleAIAssistantQuery = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    const input = form.elements.namedItem('aiQuery') as HTMLInputElement;
+    if (input.value.trim()) {
+      toast({
+        title: "AI Assistant",
+        description: "Your query has been sent to the AI Assistant",
+      });
+      input.value = '';
+    }
   };
 
   // Format the date string to MMM-YY
@@ -261,6 +282,18 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
           
           <div className="flex space-x-3">
             <button
+              onClick={toggleAIAssistant}
+              className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
+                showAIAssistant 
+                  ? 'bg-blueknight-500 text-white' 
+                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+              } rounded-md`}
+            >
+              <Bot className="h-4 w-4" />
+              <span>AI Assistant</span>
+            </button>
+            
+            <button
               onClick={toggleFilters}
               className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
                 showFilters 
@@ -285,6 +318,45 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
             </button>
           </div>
         </div>
+        
+        {showAIAssistant && (
+          <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-700 flex items-center">
+                <Bot className="h-4 w-4 mr-2" />
+                AI Assistant
+              </h3>
+              <button 
+                onClick={() => setShowAIAssistant(false)}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="p-3 bg-blue-50 text-blue-700 rounded-lg text-sm">
+                <p className="mb-2 font-medium">AI Assistant</p>
+                <p>I can help you analyze this buyer list and provide insights. What would you like to know about these potential buyers?</p>
+              </div>
+              
+              <form onSubmit={handleAIAssistantQuery} className="flex space-x-2">
+                <input 
+                  type="text" 
+                  name="aiQuery"
+                  placeholder="Ask anything about these buyers..." 
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400"
+                />
+                <button 
+                  type="submit"
+                  className="px-4 py-2 bg-blueknight-500 text-white rounded-md hover:bg-blueknight-600"
+                >
+                  Send
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
         
         {showFilters && (
           <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">

@@ -44,14 +44,8 @@ const Navbar = () => {
           <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500"></span>
         </button>
         
-        <div className="flex items-center">
-          <div className="flex flex-col items-end mr-3">
-            <span className="text-sm font-medium">John Doe</span>
-            <span className="text-xs text-gray-500">Nigeria</span>
-          </div>
-          <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center">
-            <User className="h-5 w-5 text-gray-500" />
-          </div>
+        <div className="h-9 w-9 rounded-full bg-gray-200 flex items-center justify-center">
+          <User className="h-5 w-5 text-gray-500" />
         </div>
       </div>
     </nav>
