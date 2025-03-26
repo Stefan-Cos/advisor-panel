@@ -837,18 +837,18 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
           </div>
         )}
         
-        <div className="overflow-x-auto">
-          <Table>
+        <div className="overflow-auto">
+          <Table className="w-full table-fixed">
             <TableHeader>
               <TableRow className="bg-blueknight-500">
-                <TableHead className="text-white font-medium">Company Name</TableHead>
-                <TableHead className="text-white font-medium">Short Description</TableHead>
-                <TableHead className="text-white font-medium">Offering</TableHead>
-                <TableHead className="text-white font-medium">Sectors</TableHead>
-                <TableHead className="text-white font-medium">Customer Types</TableHead>
-                <TableHead className="text-white font-medium">Rationale</TableHead>
-                <TableHead className="text-white font-medium">Match Score</TableHead>
-                <TableHead className="text-white font-medium"><span className="sr-only">Actions</span></TableHead>
+                <TableHead className="text-white font-medium w-[180px]">Company Name</TableHead>
+                <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
+                <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
+                <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
+                <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
+                <TableHead className="text-white font-medium w-[120px]">Rationale</TableHead>
+                <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
+                <TableHead className="text-white font-medium w-[100px]"><span className="sr-only">Actions</span></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -859,29 +859,23 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                   >
                     <TableCell className="font-medium">{buyer.name}</TableCell>
                     <TableCell>{buyer.description}</TableCell>
-                    <TableCell>{buyer.rationale.offering.substring(0, 50)}...</TableCell>
+                    <TableCell>{buyer.rationale.offering}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {buyer.primaryIndustries?.slice(0, 2).map((industry, i) => (
+                        {buyer.primaryIndustries?.map((industry, i) => (
                           <span key={i} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
                             {industry}
                           </span>
                         ))}
-                        {buyer.primaryIndustries && buyer.primaryIndustries.length > 2 && (
-                          <span className="text-xs text-gray-500">+{buyer.primaryIndustries.length - 2} more</span>
-                        )}
                       </div>
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
-                        {buyer.targetCustomerTypes?.slice(0, 2).map((type, i) => (
+                        {buyer.targetCustomerTypes?.map((type, i) => (
                           <span key={i} className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">
                             {type}
                           </span>
                         ))}
-                        {buyer.targetCustomerTypes && buyer.targetCustomerTypes.length > 2 && (
-                          <span className="text-xs text-gray-500">+{buyer.targetCustomerTypes.length - 2} more</span>
-                        )}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -931,11 +925,13 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                         <div className="p-4">
                           <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
                             <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
                                 <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
                               </div>
+                              
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
                                 <div className="flex flex-wrap gap-1 mt-1">
@@ -946,6 +942,9 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                                   )) || "Not provided"}
                                 </div>
                               </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
                                 <div className="flex flex-wrap gap-1 mt-1">
@@ -956,50 +955,62 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                                   )) || "Not provided"}
                                 </div>
                               </div>
+                              
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
                                 <p className="text-sm text-gray-600">
                                   {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
                                 </p>
                               </div>
+                            </div>
+                            
+                            {/* Company details in a horizontal grid */}
+                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Parent Company</h4>
+                                <h4 className="text-sm font-semibold text-gray-700">Parent Company</h4>
                                 <p className="text-sm text-gray-600">{buyer.parentCompany || "None/Independent"}</p>
                               </div>
+                              
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Website</h4>
+                                <h4 className="text-sm font-semibold text-gray-700">Website</h4>
                                 <p className="text-sm text-gray-600">
                                   {buyer.website ? (
                                     <a href={buyer.website} target="_blank" rel="noopener noreferrer" className="text-blueknight-500 hover:underline">
-                                      {buyer.website}
+                                      Visit
                                     </a>
                                   ) : "Not provided"}
                                 </p>
                               </div>
+                              
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-700">HQ</h4>
+                                <p className="text-sm text-gray-600">{buyer.hq}</p>
+                              </div>
+                              
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-700">Employees</h4>
+                                <p className="text-sm text-gray-600">{buyer.employees.toLocaleString()}</p>
+                              </div>
+                              
                               {activeTab === 'strategic' ? (
                                 <>
                                   <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">HQ</h4>
-                                    <p className="text-sm text-gray-600">{buyer.hq}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Employees</h4>
-                                    <p className="text-sm text-gray-600">{buyer.employees.toLocaleString()}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Revenue ($M)</h4>
+                                    <h4 className="text-sm font-semibold text-gray-700">Revenue ($M)</h4>
                                     <p className="text-sm text-gray-600">${buyer.revenue.toFixed(1)}</p>
                                   </div>
+                                  
                                   <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Cash ($M)</h4>
+                                    <h4 className="text-sm font-semibold text-gray-700">Cash ($M)</h4>
                                     <p className="text-sm text-gray-600">${buyer.cash.toFixed(1)}</p>
                                   </div>
+                                  
                                   <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Reported Date</h4>
+                                    <h4 className="text-sm font-semibold text-gray-700">Reported Date</h4>
                                     <p className="text-sm text-gray-600">{formatReportDate(buyer.reportedDate)}</p>
                                   </div>
+                                  
                                   <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">PE/VC-Backed</h4>
+                                    <h4 className="text-sm font-semibold text-gray-700">PE/VC-Backed</h4>
                                     <p className="text-sm text-gray-600">
                                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                         buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
@@ -1008,8 +1019,9 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                                       </span>
                                     </p>
                                   </div>
+                                  
                                   <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Public</h4>
+                                    <h4 className="text-sm font-semibold text-gray-700">Public</h4>
                                     <p className="text-sm text-gray-600">
                                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                         buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
@@ -1022,23 +1034,17 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                               ) : (
                                 <>
                                   <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">HQ</h4>
-                                    <p className="text-sm text-gray-600">{buyer.hq}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Employees</h4>
-                                    <p className="text-sm text-gray-600">{buyer.employees.toLocaleString()}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">AUM ($M)</h4>
+                                    <h4 className="text-sm font-semibold text-gray-700">AUM ($M)</h4>
                                     <p className="text-sm text-gray-600">${buyer.aum?.toFixed(1)}</p>
                                   </div>
+                                  
                                   <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Investments</h4>
+                                    <h4 className="text-sm font-semibold text-gray-700">Investments</h4>
                                     <p className="text-sm text-gray-600">{buyer.investments}</p>
                                   </div>
+                                  
                                   <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Public</h4>
+                                    <h4 className="text-sm font-semibold text-gray-700">Public</h4>
                                     <p className="text-sm text-gray-600">
                                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                         buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
@@ -1054,7 +1060,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                           
                           <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
                             <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
-                            <div className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
                                 <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
@@ -1071,7 +1077,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
                                 <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
                               </div>
-                              <div>
+                              <div className="md:col-span-2">
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
                                 <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
                               </div>

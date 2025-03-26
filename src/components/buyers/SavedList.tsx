@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown, ChevronUp, Trash } from 'lucide-react';
@@ -317,20 +316,20 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
             <p className="text-gray-500">No saved buyers yet. Add buyers from the Buyer List.</p>
           </div>
         ) : (
-          <div className="w-full overflow-x-auto">
-            <Table className="min-w-full">
+          <div className="overflow-auto">
+            <Table className="w-full table-fixed">
               <TableHeader>
                 <TableRow className="bg-blueknight-500">
-                  <TableHead className="text-white font-medium">Company Name</TableHead>
-                  <TableHead className="text-white font-medium">Short Description</TableHead>
-                  <TableHead className="text-white font-medium">Offering</TableHead>
-                  <TableHead className="text-white font-medium">Sectors</TableHead>
-                  <TableHead className="text-white font-medium">Customer Types</TableHead>
-                  <TableHead className="text-white font-medium">Rank</TableHead>
-                  <TableHead className="text-white font-medium">Feedback</TableHead>
-                  <TableHead className="text-white font-medium">Rationale</TableHead>
-                  <TableHead className="text-white font-medium">Match Score</TableHead>
-                  <TableHead className="text-white font-medium">Action</TableHead>
+                  <TableHead className="text-white font-medium w-[180px]">Company Name</TableHead>
+                  <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
+                  <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
+                  <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
+                  <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
+                  <TableHead className="text-white font-medium w-[100px]">Rank</TableHead>
+                  <TableHead className="text-white font-medium w-[180px]">Feedback</TableHead>
+                  <TableHead className="text-white font-medium w-[120px]">Rationale</TableHead>
+                  <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
+                  <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -342,26 +341,20 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                       <TableCell>{buyer.rationale.offering}</TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {buyer.primaryIndustries?.slice(0, 2).map((industry, i) => (
+                          {buyer.primaryIndustries?.map((industry, i) => (
                             <span key={i} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
                               {industry}
                             </span>
                           ))}
-                          {buyer.primaryIndustries && buyer.primaryIndustries.length > 2 && (
-                            <span className="text-xs text-gray-500">+{buyer.primaryIndustries.length - 2} more</span>
-                          )}
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {buyer.targetCustomerTypes?.slice(0, 2).map((type, i) => (
+                          {buyer.targetCustomerTypes?.map((type, i) => (
                             <span key={i} className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">
                               {type}
                             </span>
                           ))}
-                          {buyer.targetCustomerTypes && buyer.targetCustomerTypes.length > 2 && (
-                            <span className="text-xs text-gray-500">+{buyer.targetCustomerTypes.length - 2} more</span>
-                          )}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -428,10 +421,10 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                       <TableRow className="bg-green-50">
                         <TableCell colSpan={10} className="p-0">
                           <div className="p-4">
-                            {/* Buyer information layout with horizontal distribution */}
                             <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
                               <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
-                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
                                   <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
                                   <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
@@ -447,7 +440,9 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                     )) || "Not provided"}
                                   </div>
                                 </div>
-                                
+                              </div>
+                              
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                 <div>
                                   <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
                                   <div className="flex flex-wrap gap-1 mt-1">
@@ -467,14 +462,14 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                 </div>
                               </div>
                               
-                              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 mt-4">
+                              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
                                 <div>
-                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Parent Company</h4>
+                                  <h4 className="text-sm font-semibold text-gray-700">Parent Company</h4>
                                   <p className="text-sm text-gray-600">{buyer.parentCompany || "None/Independent"}</p>
                                 </div>
                                 
                                 <div>
-                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Website</h4>
+                                  <h4 className="text-sm font-semibold text-gray-700">Website</h4>
                                   <p className="text-sm text-gray-600">
                                     {buyer.website ? (
                                       <a href={buyer.website} target="_blank" rel="noopener noreferrer" className="text-blueknight-500 hover:underline">
@@ -485,34 +480,34 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                 </div>
                                 
                                 <div>
-                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">HQ</h4>
+                                  <h4 className="text-sm font-semibold text-gray-700">HQ</h4>
                                   <p className="text-sm text-gray-600">{buyer.location}</p>
                                 </div>
                                 
                                 <div>
-                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Employees</h4>
+                                  <h4 className="text-sm font-semibold text-gray-700">Employees</h4>
                                   <p className="text-sm text-gray-600">{buyer.employees.toLocaleString()}</p>
                                 </div>
                                 
                                 {activeTab === 'strategic' ? (
                                   <>
                                     <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Revenue ($M)</h4>
+                                      <h4 className="text-sm font-semibold text-gray-700">Revenue ($M)</h4>
                                       <p className="text-sm text-gray-600">${buyer.revenue.toFixed(1)}</p>
                                     </div>
                                     
                                     <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Cash ($M)</h4>
+                                      <h4 className="text-sm font-semibold text-gray-700">Cash ($M)</h4>
                                       <p className="text-sm text-gray-600">${buyer.cash.toFixed(1)}</p>
                                     </div>
                                     
                                     <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Reported Date</h4>
+                                      <h4 className="text-sm font-semibold text-gray-700">Reported Date</h4>
                                       <p className="text-sm text-gray-600">{formatReportDate(buyer.reportedDate)}</p>
                                     </div>
                                     
                                     <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">PE/VC-Backed</h4>
+                                      <h4 className="text-sm font-semibold text-gray-700">PE/VC-Backed</h4>
                                       <p className="text-sm text-gray-600">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                           buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
@@ -523,7 +518,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                     </div>
                                     
                                     <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Public</h4>
+                                      <h4 className="text-sm font-semibold text-gray-700">Public</h4>
                                       <p className="text-sm text-gray-600">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                           buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
@@ -536,17 +531,17 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                 ) : (
                                   <>
                                     <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">AUM ($M)</h4>
+                                      <h4 className="text-sm font-semibold text-gray-700">AUM ($M)</h4>
                                       <p className="text-sm text-gray-600">${buyer.aum?.toFixed(1)}</p>
                                     </div>
                                     
                                     <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Investments</h4>
+                                      <h4 className="text-sm font-semibold text-gray-700">Investments</h4>
                                       <p className="text-sm text-gray-600">{buyer.investments}</p>
                                     </div>
                                     
                                     <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Public</h4>
+                                      <h4 className="text-sm font-semibold text-gray-700">Public</h4>
                                       <p className="text-sm text-gray-600">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                           buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
@@ -560,7 +555,6 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                               </div>
                             </div>
                             
-                            {/* Rationale layout with horizontal distribution */}
                             <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
                               <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
