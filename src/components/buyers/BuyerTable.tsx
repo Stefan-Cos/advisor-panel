@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X } from 'lucide-react';
+import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X, Search } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -27,6 +27,8 @@ import {
 } from "@/components/ui/accordion";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { format } from 'date-fns';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface BuyerTableProps {
   listingId: string;
@@ -60,6 +62,31 @@ interface Buyer {
   parentCompany?: string;
   aum?: number;
   investments?: string;
+  offering?: string;
+  sectors?: string[];
+}
+
+interface SearchCriteria {
+  companyName: {
+    keywords: string[];
+    operator: 'AND' | 'OR' | 'NOT';
+  };
+  description: {
+    keywords: string[];
+    operator: 'AND' | 'OR' | 'NOT';
+  };
+  offering: {
+    keywords: string[];
+    operator: 'AND' | 'OR' | 'NOT';
+  };
+  sectors: {
+    keywords: string[];
+    operator: 'AND' | 'OR' | 'NOT';
+  };
+  customerTypes: {
+    keywords: string[];
+    operator: 'AND' | 'OR' | 'NOT';
+  };
 }
 
 const strategicBuyers: Buyer[] = [
@@ -214,6 +241,16 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   const [showPreferences, setShowPreferences] = useState(false);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [showSearchForm, setShowSearchForm] = useState(false);
+  const [searchCriteria, setSearchCriteria] = useState<SearchCriteria>({
+    companyName: { keywords: [], operator: 'AND' },
+    description: { keywords: [], operator: 'AND' },
+    offering: { keywords: [], operator: 'AND' },
+    sectors: { keywords: [], operator: 'AND' },
+    customerTypes: { keywords: [], operator: 'AND' }
+  });
+  const [tempKeyword, setTempKeyword] = useState('');
+  const [activeField, setActiveField] = useState<keyof SearchCriteria | null>(null);
   const { toast } = useToast();
   
   const handleAddToSaved = (buyerId: string) => {
@@ -244,6 +281,10 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
     setShowAIAssistant(!showAIAssistant);
     if (showFilters) setShowFilters(false);
     if (showPreferences) setShowPreferences(false);
+  };
+  
+  const toggleSearchForm = () => {
+    setShowSearchForm(!showSearchForm);
   };
   
   const toggleRationale = (buyerId: string) => {
@@ -293,6 +334,48 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
     }
   };
 
+  const handleAddKeyword = (field: keyof SearchCriteria) => {
+    if (tempKeyword.trim()) {
+      setSearchCriteria(prev => ({
+        ...prev,
+        [field]: {
+          ...prev[field],
+          keywords: [...prev[field].keywords, tempKeyword.trim()]
+        }
+      }));
+      setTempKeyword('');
+    }
+  };
+
+  const handleRemoveKeyword = (field: keyof SearchCriteria, keyword: string) => {
+    setSearchCriteria(prev => ({
+      ...prev,
+      [field]: {
+        ...prev[field],
+        keywords: prev[field].keywords.filter(k => k !== keyword)
+      }
+    }));
+  };
+
+  const handleOperatorChange = (field: keyof SearchCriteria, operator: 'AND' | 'OR' | 'NOT') => {
+    setSearchCriteria(prev => ({
+      ...prev,
+      [field]: {
+        ...prev[field],
+        operator
+      }
+    }));
+  };
+
+  const handleSearchApply = () => {
+    toast({
+      title: "Search Applied",
+      description: "Your keyword search has been applied",
+    });
+    setShowSearchForm(false);
+    // Here you would typically filter the buyers based on the search criteria
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
@@ -321,6 +404,18 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
           </div>
           
           <div className="flex space-x-3">
+            <button
+              onClick={toggleSearchForm}
+              className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
+                showSearchForm 
+                  ? 'bg-blueknight-500 text-white' 
+                  : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
+              } rounded-md`}
+            >
+              <Search className="h-4 w-4" />
+              <span>Keyword Search</span>
+            </button>
+            
             <button
               onClick={toggleAIAssistant}
               className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
@@ -358,6 +453,115 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
             </button>
           </div>
         </div>
+        
+        {showSearchForm && (
+          <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-medium text-gray-700 flex items-center">
+                <Search className="h-4 w-4 mr-2" />
+                Keyword Search
+              </h3>
+              <button 
+                onClick={() => setShowSearchForm(false)}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {(Object.keys(searchCriteria) as Array<keyof SearchCriteria>).map((field) => (
+                <div key={field} className="space-y-2">
+                  <h4 className="text-sm font-medium text-gray-700 capitalize">
+                    {field === 'companyName' ? 'Company Name' : 
+                     field === 'customerTypes' ? 'Customer Types' : field}
+                  </h4>
+                  
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {searchCriteria[field].keywords.map((keyword, index) => (
+                      <div 
+                        key={index} 
+                        className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs flex items-center"
+                      >
+                        {keyword}
+                        <button 
+                          onClick={() => handleRemoveKeyword(field, keyword)}
+                          className="ml-2 text-blueknight-500 hover:text-blueknight-700"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder={`Add ${field} keyword...`}
+                      value={activeField === field ? tempKeyword : ''}
+                      onChange={(e) => {
+                        setActiveField(field);
+                        setTempKeyword(e.target.value);
+                      }}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          handleAddKeyword(field);
+                        }
+                      }}
+                      className="text-sm"
+                    />
+                    <Button 
+                      size="sm" 
+                      onClick={() => handleAddKeyword(field)}
+                      className="text-xs"
+                    >
+                      Add
+                    </Button>
+                  </div>
+                  
+                  <div className="flex space-x-4 mt-2">
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name={`operator-${field}`}
+                        checked={searchCriteria[field].operator === 'AND'}
+                        onChange={() => handleOperatorChange(field, 'AND')}
+                        className="h-4 w-4 text-blueknight-500 focus:ring-blueknight-400"
+                      />
+                      <span className="text-xs">AND</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name={`operator-${field}`}
+                        checked={searchCriteria[field].operator === 'OR'}
+                        onChange={() => handleOperatorChange(field, 'OR')}
+                        className="h-4 w-4 text-blueknight-500 focus:ring-blueknight-400"
+                      />
+                      <span className="text-xs">OR</span>
+                    </label>
+                    <label className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name={`operator-${field}`}
+                        checked={searchCriteria[field].operator === 'NOT'}
+                        onChange={() => handleOperatorChange(field, 'NOT')}
+                        className="h-4 w-4 text-blueknight-500 focus:ring-blueknight-400"
+                      />
+                      <span className="text-xs">NOT</span>
+                    </label>
+                  </div>
+                </div>
+              ))}
+              
+              <div className="flex justify-end">
+                <Button onClick={handleSearchApply} className="text-sm">
+                  Apply Search
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
         
         {showAIAssistant && (
           <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
@@ -639,22 +843,9 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
               <TableRow className="bg-blueknight-500">
                 <TableHead className="text-white font-medium">Company Name</TableHead>
                 <TableHead className="text-white font-medium">Short Description</TableHead>
-                <TableHead className="text-white font-medium">HQ</TableHead>
-                <TableHead className="text-white font-medium">Employees</TableHead>
-                {activeTab === 'strategic' ? (
-                  <>
-                    <TableHead className="text-white font-medium">Revenue ($M)</TableHead>
-                    <TableHead className="text-white font-medium">Cash ($M)</TableHead>
-                    <TableHead className="text-white font-medium">Reported Date</TableHead>
-                    <TableHead className="text-white font-medium">PE/VC-Backed</TableHead>
-                  </>
-                ) : (
-                  <>
-                    <TableHead className="text-white font-medium">AUM ($M)</TableHead>
-                    <TableHead className="text-white font-medium">Investments</TableHead>
-                  </>
-                )}
-                <TableHead className="text-white font-medium">Public</TableHead>
+                <TableHead className="text-white font-medium">Offering</TableHead>
+                <TableHead className="text-white font-medium">Sectors</TableHead>
+                <TableHead className="text-white font-medium">Customer Types</TableHead>
                 <TableHead className="text-white font-medium">Rationale</TableHead>
                 <TableHead className="text-white font-medium">Match Score</TableHead>
                 <TableHead className="text-white font-medium"><span className="sr-only">Actions</span></TableHead>
@@ -668,33 +859,30 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                   >
                     <TableCell className="font-medium">{buyer.name}</TableCell>
                     <TableCell>{buyer.description}</TableCell>
-                    <TableCell>{buyer.hq}</TableCell>
-                    <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-                    {activeTab === 'strategic' ? (
-                      <>
-                        <TableCell>${buyer.revenue.toFixed(1)}</TableCell>
-                        <TableCell>${buyer.cash.toFixed(1)}</TableCell>
-                        <TableCell>{formatReportDate(buyer.reportedDate)}</TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
-                          }`}>
-                            {buyer.isPEVCBacked ? 'Yes' : 'No'}
-                          </span>
-                        </TableCell>
-                      </>
-                    ) : (
-                      <>
-                        <TableCell>${buyer.aum?.toFixed(1)}</TableCell>
-                        <TableCell>{buyer.investments}</TableCell>
-                      </>
-                    )}
+                    <TableCell>{buyer.rationale.offering.substring(0, 50)}...</TableCell>
                     <TableCell>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
-                      }`}>
-                        {buyer.isPublic ? 'Yes' : 'No'}
-                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {buyer.primaryIndustries?.slice(0, 2).map((industry, i) => (
+                          <span key={i} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
+                            {industry}
+                          </span>
+                        ))}
+                        {buyer.primaryIndustries && buyer.primaryIndustries.length > 2 && (
+                          <span className="text-xs text-gray-500">+{buyer.primaryIndustries.length - 2} more</span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex flex-wrap gap-1">
+                        {buyer.targetCustomerTypes?.slice(0, 2).map((type, i) => (
+                          <span key={i} className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">
+                            {type}
+                          </span>
+                        ))}
+                        {buyer.targetCustomerTypes && buyer.targetCustomerTypes.length > 2 && (
+                          <span className="text-xs text-gray-500">+{buyer.targetCustomerTypes.length - 2} more</span>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Collapsible 
@@ -739,7 +927,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                   </TableRow>
                   {expandedRationales.includes(buyer.id) && (
                     <TableRow className={savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-gray-50'}>
-                      <TableCell colSpan={12} className="p-0">
+                      <TableCell colSpan={8} className="p-0">
                         <div className="p-4">
                           <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
                             <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
@@ -788,6 +976,79 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                                   ) : "Not provided"}
                                 </p>
                               </div>
+                              {activeTab === 'strategic' ? (
+                                <>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">HQ</h4>
+                                    <p className="text-sm text-gray-600">{buyer.hq}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Employees</h4>
+                                    <p className="text-sm text-gray-600">{buyer.employees.toLocaleString()}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Revenue ($M)</h4>
+                                    <p className="text-sm text-gray-600">${buyer.revenue.toFixed(1)}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Cash ($M)</h4>
+                                    <p className="text-sm text-gray-600">${buyer.cash.toFixed(1)}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Reported Date</h4>
+                                    <p className="text-sm text-gray-600">{formatReportDate(buyer.reportedDate)}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">PE/VC-Backed</h4>
+                                    <p className="text-sm text-gray-600">
+                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                        buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
+                                      }`}>
+                                        {buyer.isPEVCBacked ? 'Yes' : 'No'}
+                                      </span>
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Public</h4>
+                                    <p className="text-sm text-gray-600">
+                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                        buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
+                                      }`}>
+                                        {buyer.isPublic ? 'Yes' : 'No'}
+                                      </span>
+                                    </p>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">HQ</h4>
+                                    <p className="text-sm text-gray-600">{buyer.hq}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Employees</h4>
+                                    <p className="text-sm text-gray-600">{buyer.employees.toLocaleString()}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">AUM ($M)</h4>
+                                    <p className="text-sm text-gray-600">${buyer.aum?.toFixed(1)}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Investments</h4>
+                                    <p className="text-sm text-gray-600">{buyer.investments}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Public</h4>
+                                    <p className="text-sm text-gray-600">
+                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                        buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
+                                      }`}>
+                                        {buyer.isPublic ? 'Yes' : 'No'}
+                                      </span>
+                                    </p>
+                                  </div>
+                                </>
+                              )}
                             </div>
                           </div>
                           

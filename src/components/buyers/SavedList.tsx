@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown, ChevronUp, Trash } from 'lucide-react';
@@ -320,24 +321,11 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
             <Table>
               <TableHeader>
                 <TableRow className="bg-blueknight-500">
-                  <TableHead className="text-white font-medium">Buyer Name</TableHead>
+                  <TableHead className="text-white font-medium">Company Name</TableHead>
                   <TableHead className="text-white font-medium">Short Description</TableHead>
-                  <TableHead className="text-white font-medium">HQ</TableHead>
-                  <TableHead className="text-white font-medium">Employees</TableHead>
-                  {activeTab === 'strategic' ? (
-                    <>
-                      <TableHead className="text-white font-medium">Revenue ($M)</TableHead>
-                      <TableHead className="text-white font-medium">Cash ($M)</TableHead>
-                      <TableHead className="text-white font-medium">Reported Date</TableHead>
-                      <TableHead className="text-white font-medium">PE/VC-Backed</TableHead>
-                    </>
-                  ) : (
-                    <>
-                      <TableHead className="text-white font-medium">AUM ($M)</TableHead>
-                      <TableHead className="text-white font-medium">Investments</TableHead>
-                    </>
-                  )}
-                  <TableHead className="text-white font-medium">Public</TableHead>
+                  <TableHead className="text-white font-medium">Offering</TableHead>
+                  <TableHead className="text-white font-medium">Sectors</TableHead>
+                  <TableHead className="text-white font-medium">Customer Types</TableHead>
                   <TableHead className="text-white font-medium">Rank</TableHead>
                   <TableHead className="text-white font-medium">Feedback</TableHead>
                   <TableHead className="text-white font-medium">Rationale</TableHead>
@@ -351,33 +339,30 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                     <TableRow className="hover:bg-gray-50 bg-green-50">
                       <TableCell className="font-medium">{buyer.name}</TableCell>
                       <TableCell>{buyer.description}</TableCell>
-                      <TableCell>{buyer.location}</TableCell>
-                      <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-                      {activeTab === 'strategic' ? (
-                        <>
-                          <TableCell>${buyer.revenue.toFixed(1)}</TableCell>
-                          <TableCell>${buyer.cash.toFixed(1)}</TableCell>
-                          <TableCell>{formatReportDate(buyer.reportedDate)}</TableCell>
-                          <TableCell>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
-                            }`}>
-                              {buyer.isPEVCBacked ? 'Yes' : 'No'}
-                            </span>
-                          </TableCell>
-                        </>
-                      ) : (
-                        <>
-                          <TableCell>${buyer.aum?.toFixed(1)}</TableCell>
-                          <TableCell>{buyer.investments}</TableCell>
-                        </>
-                      )}
+                      <TableCell>{buyer.rationale.offering.substring(0, 50)}...</TableCell>
                       <TableCell>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {buyer.isPublic ? 'Yes' : 'No'}
-                        </span>
+                        <div className="flex flex-wrap gap-1">
+                          {buyer.primaryIndustries?.slice(0, 2).map((industry, i) => (
+                            <span key={i} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
+                              {industry}
+                            </span>
+                          ))}
+                          {buyer.primaryIndustries && buyer.primaryIndustries.length > 2 && (
+                            <span className="text-xs text-gray-500">+{buyer.primaryIndustries.length - 2} more</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {buyer.targetCustomerTypes?.slice(0, 2).map((type, i) => (
+                            <span key={i} className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">
+                              {type}
+                            </span>
+                          ))}
+                          {buyer.targetCustomerTypes && buyer.targetCustomerTypes.length > 2 && (
+                            <span className="text-xs text-gray-500">+{buyer.targetCustomerTypes.length - 2} more</span>
+                          )}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <select
@@ -441,7 +426,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                     </TableRow>
                     {expandedRationales.includes(buyer.id) && (
                       <TableRow className="bg-green-50">
-                        <TableCell colSpan={14} className="p-0">
+                        <TableCell colSpan={10} className="p-0">
                           <div className="p-4">
                             <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
                               <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
@@ -490,6 +475,79 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                     ) : "Not provided"}
                                   </p>
                                 </div>
+                                {activeTab === 'strategic' ? (
+                                  <>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">HQ</h4>
+                                      <p className="text-sm text-gray-600">{buyer.location}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Employees</h4>
+                                      <p className="text-sm text-gray-600">{buyer.employees.toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Revenue ($M)</h4>
+                                      <p className="text-sm text-gray-600">${buyer.revenue.toFixed(1)}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Cash ($M)</h4>
+                                      <p className="text-sm text-gray-600">${buyer.cash.toFixed(1)}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Reported Date</h4>
+                                      <p className="text-sm text-gray-600">{formatReportDate(buyer.reportedDate)}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">PE/VC-Backed</h4>
+                                      <p className="text-sm text-gray-600">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                          buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
+                                        }`}>
+                                          {buyer.isPEVCBacked ? 'Yes' : 'No'}
+                                        </span>
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Public</h4>
+                                      <p className="text-sm text-gray-600">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                          buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
+                                        }`}>
+                                          {buyer.isPublic ? 'Yes' : 'No'}
+                                        </span>
+                                      </p>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">HQ</h4>
+                                      <p className="text-sm text-gray-600">{buyer.location}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Employees</h4>
+                                      <p className="text-sm text-gray-600">{buyer.employees.toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">AUM ($M)</h4>
+                                      <p className="text-sm text-gray-600">${buyer.aum?.toFixed(1)}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Investments</h4>
+                                      <p className="text-sm text-gray-600">{buyer.investments}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Public</h4>
+                                      <p className="text-sm text-gray-600">
+                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                          buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
+                                        }`}>
+                                          {buyer.isPublic ? 'Yes' : 'No'}
+                                        </span>
+                                      </p>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             </div>
                             
