@@ -58,9 +58,10 @@ interface Buyer {
   keywords?: string[];
   targetCustomerTypes?: string[];
   parentCompany?: string;
+  aum?: number;
+  investments?: string;
 }
 
-// Sample data
 const strategicBuyers: Buyer[] = [
   {
     id: 'buyer1',
@@ -159,11 +160,13 @@ const peBuyers: Buyer[] = [
     website: 'https://healthcarecapital.example.com',
     hq: 'UK',
     employees: 120,
-    revenue: 350.0, // AUM in millions
-    cash: 125.0, // Dry powder in millions
-    reportedDate: '2024-04-05',
+    revenue: 0,
+    cash: 0,
+    reportedDate: '',
     isPEVCBacked: false,
     isPublic: false,
+    aum: 350.0,
+    investments: '12 companies in healthcare tech',
     rationale: {
       offering: 'Looking to expand their healthcare technology portfolio with companies like our client.',
       customers: 'Their portfolio companies serve similar customer segments, creating potential synergies.',
@@ -186,11 +189,13 @@ const peBuyers: Buyer[] = [
     website: 'https://medtechgrowth.example.com',
     hq: 'USA',
     employees: 85,
-    revenue: 220.0, // AUM in millions
-    cash: 80.0, // Dry powder in millions
-    reportedDate: '2024-03-18',
+    revenue: 0,
+    cash: 0,
+    reportedDate: '',
     isPEVCBacked: false,
     isPublic: false,
+    aum: 220.0,
+    investments: '8 portfolio companies in medtech',
     rationale: {
       offering: 'Actively seeking to invest in innovative medical technology solutions.',
       customers: 'Portfolio focused on solutions for hospital systems and clinics.',
@@ -631,15 +636,24 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
-              <TableRow className="bg-blueknight-500 [&>th]:text-white [&>th]:font-medium hover:bg-blueknight-500">
+              <TableRow className="bg-blueknight-500">
                 <TableHead className="text-white font-medium">Company Name</TableHead>
                 <TableHead className="text-white font-medium">Short Description</TableHead>
                 <TableHead className="text-white font-medium">HQ</TableHead>
                 <TableHead className="text-white font-medium">Employees</TableHead>
-                <TableHead className="text-white font-medium">Revenue ($M)</TableHead>
-                <TableHead className="text-white font-medium">Cash ($M)</TableHead>
-                <TableHead className="text-white font-medium">Reported Date</TableHead>
-                <TableHead className="text-white font-medium">PE/VC-Backed</TableHead>
+                {activeTab === 'strategic' ? (
+                  <>
+                    <TableHead className="text-white font-medium">Revenue ($M)</TableHead>
+                    <TableHead className="text-white font-medium">Cash ($M)</TableHead>
+                    <TableHead className="text-white font-medium">Reported Date</TableHead>
+                    <TableHead className="text-white font-medium">PE/VC-Backed</TableHead>
+                  </>
+                ) : (
+                  <>
+                    <TableHead className="text-white font-medium">AUM ($M)</TableHead>
+                    <TableHead className="text-white font-medium">Investments</TableHead>
+                  </>
+                )}
                 <TableHead className="text-white font-medium">Public</TableHead>
                 <TableHead className="text-white font-medium">Rationale</TableHead>
                 <TableHead className="text-white font-medium">Match Score</TableHead>
@@ -656,16 +670,25 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                     <TableCell>{buyer.description}</TableCell>
                     <TableCell>{buyer.hq}</TableCell>
                     <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-                    <TableCell>${buyer.revenue.toFixed(1)}</TableCell>
-                    <TableCell>${buyer.cash.toFixed(1)}</TableCell>
-                    <TableCell>{formatReportDate(buyer.reportedDate)}</TableCell>
-                    <TableCell>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
-                      }`}>
-                        {buyer.isPEVCBacked ? 'Yes' : 'No'}
-                      </span>
-                    </TableCell>
+                    {activeTab === 'strategic' ? (
+                      <>
+                        <TableCell>${buyer.revenue.toFixed(1)}</TableCell>
+                        <TableCell>${buyer.cash.toFixed(1)}</TableCell>
+                        <TableCell>{formatReportDate(buyer.reportedDate)}</TableCell>
+                        <TableCell>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {buyer.isPEVCBacked ? 'Yes' : 'No'}
+                          </span>
+                        </TableCell>
+                      </>
+                    ) : (
+                      <>
+                        <TableCell>${buyer.aum?.toFixed(1)}</TableCell>
+                        <TableCell>{buyer.investments}</TableCell>
+                      </>
+                    )}
                     <TableCell>
                       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'

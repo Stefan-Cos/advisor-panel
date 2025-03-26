@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -48,6 +48,8 @@ interface SavedBuyer {
   keywords?: string[];
   targetCustomerTypes?: string[];
   parentCompany?: string;
+  aum?: number;
+  investments?: string;
 }
 
 const sampleStrategicBuyers: SavedBuyer[] = [
@@ -152,9 +154,9 @@ const samplePEBuyers: SavedBuyer[] = [
     location: 'UK',
     sector: 'Medtech, Life sciences',
     employees: 120,
-    revenue: 350.0,
-    cash: 125.0,
-    reportedDate: '2024-04-05',
+    revenue: 0,
+    cash: 0,
+    reportedDate: '',
     isPEVCBacked: false,
     isPublic: false,
     rank: 1,
@@ -166,6 +168,8 @@ const samplePEBuyers: SavedBuyer[] = [
     keywords: ['Healthcare Investment', 'Growth Capital', 'Portfolio Synergies', 'Buy-and-Build'],
     targetCustomerTypes: ['Healthcare Startups', 'Growth-Stage Companies', 'Healthcare Service Providers'],
     parentCompany: 'Capital Partners Group',
+    aum: 350.0,
+    investments: '12 companies in healthcare tech',
     rationale: {
       offering: 'Looking to expand their healthcare technology portfolio with companies like our client.',
       customers: 'Their portfolio companies serve similar customer segments, creating potential synergies.',
@@ -182,9 +186,9 @@ const samplePEBuyers: SavedBuyer[] = [
     location: 'USA',
     sector: 'Healthcare technology, Digital health',
     employees: 85,
-    revenue: 220.0,
-    cash: 80.0,
-    reportedDate: '2024-03-18',
+    revenue: 0,
+    cash: 0,
+    reportedDate: '',
     isPEVCBacked: false,
     isPublic: false,
     rank: null,
@@ -196,6 +200,8 @@ const samplePEBuyers: SavedBuyer[] = [
     keywords: ['Medtech Investment', 'Growth Equity', 'Digital Health Innovation', 'Scale-up Funding'],
     targetCustomerTypes: ['Health Technology Companies', 'Medical Device Manufacturers', 'Digital Health Startups'],
     parentCompany: 'US Venture Partners',
+    aum: 220.0,
+    investments: '8 portfolio companies in medtech',
     rationale: {
       offering: 'Actively seeking to invest in innovative medical technology solutions.',
       customers: 'Portfolio focused on solutions for hospital systems and clinics.',
@@ -247,10 +253,15 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
     }
   };
   
-  const handleContacting = () => {
+  const handleRemoveBuyer = (id: string) => {
+    if (activeTab === 'strategic') {
+      setStrategicBuyers(prev => prev.filter(buyer => buyer.id !== id));
+    } else {
+      setPEBuyers(prev => prev.filter(buyer => buyer.id !== id));
+    }
     toast({
-      title: "Feature Coming Soon",
-      description: "The contacting feature will be available in a future update."
+      title: "Buyer Removed",
+      description: "The buyer has been removed from your saved list",
     });
   };
 
@@ -308,15 +319,24 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow className="bg-blueknight-500 [&>th]:text-white [&>th]:font-medium hover:bg-blueknight-500">
+                <TableRow className="bg-blueknight-500">
                   <TableHead className="text-white font-medium">Buyer Name</TableHead>
                   <TableHead className="text-white font-medium">Short Description</TableHead>
                   <TableHead className="text-white font-medium">HQ</TableHead>
                   <TableHead className="text-white font-medium">Employees</TableHead>
-                  <TableHead className="text-white font-medium">Revenue ($M)</TableHead>
-                  <TableHead className="text-white font-medium">Cash ($M)</TableHead>
-                  <TableHead className="text-white font-medium">Reported Date</TableHead>
-                  <TableHead className="text-white font-medium">PE/VC-Backed</TableHead>
+                  {activeTab === 'strategic' ? (
+                    <>
+                      <TableHead className="text-white font-medium">Revenue ($M)</TableHead>
+                      <TableHead className="text-white font-medium">Cash ($M)</TableHead>
+                      <TableHead className="text-white font-medium">Reported Date</TableHead>
+                      <TableHead className="text-white font-medium">PE/VC-Backed</TableHead>
+                    </>
+                  ) : (
+                    <>
+                      <TableHead className="text-white font-medium">AUM ($M)</TableHead>
+                      <TableHead className="text-white font-medium">Investments</TableHead>
+                    </>
+                  )}
                   <TableHead className="text-white font-medium">Public</TableHead>
                   <TableHead className="text-white font-medium">Rank</TableHead>
                   <TableHead className="text-white font-medium">Feedback</TableHead>
@@ -333,16 +353,25 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                       <TableCell>{buyer.description}</TableCell>
                       <TableCell>{buyer.location}</TableCell>
                       <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-                      <TableCell>${buyer.revenue.toFixed(1)}</TableCell>
-                      <TableCell>${buyer.cash.toFixed(1)}</TableCell>
-                      <TableCell>{formatReportDate(buyer.reportedDate)}</TableCell>
-                      <TableCell>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
-                        }`}>
-                          {buyer.isPEVCBacked ? 'Yes' : 'No'}
-                        </span>
-                      </TableCell>
+                      {activeTab === 'strategic' ? (
+                        <>
+                          <TableCell>${buyer.revenue.toFixed(1)}</TableCell>
+                          <TableCell>${buyer.cash.toFixed(1)}</TableCell>
+                          <TableCell>{formatReportDate(buyer.reportedDate)}</TableCell>
+                          <TableCell>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {buyer.isPEVCBacked ? 'Yes' : 'No'}
+                            </span>
+                          </TableCell>
+                        </>
+                      ) : (
+                        <>
+                          <TableCell>${buyer.aum?.toFixed(1)}</TableCell>
+                          <TableCell>{buyer.investments}</TableCell>
+                        </>
+                      )}
                       <TableCell>
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                           buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
@@ -359,8 +388,8 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                           )}
                           className="block w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400 focus:border-transparent"
                         >
-                          <option value="">Not Ranked</option>
-                          <option value="1">1 (Top)</option>
+                          <option value="">-</option>
+                          <option value="1">1</option>
                           <option value="2">2</option>
                           <option value="3">3</option>
                         </select>
@@ -402,11 +431,11 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                       </TableCell>
                       <TableCell>
                         <button
-                          onClick={handleContacting}
-                          className="px-3 py-1 text-xs font-medium text-blueknight-500 bg-blueknight-50 rounded-md hover:bg-blueknight-100"
-                          title="Feature coming soon"
+                          onClick={() => handleRemoveBuyer(buyer.id)}
+                          className="text-xs px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center"
                         >
-                          Contacting
+                          <Trash className="h-3 w-3 mr-1" />
+                          Remove
                         </button>
                       </TableCell>
                     </TableRow>
