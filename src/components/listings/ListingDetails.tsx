@@ -19,9 +19,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   id,
   companyName,
   projectTitle,
-  revenue,
-  industry,
-  country,
   status,
   date,
 }) => {
@@ -43,23 +40,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </span>
-        </div>
-        
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="border-r border-gray-200 pr-4">
-            <p className="text-sm text-gray-500">Revenue</p>
-            <p className="text-lg font-medium">{revenue}</p>
-          </div>
-          
-          <div className="md:border-r border-gray-200 md:px-4">
-            <p className="text-sm text-gray-500">Industry</p>
-            <p className="text-lg font-medium">{industry}</p>
-          </div>
-          
-          <div className="md:pl-4">
-            <p className="text-sm text-gray-500">Country</p>
-            <p className="text-lg font-medium">{country}</p>
-          </div>
         </div>
       </div>
       

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown, ChevronUp, SlidersHorizontal, Filter, Bot, X } from 'lucide-react';
@@ -54,9 +53,13 @@ interface SavedBuyer {
     financialStrength: string;
     overall: string;
   };
+  longDescription?: string;
+  primaryIndustries?: string[];
+  keywords?: string[];
+  targetCustomerTypes?: string[];
+  parentCompany?: string;
 }
 
-// Sample data for strategic buyers
 const sampleStrategicBuyers: SavedBuyer[] = [
   {
     id: 'buyer1',
@@ -74,6 +77,11 @@ const sampleStrategicBuyers: SavedBuyer[] = [
     rank: 1,
     feedback: 'Great fit for our technology stack.',
     matchingScore: 92,
+    longDescription: 'Tech Innovations Inc. is a leading enterprise software company specializing in cloud infrastructure, data management, and cybersecurity solutions. Founded in 2005, they have grown to become a trusted partner for digital transformation initiatives across multiple sectors.',
+    primaryIndustries: ['Technology', 'Healthcare', 'Financial Services'],
+    keywords: ['Enterprise Software', 'Cloud Infrastructure', 'Digital Transformation', 'API Management'],
+    targetCustomerTypes: ['Enterprise Clients', 'Mid-market Organizations', 'Healthcare Systems'],
+    parentCompany: 'TechGroup Holdings',
     rationale: {
       offering: 'Their software solutions align perfectly with our client\'s technology stack, providing an opportunity for seamless integration and expansion of service offerings.',
       customers: 'Strong overlap in customer base within the healthcare and financial sectors, which could lead to cross-selling opportunities.',
@@ -97,6 +105,11 @@ const sampleStrategicBuyers: SavedBuyer[] = [
     rank: 2,
     feedback: 'Strong market presence in our target regions.',
     matchingScore: 85,
+    longDescription: 'Global HealthTech specializes in developing electronic health record systems and clinical workflow solutions for hospitals and healthcare facilities. With a presence in over 15 countries, they are focused on improving patient outcomes through technology.',
+    primaryIndustries: ['Healthcare', 'Life Sciences', 'Biotechnology'],
+    keywords: ['EHR', 'Clinical Workflow', 'Patient Management', 'Healthcare IT'],
+    targetCustomerTypes: ['Hospitals', 'Healthcare Systems', 'Clinics', 'Medical Practices'],
+    parentCompany: 'UK Health Innovations Group',
     rationale: {
       offering: 'Their healthcare solutions complement our client\'s products, allowing for a more comprehensive offering to the market.',
       customers: 'Strong presence in European healthcare systems which would open new markets for our client.',
@@ -120,6 +133,11 @@ const sampleStrategicBuyers: SavedBuyer[] = [
     rank: null,
     feedback: '',
     matchingScore: 78,
+    longDescription: 'MediSoft Solutions creates specialized software applications for medical diagnostics, laboratory management, and healthcare analytics. Their solutions are known for regulatory compliance and integration capabilities with existing medical systems.',
+    primaryIndustries: ['Medical Technology', 'Healthcare', 'Diagnostics'],
+    keywords: ['Medical Software', 'Lab Management', 'Healthcare Analytics', 'Regulatory Compliance'],
+    targetCustomerTypes: ['Medical Laboratories', 'Diagnostic Centers', 'Research Institutions'],
+    parentCompany: 'Deutsche Medical Technologies',
     rationale: {
       offering: 'Their medical software platforms would gain significant feature enhancement from our client\'s technology.',
       customers: 'Strong position in DACH region healthcare providers, complementing our client\'s North American focus.',
@@ -129,7 +147,6 @@ const sampleStrategicBuyers: SavedBuyer[] = [
   }
 ];
 
-// Sample data for PE buyers
 const samplePEBuyers: SavedBuyer[] = [
   {
     id: 'buyer5',
@@ -147,6 +164,11 @@ const samplePEBuyers: SavedBuyer[] = [
     rank: 1,
     feedback: 'Good understanding of our market segment.',
     matchingScore: 95,
+    longDescription: 'Healthcare Capital Partners is a private equity firm exclusively focused on investments in healthcare technology and services. Their portfolio includes a range of companies from early-stage to mature healthcare businesses seeking growth capital.',
+    primaryIndustries: ['Healthcare', 'Health Technology', 'Medical Devices'],
+    keywords: ['Healthcare Investment', 'Growth Capital', 'Portfolio Synergies', 'Buy-and-Build'],
+    targetCustomerTypes: ['Healthcare Startups', 'Growth-Stage Companies', 'Healthcare Service Providers'],
+    parentCompany: 'Capital Partners Group',
     rationale: {
       offering: 'Looking to expand their healthcare technology portfolio with companies like our client.',
       customers: 'Their portfolio companies serve similar customer segments, creating potential synergies.',
@@ -170,6 +192,11 @@ const samplePEBuyers: SavedBuyer[] = [
     rank: null,
     feedback: '',
     matchingScore: 88,
+    longDescription: 'Medtech Growth Fund invests in innovative medical technology companies with disruptive solutions for healthcare delivery and patient care. They typically target companies with established products and proven market fit seeking expansion capital.',
+    primaryIndustries: ['Medical Technology', 'Digital Health', 'Health IT'],
+    keywords: ['Medtech Investment', 'Growth Equity', 'Digital Health Innovation', 'Scale-up Funding'],
+    targetCustomerTypes: ['Health Technology Companies', 'Medical Device Manufacturers', 'Digital Health Startups'],
+    parentCompany: 'US Venture Partners',
     rationale: {
       offering: 'Actively seeking to invest in innovative medical technology solutions.',
       customers: 'Portfolio focused on solutions for hospital systems and clinics.',
@@ -285,7 +312,6 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
     }
   };
 
-  // Format the date string to MMM-YY
   const formatReportDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -749,23 +775,66 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                     {expandedRationales.includes(buyer.id) && (
                       <TableRow className="bg-green-50">
                         <TableCell colSpan={14} className="p-0">
-                          <div className="p-4 space-y-4">
-                            <div className="grid grid-cols-1 gap-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
+                          <div className="p-4">
+                            <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
+                              <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
+                                  <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {buyer.primaryIndustries?.map((industry, i) => (
+                                      <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                                        {industry}
+                                      </span>
+                                    )) || "Not provided"}
+                                  </div>
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
+                                  <div className="flex flex-wrap gap-1 mt-1">
+                                    {buyer.keywords?.map((keyword, i) => (
+                                      <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
+                                        {keyword}
+                                      </span>
+                                    )) || "Not provided"}
+                                  </div>
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
+                                  <p className="text-sm text-gray-600">
+                                    {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
+                                  </p>
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Parent Company</h4>
+                                  <p className="text-sm text-gray-600">{buyer.parentCompany || "None/Independent"}</p>
+                                </div>
                               </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
+                            </div>
+                            
+                            <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                              <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
+                              <div className="space-y-4">
+                                <div>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
+                                  <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
+                                  <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
+                                  <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
+                                </div>
+                                <div>
+                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
+                                  <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
+                                </div>
                               </div>
                             </div>
                           </div>
