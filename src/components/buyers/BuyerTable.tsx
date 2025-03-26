@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
@@ -45,6 +44,7 @@ interface Buyer {
   reportedDate: string;
   isPEVCBacked: boolean;
   isPublic: boolean;
+  website?: string;
   rationale: {
     offering: string;
     customers: string;
@@ -71,6 +71,7 @@ const strategicBuyers: Buyer[] = [
     keywords: ['Enterprise Software', 'Cloud Infrastructure', 'Digital Transformation', 'API Management'],
     targetCustomerTypes: ['Enterprise Clients', 'Mid-market Organizations', 'Healthcare Systems'],
     parentCompany: 'TechGroup Holdings',
+    website: 'https://techinnovations.example.com',
     hq: 'USA',
     employees: 1500,
     revenue: 125.5,
@@ -96,6 +97,7 @@ const strategicBuyers: Buyer[] = [
     keywords: ['EHR', 'Clinical Workflow', 'Patient Management', 'Healthcare IT'],
     targetCustomerTypes: ['Hospitals', 'Healthcare Systems', 'Clinics', 'Medical Practices'],
     parentCompany: 'UK Health Innovations Group',
+    website: 'https://globalhealthtech.example.com',
     hq: 'UK',
     employees: 850,
     revenue: 75.8,
@@ -121,6 +123,7 @@ const strategicBuyers: Buyer[] = [
     keywords: ['Medical Software', 'Lab Management', 'Healthcare Analytics', 'Regulatory Compliance'],
     targetCustomerTypes: ['Medical Laboratories', 'Diagnostic Centers', 'Research Institutions'],
     parentCompany: 'Deutsche Medical Technologies',
+    website: 'https://medisoft.example.com',
     hq: 'Germany',
     employees: 620,
     revenue: 58.2,
@@ -149,6 +152,7 @@ const peBuyers: Buyer[] = [
     keywords: ['Healthcare Investment', 'Growth Capital', 'Portfolio Synergies', 'Buy-and-Build'],
     targetCustomerTypes: ['Healthcare Startups', 'Growth-Stage Companies', 'Healthcare Service Providers'],
     parentCompany: 'Capital Partners Group',
+    website: 'https://healthcarecapital.example.com',
     hq: 'UK',
     employees: 120,
     revenue: 350.0, // AUM in millions
@@ -174,6 +178,7 @@ const peBuyers: Buyer[] = [
     keywords: ['Medtech Investment', 'Growth Equity', 'Digital Health Innovation', 'Scale-up Funding'],
     targetCustomerTypes: ['Health Technology Companies', 'Medical Device Manufacturers', 'Digital Health Startups'],
     parentCompany: 'US Venture Partners',
+    website: 'https://medtechgrowth.example.com',
     hq: 'USA',
     employees: 85,
     revenue: 220.0, // AUM in millions
@@ -267,7 +272,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
     }
   };
 
-  // Format the date string to MMM-YY
   const formatReportDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -708,7 +712,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                     <TableRow className={savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-gray-50'}>
                       <TableCell colSpan={12} className="p-0">
                         <div className="p-4">
-                          {/* Buyer Information Section */}
                           <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
                             <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -746,10 +749,19 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Parent Company</h4>
                                 <p className="text-sm text-gray-600">{buyer.parentCompany || "None/Independent"}</p>
                               </div>
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Website</h4>
+                                <p className="text-sm text-gray-600">
+                                  {buyer.website ? (
+                                    <a href={buyer.website} target="_blank" rel="noopener noreferrer" className="text-blueknight-500 hover:underline">
+                                      {buyer.website}
+                                    </a>
+                                  ) : "Not provided"}
+                                </p>
+                              </div>
                             </div>
                           </div>
                           
-                          {/* Rationale Section */}
                           <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
                             <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
                             <div className="space-y-4">
