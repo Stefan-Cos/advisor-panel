@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal } from 'lucide-react';
 import BuyerCard from './BuyerCard';
@@ -249,7 +248,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
         )}
         
         {activeTab === 'strategic' ? (
-          <ScrollArea className="h-[600px] w-full">
+          <ScrollArea className="h-[600px] w-full" orientation="both">
             <div className="min-w-max">
               <Table>
                 <TableHeader>
