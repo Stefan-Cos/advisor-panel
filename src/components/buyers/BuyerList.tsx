@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal } from 'lucide-react';
 import BuyerCard from './BuyerCard';
@@ -260,7 +261,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                     <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
-                    <TableHead className="text-white font-medium w-[200px]">Previous Acquisitions</TableHead>
+                    <TableHead className="text-white font-medium w-[250px]">Previous Acquisitions</TableHead>
                     <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
                   </TableRow>
                 </TableHeader>
