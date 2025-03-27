@@ -76,7 +76,7 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
       <div className="bg-white shadow-sm overflow-hidden rounded-lg border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-blueknight-500">
-            <tr>
+            <tr className="hover:bg-blueknight-500">
               <th scope="col" className="table-header text-white font-medium">Company Name</th>
               <th scope="col" className="table-header text-white font-medium">Project Title</th>
               <th scope="col" className="table-header text-white font-medium">Advisor Created</th>
