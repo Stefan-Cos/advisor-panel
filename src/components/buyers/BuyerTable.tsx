@@ -373,7 +373,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
       description: "Your keyword search has been applied",
     });
     setShowSearchForm(false);
-    // Here you would typically filter the buyers based on the search criteria
   };
 
   return (
@@ -964,7 +963,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                               </div>
                             </div>
                             
-                            {/* Company details in a horizontal grid */}
                             <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700">Parent Company</h4>
@@ -1060,7 +1058,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                           
                           <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
                             <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            <div className="grid grid-cols-1 gap-4">
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
                                 <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
@@ -1077,7 +1075,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
                                 <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
                               </div>
-                              <div className="md:col-span-2">
+                              <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
                                 <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
                               </div>
