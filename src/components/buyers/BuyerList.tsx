@@ -3,6 +3,15 @@ import React, { useState } from 'react';
 import { Filter, SlidersHorizontal } from 'lucide-react';
 import BuyerCard from './BuyerCard';
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface BuyerListProps {
   listingId: string;
@@ -17,7 +26,9 @@ const strategicBuyers = [
     location: 'USA',
     sector: 'Medtech, Life sciences',
     offering: 'Revenue-focused software, services',
-    customers: 'Pharmaceutical and life science sectors'
+    customers: 'Pharmaceutical and life science sectors',
+    employees: 1500,
+    previousAcquisitions: 'Acquired three complementary software companies in the last 2 years'
   },
   {
     id: 'buyer2',
@@ -26,7 +37,9 @@ const strategicBuyers = [
     location: 'UK',
     sector: 'Healthcare, Technology',
     offering: 'Software solutions, Consulting',
-    customers: 'Hospitals, Research institutions'
+    customers: 'Hospitals, Research institutions',
+    employees: 850,
+    previousAcquisitions: 'Completed one strategic acquisition in the clinical workflow space last year'
   },
   {
     id: 'buyer3',
@@ -35,7 +48,9 @@ const strategicBuyers = [
     location: 'Germany',
     sector: 'Medical software, Services',
     offering: 'Health management platforms',
-    customers: 'Healthcare providers, Clinics'
+    customers: 'Healthcare providers, Clinics',
+    employees: 620,
+    previousAcquisitions: 'No recent acquisition history'
   },
   {
     id: 'buyer4',
@@ -44,7 +59,9 @@ const strategicBuyers = [
     location: 'Canada',
     sector: 'Biotechnology, Research',
     offering: 'Data analytics, Clinical solutions',
-    customers: 'Pharmaceutical companies, Research labs'
+    customers: 'Pharmaceutical companies, Research labs',
+    employees: 420,
+    previousAcquisitions: 'Acquired a data analytics platform in 2023'
   }
 ];
 
@@ -96,6 +113,10 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
       setSavedBuyers([...savedBuyers, buyerId]);
+      toast({
+        title: "Buyer Saved",
+        description: "The buyer has been added to your saved list",
+      });
     }
   };
   
@@ -227,16 +248,65 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
           </div>
         )}
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {buyers.map(buyer => (
-            <BuyerCard
-              key={buyer.id}
-              {...buyer}
-              addedToSaved={savedBuyers.includes(buyer.id)}
-              onAddToSaved={handleAddToSaved}
-            />
-          ))}
-        </div>
+        {activeTab === 'strategic' ? (
+          <ScrollArea className="h-[600px] w-full">
+            <div className="min-w-max">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-blueknight-500">
+                    <TableHead className="text-white font-medium w-[180px]">Company Name</TableHead>
+                    <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
+                    <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
+                    <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
+                    <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
+                    <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
+                    <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
+                    <TableHead className="text-white font-medium w-[200px]">Previous Acquisitions</TableHead>
+                    <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {strategicBuyers.map((buyer) => (
+                    <TableRow key={buyer.id} className="hover:bg-gray-50">
+                      <TableCell className="font-medium">{buyer.name}</TableCell>
+                      <TableCell>{buyer.location}</TableCell>
+                      <TableCell>{buyer.employees}</TableCell>
+                      <TableCell>Strategic buyer in {buyer.sector}</TableCell>
+                      <TableCell>{buyer.offering}</TableCell>
+                      <TableCell>{buyer.sector}</TableCell>
+                      <TableCell>{buyer.customers}</TableCell>
+                      <TableCell>{buyer.previousAcquisitions}</TableCell>
+                      <TableCell>
+                        <button
+                          onClick={() => handleAddToSaved(buyer.id)}
+                          disabled={savedBuyers.includes(buyer.id)}
+                          className={`px-3 py-1 text-xs font-medium rounded-md ${
+                            savedBuyers.includes(buyer.id)
+                              ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                              : 'bg-blueknight-500 text-white hover:bg-blueknight-600'
+                          }`}
+                        >
+                          {savedBuyers.includes(buyer.id) ? 'Saved' : 'Save'}
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </ScrollArea>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {peBuyers.map(buyer => (
+              <BuyerCard
+                key={buyer.id}
+                {...buyer}
+                addedToSaved={savedBuyers.includes(buyer.id)}
+                onAddToSaved={handleAddToSaved}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

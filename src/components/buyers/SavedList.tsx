@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown, ChevronUp, Trash } from 'lucide-react';
@@ -317,7 +318,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
             <p className="text-gray-500">No saved buyers yet. Add buyers from the Buyer List.</p>
           </div>
         ) : (
-          <ScrollArea className="h-[600px] w-full" orientation="horizontal">
+          <ScrollArea className="h-[600px] w-full">
             <div className="min-w-max">
               <Table>
                 <TableHeader>
