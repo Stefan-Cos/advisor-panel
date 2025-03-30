@@ -90,7 +90,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         </TabsContent>
       </Tabs>
       
-      {/* Add the AI Assistant Chat component */}
+      {/* AI Assistant Chat component is positioned here */}
       <AIAssistantChat />
     </div>
   );

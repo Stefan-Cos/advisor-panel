@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag } from 'lucide-react';
 import BuyerCard from './BuyerCard';
@@ -620,48 +619,84 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                               <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
-                                    <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                      {buyer.primaryIndustries?.map((industry, i) => (
-                                        <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                                          {industry}
-                                        </span>
-                                      )) || "Not provided"}
+                                <div className="mb-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Long Description</h4>
+                                      <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
+                                    </div>
+                                    
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Primary Industries</h4>
+                                      <div className="flex flex-wrap gap-1 mt-1">
+                                        {buyer.primaryIndustries?.map((industry, i) => (
+                                          <span key={i} className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-md">
+                                            {industry}
+                                          </span>
+                                        )) || "Not provided"}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                                 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                      {buyer.keywords?.map((keyword, i) => (
-                                        <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                          {keyword}
-                                        </span>
-                                      )) || "Not provided"}
+                                <div className="mb-4">
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Keywords</h4>
+                                      <div className="flex flex-wrap gap-1 mt-1">
+                                        {buyer.keywords?.map((keyword, i) => (
+                                          <span key={i} className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-md">
+                                            {keyword}
+                                          </span>
+                                        )) || "Not provided"}
+                                      </div>
                                     </div>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
-                                    <p className="text-sm text-gray-600">
-                                      {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
-                                    </p>
+                                    
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Target Customer Types</h4>
+                                      <p className="text-sm text-gray-600">
+                                        {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
+                                      </p>
+                                    </div>
                                   </div>
                                 </div>
                                 
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
                                   <div>
-                                    <h4 className="text-sm font-semibold text-gray-700">Parent Company</h4>
-                                    <p className="text-sm text-gray-600">{buyer.parentCompany || "None/Independent"}</p>
+                                    <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
+                                    <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-xs text-gray-500 mb-1">Website</h4>
+                                    <p className="text-sm font-medium text-blue-500 hover:underline cursor-pointer">Visit</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
+                                    <p className="text-sm font-medium">{buyer.location}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
+                                    <p className="text-sm font-medium">{buyer.employees.toLocaleString()}</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
+                                    <p className="text-sm font-medium">$125.5</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
+                                    <p className="text-sm font-medium">$45.2</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
+                                    <p className="text-sm font-medium">Mar 24</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
+                                    <p className="text-sm font-medium">No</p>
+                                  </div>
+                                  <div>
+                                    <h4 className="text-xs text-gray-500 mb-1">Public</h4>
+                                    <p className="text-sm font-medium">Yes</p>
                                   </div>
                                 </div>
                               </div>
