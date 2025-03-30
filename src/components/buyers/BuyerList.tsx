@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag, Plus, Check } from 'lucide-react';
 import BuyerCard from './BuyerCard';
@@ -526,13 +527,13 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
         )}
         
         {activeTab === 'strategic' ? (
-          <div className="relative overflow-auto">
+          <div className="relative overflow-hidden">
             <ScrollArea className="h-[600px] w-full" orientation="both">
               <div className="min-w-max">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-blueknight-500">
-                      <TableHead className="text-white font-medium w-[280px] sticky left-0 bg-blueknight-500 z-10">Company Name</TableHead>
+                      <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">Company Name</TableHead>
                       <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
                       <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
                       <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
@@ -547,7 +548,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                     {strategicBuyers.map((buyer) => (
                       <React.Fragment key={buyer.id}>
                         <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-                          <TableCell className="font-medium sticky left-0 bg-white z-10">
+                          <TableCell className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}>
                             <div className="flex items-center justify-between">
                               <div>
                                 <div className="flex items-center gap-2">

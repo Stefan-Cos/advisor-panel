@@ -337,13 +337,13 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
             <p className="text-gray-500">No saved buyers yet. Add buyers from the Buyer List.</p>
           </div>
         ) : (
-          <div className="relative overflow-auto">
+          <div className="relative overflow-hidden">
             <ScrollArea className="h-[600px] w-full" orientation="both">
               <div className="min-w-max">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-blueknight-500">
-                      <TableHead className="text-white font-medium w-[180px] sticky left-0 bg-blueknight-500 z-10">Company Name</TableHead>
+                      <TableHead className="text-white font-medium w-[180px] sticky left-0 z-20 bg-blueknight-500">Company Name</TableHead>
                       {activeTab === 'strategic' && (
                         <>
                           <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
@@ -366,7 +366,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                     {buyers.map((buyer) => (
                       <React.Fragment key={buyer.id}>
                         <TableRow className="hover:bg-green-50 bg-green-50">
-                          <TableCell className="font-medium sticky left-0 bg-green-50 z-10">{buyer.name}</TableCell>
+                          <TableCell className="font-medium sticky left-0 z-10 bg-green-50">{buyer.name}</TableCell>
                           {activeTab === 'strategic' && (
                             <>
                               <TableCell>{buyer.location}</TableCell>
