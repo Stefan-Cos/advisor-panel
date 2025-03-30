@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal } from 'lucide-react';
 import BuyerCard from './BuyerCard';
@@ -28,7 +27,12 @@ const strategicBuyers = [
     offering: 'Revenue-focused software, services',
     customers: 'Pharmaceutical and life science sectors',
     employees: 1500,
-    previousAcquisitions: 'Acquired three complementary software companies in the last 2 years'
+    previousAcquisitions: 'Acquired three complementary software companies in the last 2 years',
+    notifications: 0,
+    savedBuyers: 3,
+    matchingScore: 92,
+    status: 'active' as const,
+    description: 'Leading provider of technology solutions'
   },
   {
     id: 'buyer2',
@@ -39,7 +43,12 @@ const strategicBuyers = [
     offering: 'Software solutions, Consulting',
     customers: 'Hospitals, Research institutions',
     employees: 850,
-    previousAcquisitions: 'Completed one strategic acquisition in the clinical workflow space last year'
+    previousAcquisitions: 'Completed one strategic acquisition in the clinical workflow space last year',
+    notifications: 0,
+    savedBuyers: 2,
+    matchingScore: 85,
+    status: 'active' as const,
+    description: 'Healthcare technology provider'
   },
   {
     id: 'buyer3',
@@ -50,7 +59,12 @@ const strategicBuyers = [
     offering: 'Health management platforms',
     customers: 'Healthcare providers, Clinics',
     employees: 620,
-    previousAcquisitions: 'No recent acquisition history'
+    previousAcquisitions: 'No recent acquisition history',
+    notifications: 0,
+    savedBuyers: 1,
+    matchingScore: 78,
+    status: 'inactive' as const,
+    description: 'Medical software provider'
   },
   {
     id: 'buyer4',
@@ -61,7 +75,12 @@ const strategicBuyers = [
     offering: 'Data analytics, Clinical solutions',
     customers: 'Pharmaceutical companies, Research labs',
     employees: 420,
-    previousAcquisitions: 'Acquired a data analytics platform in 2023'
+    previousAcquisitions: 'Acquired a data analytics platform in 2023',
+    notifications: 0,
+    savedBuyers: 0,
+    matchingScore: 70,
+    status: 'pending' as const,
+    description: 'Biotechnology research company'
   }
 ];
 
@@ -261,7 +280,9 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                     <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
-                    <TableHead className="text-white font-medium w-[250px]">Previous Acquisitions</TableHead>
+                    <TableHead className="text-white font-medium w-[200px]">Previous Acquisitions</TableHead>
+                    <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
+                    <TableHead className="text-white font-medium w-[100px]">Status</TableHead>
                     <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -270,12 +291,32 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                     <TableRow key={buyer.id} className="hover:bg-gray-50">
                       <TableCell className="font-medium">{buyer.name}</TableCell>
                       <TableCell>{buyer.location}</TableCell>
-                      <TableCell>{buyer.employees}</TableCell>
-                      <TableCell>Strategic buyer in {buyer.sector}</TableCell>
+                      <TableCell>{buyer.employees.toLocaleString()}</TableCell>
+                      <TableCell>{buyer.description}</TableCell>
                       <TableCell>{buyer.offering}</TableCell>
                       <TableCell>{buyer.sector}</TableCell>
                       <TableCell>{buyer.customers}</TableCell>
                       <TableCell>{buyer.previousAcquisitions}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center">
+                          <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
+                            <div
+                              className="bg-blueknight-500 h-2 rounded-full"
+                              style={{ width: `${buyer.matchingScore}%` }}
+                            />
+                          </div>
+                          <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          buyer.status === 'active' ? 'bg-green-50 text-green-700' :
+                          buyer.status === 'inactive' ? 'bg-red-50 text-red-700' :
+                          'bg-yellow-50 text-yellow-700'
+                        }`}>
+                          {buyer.status.charAt(0).toUpperCase() + buyer.status.slice(1)}
+                        </span>
+                      </TableCell>
                       <TableCell>
                         <button
                           onClick={() => handleAddToSaved(buyer.id)}
