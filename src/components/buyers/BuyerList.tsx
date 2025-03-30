@@ -531,7 +531,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-blueknight-500">
-                    <TableHead className="text-white font-medium w-[180px]">Company Name</TableHead>
+                    <TableHead className="text-white font-medium w-[220px]">Company Name</TableHead>
                     <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
                     <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
                     <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
@@ -540,7 +540,6 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                     <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
                     <TableHead className="text-white font-medium w-[200px]">Previous Acquisitions</TableHead>
                     <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
-                    <TableHead className="text-white font-medium w-[120px]">Rationale</TableHead>
                     <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
                     <TableHead className="text-white font-medium w-[100px]">Status</TableHead>
                     <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
@@ -550,7 +549,24 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                   {strategicBuyers.map((buyer) => (
                     <React.Fragment key={buyer.id}>
                       <TableRow className="hover:bg-gray-50">
-                        <TableCell className="font-medium">{buyer.name}</TableCell>
+                        <TableCell className="font-medium">
+                          <div>
+                            {buyer.name}
+                            <Collapsible 
+                              open={expandedRationales.includes(buyer.id)}
+                              onOpenChange={() => toggleRationale(buyer.id)}
+                            >
+                              <CollapsibleTrigger className="flex items-center mt-1 px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
+                                Rationale
+                                {expandedRationales.includes(buyer.id) ? (
+                                  <ChevronUp className="h-3 w-3 ml-1" />
+                                ) : (
+                                  <ChevronDown className="h-3 w-3 ml-1" />
+                                )}
+                              </CollapsibleTrigger>
+                            </Collapsible>
+                          </div>
+                        </TableCell>
                         <TableCell>{buyer.location}</TableCell>
                         <TableCell>{buyer.employees.toLocaleString()}</TableCell>
                         <TableCell>{buyer.description}</TableCell>
@@ -562,21 +578,6 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
                             {buyer.maTrackRecord}
                           </span>
-                        </TableCell>
-                        <TableCell>
-                          <Collapsible 
-                            open={expandedRationales.includes(buyer.id)}
-                            onOpenChange={() => toggleRationale(buyer.id)}
-                          >
-                            <CollapsibleTrigger className="flex items-center px-3 py-1.5 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                              Rationale
-                              {expandedRationales.includes(buyer.id) ? (
-                                <ChevronUp className="h-4 w-4 ml-1" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4 ml-1" />
-                              )}
-                            </CollapsibleTrigger>
-                          </Collapsible>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center">
@@ -614,7 +615,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                       </TableRow>
                       {expandedRationales.includes(buyer.id) && (
                         <TableRow className="bg-green-50">
-                          <TableCell colSpan={13} className="p-0">
+                          <TableCell colSpan={12} className="p-0">
                             <div className="p-4">
                               <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
