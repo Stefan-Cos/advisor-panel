@@ -32,7 +32,8 @@ const strategicBuyers = [
     savedBuyers: 3,
     matchingScore: 92,
     status: 'active' as const,
-    description: 'Leading provider of technology solutions'
+    description: 'Leading provider of technology solutions',
+    maTrackRecord: 'High'
   },
   {
     id: 'buyer2',
@@ -48,7 +49,8 @@ const strategicBuyers = [
     savedBuyers: 2,
     matchingScore: 85,
     status: 'active' as const,
-    description: 'Healthcare technology provider'
+    description: 'Healthcare technology provider',
+    maTrackRecord: 'Medium'
   },
   {
     id: 'buyer3',
@@ -64,7 +66,8 @@ const strategicBuyers = [
     savedBuyers: 1,
     matchingScore: 78,
     status: 'inactive' as const,
-    description: 'Medical software provider'
+    description: 'Medical software provider',
+    maTrackRecord: 'Low'
   },
   {
     id: 'buyer4',
@@ -80,7 +83,8 @@ const strategicBuyers = [
     savedBuyers: 0,
     matchingScore: 70,
     status: 'pending' as const,
-    description: 'Biotechnology research company'
+    description: 'Biotechnology research company',
+    maTrackRecord: 'Medium'
   }
 ];
 
@@ -92,7 +96,8 @@ const peBuyers = [
     location: 'UK',
     sector: 'Medtech, Life sciences',
     offering: 'Revenue-focused software, services',
-    customers: 'Pharmaceutical and life science sectors'
+    customers: 'Pharmaceutical and life science sectors',
+    maTrackRecord: 'High'
   },
   {
     id: 'buyer6',
@@ -101,7 +106,8 @@ const peBuyers = [
     location: 'USA',
     sector: 'Healthcare technology, Digital health',
     offering: 'Capital investment, Strategic guidance',
-    customers: 'Healthcare innovators, Technology startups'
+    customers: 'Healthcare innovators, Technology startups',
+    maTrackRecord: 'Medium'
   },
   {
     id: 'buyer7',
@@ -110,7 +116,8 @@ const peBuyers = [
     location: 'Switzerland',
     sector: 'Biotech, Pharmaceutical',
     offering: 'Growth capital, Operational expertise',
-    customers: 'Emerging biotech firms, Research platforms'
+    customers: 'Emerging biotech firms, Research platforms',
+    maTrackRecord: 'Low'
   },
   {
     id: 'buyer8',
@@ -119,7 +126,8 @@ const peBuyers = [
     location: 'Australia',
     sector: 'Medical devices, Healthcare IT',
     offering: 'Expansion funding, Market access',
-    customers: 'Medical technology providers, Healthcare networks'
+    customers: 'Medical technology providers, Healthcare networks',
+    maTrackRecord: 'Medium'
   }
 ];
 
@@ -151,6 +159,19 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
       description: "Your search filters have been applied",
     });
     setShowFilters(false);
+  };
+
+  const getMATrackRecordColor = (record: string) => {
+    switch(record) {
+      case 'High':
+        return 'bg-green-50 text-green-700';
+      case 'Medium':
+        return 'bg-yellow-50 text-yellow-700';
+      case 'Low':
+        return 'bg-red-50 text-red-700';
+      default:
+        return 'bg-gray-50 text-gray-700';
+    }
   };
 
   return (
@@ -281,6 +302,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                     <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
                     <TableHead className="text-white font-medium w-[200px]">Previous Acquisitions</TableHead>
+                    <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
                     <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
                     <TableHead className="text-white font-medium w-[100px]">Status</TableHead>
                     <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
@@ -297,6 +319,11 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                       <TableCell>{buyer.sector}</TableCell>
                       <TableCell>{buyer.customers}</TableCell>
                       <TableCell>{buyer.previousAcquisitions}</TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
+                          {buyer.maTrackRecord}
+                        </span>
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center">
                           <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">

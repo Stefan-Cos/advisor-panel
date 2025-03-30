@@ -51,6 +51,7 @@ interface SavedBuyer {
   parentCompany?: string;
   aum?: number;
   investments?: string;
+  maTrackRecord: 'High' | 'Medium' | 'Low';
 }
 
 const sampleStrategicBuyers: SavedBuyer[] = [
@@ -82,7 +83,8 @@ const sampleStrategicBuyers: SavedBuyer[] = [
       previousTransactions: 'Acquired three complementary software companies in the last 2 years, demonstrating experience in successful post-merger integration.',
       financialStrength: 'Solid balance sheet with consistent revenue growth over the past 5 years and strong cash reserves for potential acquisitions.',
       overall: 'Tech Innovations Inc. presents a strong strategic fit due to complementary technology, overlapping customer base, and financial capability to execute the acquisition.'
-    }
+    },
+    maTrackRecord: 'High'
   },
   {
     id: 'buyer2',
@@ -112,7 +114,8 @@ const sampleStrategicBuyers: SavedBuyer[] = [
       previousTransactions: 'Completed one strategic acquisition in the clinical workflow space last year, showing appetite for growth through acquisition.',
       financialStrength: 'Steady growth and good profitability metrics, though cash reserves are moderate.',
       overall: 'Global HealthTech offers excellent geographic expansion opportunities and product synergies, despite somewhat limited acquisition funds.'
-    }
+    },
+    maTrackRecord: 'Medium'
   },
   {
     id: 'buyer3',
@@ -142,7 +145,8 @@ const sampleStrategicBuyers: SavedBuyer[] = [
       previousTransactions: 'No recent acquisition history, but their parent company has completed several technology acquisitions in the past 3 years.',
       financialStrength: 'Recently received PE backing, providing acquisition capabilities despite smaller size.',
       overall: 'MediSoft presents an interesting opportunity for international expansion with their strong regional presence and newly available capital for acquisitions.'
-    }
+    },
+    maTrackRecord: 'Low'
   }
 ];
 
@@ -177,7 +181,8 @@ const samplePEBuyers: SavedBuyer[] = [
       previousTransactions: 'Completed 5 healthcare technology acquisitions in the past 3 years, with a focus on software and digital health platforms.',
       financialStrength: 'Recently raised a new fund with significant capital to deploy in this sector.',
       overall: 'Healthcare Capital Partners has a strong track record in the healthcare technology space and is actively seeking acquisitions in our client\'s sector.'
-    }
+    },
+    maTrackRecord: 'High'
   },
   {
     id: 'buyer6',
@@ -209,7 +214,8 @@ const samplePEBuyers: SavedBuyer[] = [
       previousTransactions: 'Made 3 investments in similar companies over the past 18 months, with typical deal sizes of $30-50M.',
       financialStrength: 'Mid-sized fund with adequate capital for this acquisition size.',
       overall: 'Medtech Growth Fund specializes in exactly our client\'s market segment and has a successful history of growing similar companies.'
-    }
+    },
+    maTrackRecord: 'Medium'
   }
 ];
 
@@ -284,6 +290,19 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
     }
   };
 
+  const getMATrackRecordColor = (record: string) => {
+    switch(record) {
+      case 'High':
+        return 'bg-green-50 text-green-700';
+      case 'Medium':
+        return 'bg-yellow-50 text-yellow-700';
+      case 'Low':
+        return 'bg-red-50 text-red-700';
+      default:
+        return 'bg-gray-50 text-gray-700';
+    }
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
@@ -336,6 +355,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                     {activeTab === 'strategic' && (
                       <TableHead className="text-white font-medium w-[200px]">Previous Acquisitions</TableHead>
                     )}
+                    <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
                     <TableHead className="text-white font-medium w-[100px]">Rank</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Feedback</TableHead>
                     <TableHead className="text-white font-medium w-[120px]">Rationale</TableHead>
@@ -377,6 +397,11 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                         {activeTab === 'strategic' && (
                           <TableCell>{buyer.rationale.previousTransactions}</TableCell>
                         )}
+                        <TableCell>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
+                            {buyer.maTrackRecord}
+                          </span>
+                        </TableCell>
                         <TableCell>
                           <select
                             value={buyer.rank || ''}
