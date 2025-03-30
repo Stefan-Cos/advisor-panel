@@ -5,6 +5,7 @@ import BuyerList from '../buyers/BuyerList';
 import SavedList from '../buyers/SavedList';
 import BuyerPreferencesForm from '../forms/BuyerPreferencesForm';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import AIAssistantChat from '../ui/AIAssistantChat';
 
 interface ListingDetailsProps {
   id: string;
@@ -31,7 +32,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   };
 
   return (
-    <div className="animate-fade-in space-y-8 w-full">
+    <div className="animate-fade-in space-y-8 w-full relative">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
         <div className="flex justify-between items-start">
           <div>
@@ -88,6 +89,9 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           </div>
         </TabsContent>
       </Tabs>
+      
+      {/* Add the AI Assistant Chat component */}
+      <AIAssistantChat />
     </div>
   );
 };

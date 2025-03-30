@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, SparkleIcon, UserCircle, Tag } from 'lucide-react';
+import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag } from 'lucide-react';
 import BuyerCard from './BuyerCard';
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -28,7 +27,6 @@ interface BuyerListProps {
   listingId: string;
 }
 
-// Sample data
 const strategicBuyers = [
   {
     id: 'buyer1',
@@ -351,32 +349,6 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
           </div>
           
           <div className="flex items-center space-x-3">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                  <SparkleIcon className="h-4 w-4 text-blue-500" />
-                  <span>AI Assistant</span>
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-4">
-                <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-gray-900">AI Buyer Recommendations</h3>
-                  <p className="text-sm text-gray-500">Let AI help you find the best buyers based on your project details.</p>
-                  <div className="flex flex-col gap-2">
-                    <button
-                      onClick={handleAIAssistant}
-                      className="w-full px-3 py-2 text-sm font-medium bg-blue-500 text-white rounded-md hover:bg-blue-600"
-                    >
-                      Generate AI Recommendations
-                    </button>
-                    <button className="w-full px-3 py-2 text-sm font-medium border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50">
-                      Adjust AI Settings
-                    </button>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-            
             <Popover>
               <PopoverTrigger asChild>
                 <button className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
