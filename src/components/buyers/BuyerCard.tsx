@@ -44,25 +44,27 @@ const BuyerCard: React.FC<BuyerCardProps> = ({
   return (
     <div className={cn(
       "premium-card animate-scale-in overflow-hidden",
-      addedToSaved && "ring-2 ring-blueknight-400"
+      addedToSaved && "ring-2 ring-blueknight-400 bg-green-50"
     )}>
       <div className="p-4 border-b border-gray-100">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-lg text-blueknight-800">{name}</h3>
-          {!addedToSaved && (
-            <button
-              onClick={handleAddToSaved}
-              className="h-8 w-8 flex items-center justify-center rounded-full bg-blueknight-50 text-blueknight-500 hover:bg-blueknight-100 transition-colors"
-            >
-              <Plus className="h-5 w-5" />
-              <span className="sr-only">Add to saved list</span>
-            </button>
-          )}
-          {addedToSaved && (
-            <span className="text-xs font-medium bg-green-50 text-green-700 px-2 py-1 rounded-full">
-              Saved
-            </span>
-          )}
+          <div className="flex items-center space-x-2">
+            {!addedToSaved && (
+              <button
+                onClick={handleAddToSaved}
+                className="h-8 w-8 flex items-center justify-center rounded-full bg-blueknight-50 text-blueknight-500 hover:bg-blueknight-100 transition-colors"
+              >
+                <Plus className="h-5 w-5" />
+                <span className="sr-only">Add to saved list</span>
+              </button>
+            )}
+            {addedToSaved && (
+              <span className="text-xs font-medium bg-green-50 text-green-700 px-2 py-1 rounded-full">
+                Saved
+              </span>
+            )}
+          </div>
         </div>
         
         <div className="mt-2 flex items-center justify-between">
