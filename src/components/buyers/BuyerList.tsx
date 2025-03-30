@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag } from 'lucide-react';
 import BuyerCard from './BuyerCard';
@@ -667,7 +668,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                               
                               <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                <div className="space-y-4">
                                   <div>
                                     <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
                                     <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
@@ -684,7 +685,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                                     <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
                                     <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
                                   </div>
-                                  <div className="md:col-span-2">
+                                  <div>
                                     <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
                                     <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
                                   </div>
