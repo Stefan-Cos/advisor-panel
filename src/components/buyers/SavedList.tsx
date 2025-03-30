@@ -352,9 +352,6 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                     <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
-                    {activeTab === 'strategic' && (
-                      <TableHead className="text-white font-medium w-[200px]">Previous Acquisitions</TableHead>
-                    )}
                     <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
                     <TableHead className="text-white font-medium w-[100px]">Rank</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Feedback</TableHead>
@@ -394,9 +391,6 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                             ))}
                           </div>
                         </TableCell>
-                        {activeTab === 'strategic' && (
-                          <TableCell>{buyer.rationale.previousTransactions}</TableCell>
-                        )}
                         <TableCell>
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
                             {buyer.maTrackRecord}
@@ -464,7 +458,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                       </TableRow>
                       {expandedRationales.includes(buyer.id) && (
                         <TableRow className="bg-green-50">
-                          <TableCell colSpan={10} className="p-0">
+                          <TableCell colSpan={12} className="p-0">
                             <div className="p-4">
                               <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
@@ -602,7 +596,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                               
                               <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                <div className="space-y-4">
                                   <div>
                                     <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
                                     <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
@@ -619,7 +613,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                     <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
                                     <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
                                   </div>
-                                  <div className="md:col-span-2">
+                                  <div>
                                     <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
                                     <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
                                   </div>

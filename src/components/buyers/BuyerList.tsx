@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag } from 'lucide-react';
+import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag, Plus, Check } from 'lucide-react';
 import BuyerCard from './BuyerCard';
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -531,18 +531,15 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-blueknight-500">
-                    <TableHead className="text-white font-medium w-[220px]">Company Name</TableHead>
+                    <TableHead className="text-white font-medium w-[280px]">Company Name</TableHead>
                     <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
                     <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
                     <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
                     <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
                     <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
-                    <TableHead className="text-white font-medium w-[200px]">Previous Acquisitions</TableHead>
                     <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
                     <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-                    <TableHead className="text-white font-medium w-[100px]">Status</TableHead>
-                    <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -550,21 +547,41 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                     <React.Fragment key={buyer.id}>
                       <TableRow className="hover:bg-gray-50">
                         <TableCell className="font-medium">
-                          <div>
-                            {buyer.name}
-                            <Collapsible 
-                              open={expandedRationales.includes(buyer.id)}
-                              onOpenChange={() => toggleRationale(buyer.id)}
-                            >
-                              <CollapsibleTrigger className="flex items-center mt-1 px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                                Rationale
-                                {expandedRationales.includes(buyer.id) ? (
-                                  <ChevronUp className="h-3 w-3 ml-1" />
-                                ) : (
-                                  <ChevronDown className="h-3 w-3 ml-1" />
-                                )}
-                              </CollapsibleTrigger>
-                            </Collapsible>
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span>{buyer.name}</span>
+                                <button
+                                  onClick={() => handleAddToSaved(buyer.id)}
+                                  disabled={savedBuyers.includes(buyer.id)}
+                                  className={`flex items-center justify-center p-1 rounded-full ${
+                                    savedBuyers.includes(buyer.id)
+                                      ? 'bg-green-100 text-green-600 cursor-not-allowed'
+                                      : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
+                                  }`}
+                                  title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
+                                >
+                                  {savedBuyers.includes(buyer.id) ? (
+                                    <Check className="h-3.5 w-3.5" />
+                                  ) : (
+                                    <Plus className="h-3.5 w-3.5" />
+                                  )}
+                                </button>
+                              </div>
+                              <Collapsible 
+                                open={expandedRationales.includes(buyer.id)}
+                                onOpenChange={() => toggleRationale(buyer.id)}
+                              >
+                                <CollapsibleTrigger className="flex items-center mt-1 px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
+                                  Rationale
+                                  {expandedRationales.includes(buyer.id) ? (
+                                    <ChevronUp className="h-3 w-3 ml-1" />
+                                  ) : (
+                                    <ChevronDown className="h-3 w-3 ml-1" />
+                                  )}
+                                </CollapsibleTrigger>
+                              </Collapsible>
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell>{buyer.location}</TableCell>
@@ -573,7 +590,6 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                         <TableCell>{buyer.offering}</TableCell>
                         <TableCell>{buyer.sector}</TableCell>
                         <TableCell>{buyer.customers}</TableCell>
-                        <TableCell>{buyer.previousAcquisitions}</TableCell>
                         <TableCell>
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
                             {buyer.maTrackRecord}
@@ -590,79 +606,53 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                             <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            buyer.status === 'active' ? 'bg-green-50 text-green-700' :
-                            buyer.status === 'inactive' ? 'bg-red-50 text-red-700' :
-                            'bg-yellow-50 text-yellow-700'
-                          }`}>
-                            {buyer.status.charAt(0).toUpperCase() + buyer.status.slice(1)}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <button
-                            onClick={() => handleAddToSaved(buyer.id)}
-                            disabled={savedBuyers.includes(buyer.id)}
-                            className={`px-3 py-1 text-xs font-medium rounded-md ${
-                              savedBuyers.includes(buyer.id)
-                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                                : 'bg-blueknight-500 text-white hover:bg-blueknight-600'
-                            }`}
-                          >
-                            {savedBuyers.includes(buyer.id) ? 'Saved' : 'Save'}
-                          </button>
-                        </TableCell>
                       </TableRow>
                       {expandedRationales.includes(buyer.id) && (
                         <TableRow className="bg-green-50">
-                          <TableCell colSpan={12} className="p-0">
+                          <TableCell colSpan={9} className="p-0">
                             <div className="p-4">
                               <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
                                 <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
                                 
-                                <div className="mb-4">
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Long Description</h4>
-                                      <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
-                                    </div>
-                                    
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Primary Industries</h4>
-                                      <div className="flex flex-wrap gap-1 mt-1">
-                                        {buyer.primaryIndustries?.map((industry, i) => (
-                                          <span key={i} className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-md">
-                                            {industry}
-                                          </span>
-                                        )) || "Not provided"}
-                                      </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
+                                    <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
+                                  </div>
+                                  
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {buyer.primaryIndustries?.map((industry, i) => (
+                                        <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                                          {industry}
+                                        </span>
+                                      )) || "Not provided"}
                                     </div>
                                   </div>
                                 </div>
                                 
-                                <div className="mb-4">
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Keywords</h4>
-                                      <div className="flex flex-wrap gap-1 mt-1">
-                                        {buyer.keywords?.map((keyword, i) => (
-                                          <span key={i} className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-md">
-                                            {keyword}
-                                          </span>
-                                        )) || "Not provided"}
-                                      </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                      {buyer.keywords?.map((keyword, i) => (
+                                        <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
+                                          {keyword}
+                                        </span>
+                                      )) || "Not provided"}
                                     </div>
-                                    
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Target Customer Types</h4>
-                                      <p className="text-sm text-gray-600">
-                                        {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
-                                      </p>
-                                    </div>
+                                  </div>
+                                  
+                                  <div>
+                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
+                                    <p className="text-sm text-gray-600">
+                                      {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
+                                    </p>
                                   </div>
                                 </div>
                                 
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-4">
+                                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
                                   <div>
                                     <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
                                     <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
