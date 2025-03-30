@@ -526,207 +526,212 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
         )}
         
         {activeTab === 'strategic' ? (
-          <ScrollArea className="h-[600px] w-full" orientation="both">
-            <div className="min-w-max">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-blueknight-500">
-                    <TableHead className="text-white font-medium w-[280px]">Company Name</TableHead>
-                    <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
-                    <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
-                    <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                    <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
-                    <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
-                    <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
-                    <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
-                    <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {strategicBuyers.map((buyer) => (
-                    <React.Fragment key={buyer.id}>
-                      <TableRow className="hover:bg-gray-50">
-                        <TableCell className="font-medium">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span>{buyer.name}</span>
-                                <button
-                                  onClick={() => handleAddToSaved(buyer.id)}
-                                  disabled={savedBuyers.includes(buyer.id)}
-                                  className={`flex items-center justify-center p-1 rounded-full ${
-                                    savedBuyers.includes(buyer.id)
-                                      ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                                      : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
-                                  }`}
-                                  title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-                                >
-                                  {savedBuyers.includes(buyer.id) ? (
-                                    <Check className="h-3.5 w-3.5" />
-                                  ) : (
-                                    <Plus className="h-3.5 w-3.5" />
-                                  )}
-                                </button>
-                              </div>
-                              <Collapsible 
-                                open={expandedRationales.includes(buyer.id)}
-                                onOpenChange={() => toggleRationale(buyer.id)}
-                              >
-                                <CollapsibleTrigger className="flex items-center mt-1 px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                                  Rationale
-                                  {expandedRationales.includes(buyer.id) ? (
-                                    <ChevronUp className="h-3 w-3 ml-1" />
-                                  ) : (
-                                    <ChevronDown className="h-3 w-3 ml-1" />
-                                  )}
-                                </CollapsibleTrigger>
-                              </Collapsible>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>{buyer.location}</TableCell>
-                        <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-                        <TableCell>{buyer.description}</TableCell>
-                        <TableCell>{buyer.offering}</TableCell>
-                        <TableCell>{buyer.sector}</TableCell>
-                        <TableCell>{buyer.customers}</TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
-                            {buyer.maTrackRecord}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
-                              <div
-                                className="bg-blueknight-500 h-2 rounded-full"
-                                style={{ width: `${buyer.matchingScore}%` }}
-                              />
-                            </div>
-                            <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                      {expandedRationales.includes(buyer.id) && (
-                        <TableRow className="bg-green-50">
-                          <TableCell colSpan={9} className="p-0">
-                            <div className="p-4">
-                              <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
-                                <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
-                                
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
-                                    <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
-                                  </div>
+          <div className="relative overflow-auto">
+            <ScrollArea className="h-[600px] w-full" orientation="both">
+              <div className="min-w-max">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-blueknight-500">
+                      <TableHead className="text-white font-medium w-[280px] sticky left-0 bg-blueknight-500 z-10">Company Name</TableHead>
+                      <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
+                      <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
+                      <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
+                      <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
+                      <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
+                      <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
+                      <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
+                      <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {strategicBuyers.map((buyer) => (
+                      <React.Fragment key={buyer.id}>
+                        <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
+                          <TableCell className="font-medium sticky left-0 bg-white z-10">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span>{buyer.name}</span>
+                                </div>
+                                <div className="flex items-center mt-1 gap-2">
+                                  <Collapsible 
+                                    open={expandedRationales.includes(buyer.id)}
+                                    onOpenChange={() => toggleRationale(buyer.id)}
+                                  >
+                                    <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
+                                      Rationale
+                                      {expandedRationales.includes(buyer.id) ? (
+                                        <ChevronUp className="h-3 w-3 ml-1" />
+                                      ) : (
+                                        <ChevronDown className="h-3 w-3 ml-1" />
+                                      )}
+                                    </CollapsibleTrigger>
+                                  </Collapsible>
                                   
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                      {buyer.primaryIndustries?.map((industry, i) => (
-                                        <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                                          {industry}
-                                        </span>
-                                      )) || "Not provided"}
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
-                                    <div className="flex flex-wrap gap-1 mt-1">
-                                      {buyer.keywords?.map((keyword, i) => (
-                                        <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                          {keyword}
-                                        </span>
-                                      )) || "Not provided"}
-                                    </div>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
-                                    <p className="text-sm text-gray-600">
-                                      {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
-                                    </p>
-                                  </div>
-                                </div>
-                                
-                                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
-                                  <div>
-                                    <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
-                                    <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-xs text-gray-500 mb-1">Website</h4>
-                                    <p className="text-sm font-medium text-blue-500 hover:underline cursor-pointer">Visit</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
-                                    <p className="text-sm font-medium">{buyer.location}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
-                                    <p className="text-sm font-medium">{buyer.employees.toLocaleString()}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
-                                    <p className="text-sm font-medium">$125.5</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
-                                    <p className="text-sm font-medium">$45.2</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
-                                    <p className="text-sm font-medium">Mar 24</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
-                                    <p className="text-sm font-medium">No</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-xs text-gray-500 mb-1">Public</h4>
-                                    <p className="text-sm font-medium">Yes</p>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-                                <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
-                                <div className="space-y-4">
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
-                                    <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
-                                    <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Previous Transactions</h4>
-                                    <p className="text-sm text-gray-600">{buyer.rationale.previousTransactions}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
-                                    <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
-                                  </div>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
-                                    <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
-                                  </div>
+                                  <button
+                                    onClick={() => handleAddToSaved(buyer.id)}
+                                    disabled={savedBuyers.includes(buyer.id)}
+                                    className={`flex items-center justify-center p-1 rounded-full ${
+                                      savedBuyers.includes(buyer.id)
+                                        ? 'bg-green-100 text-green-600 cursor-not-allowed'
+                                        : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
+                                    }`}
+                                    title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
+                                  >
+                                    {savedBuyers.includes(buyer.id) ? (
+                                      <Check className="h-3.5 w-3.5" />
+                                    ) : (
+                                      <Plus className="h-3.5 w-3.5" />
+                                    )}
+                                  </button>
                                 </div>
                               </div>
                             </div>
                           </TableCell>
+                          <TableCell>{buyer.location}</TableCell>
+                          <TableCell>{buyer.employees.toLocaleString()}</TableCell>
+                          <TableCell>{buyer.description}</TableCell>
+                          <TableCell>{buyer.offering}</TableCell>
+                          <TableCell>{buyer.sector}</TableCell>
+                          <TableCell>{buyer.customers}</TableCell>
+                          <TableCell>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
+                              {buyer.maTrackRecord}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
+                                <div
+                                  className="bg-blueknight-500 h-2 rounded-full"
+                                  style={{ width: `${buyer.matchingScore}%` }}
+                                />
+                              </div>
+                              <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
+                            </div>
+                          </TableCell>
                         </TableRow>
-                      )}
-                    </React.Fragment>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </ScrollArea>
+                        {expandedRationales.includes(buyer.id) && (
+                          <TableRow className="bg-green-50">
+                            <TableCell colSpan={9} className="p-0">
+                              <div className="p-4">
+                                <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
+                                  <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
+                                      <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
+                                    </div>
+                                  
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
+                                      <div className="flex flex-wrap gap-1 mt-1">
+                                        {buyer.primaryIndustries?.map((industry, i) => (
+                                          <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                                            {industry}
+                                          </span>
+                                        )) || "Not provided"}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
+                                      <div className="flex flex-wrap gap-1 mt-1">
+                                        {buyer.keywords?.map((keyword, i) => (
+                                          <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
+                                            {keyword}
+                                          </span>
+                                        )) || "Not provided"}
+                                      </div>
+                                    </div>
+                                  
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
+                                      <p className="text-sm text-gray-600">
+                                        {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
+                                    <div>
+                                      <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
+                                      <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xs text-gray-500 mb-1">Website</h4>
+                                      <p className="text-sm font-medium text-blue-500 hover:underline cursor-pointer">Visit</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
+                                      <p className="text-sm font-medium">{buyer.location}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
+                                      <p className="text-sm font-medium">{buyer.employees.toLocaleString()}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
+                                      <p className="text-sm font-medium">$125.5</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
+                                      <p className="text-sm font-medium">$45.2</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
+                                      <p className="text-sm font-medium">Mar 24</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
+                                      <p className="text-sm font-medium">No</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-xs text-gray-500 mb-1">Public</h4>
+                                      <p className="text-sm font-medium">Yes</p>
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
+                                  <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
+                                  <div className="space-y-4">
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
+                                      <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
+                                      <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Previous Transactions</h4>
+                                      <p className="text-sm text-gray-600">{buyer.rationale.previousTransactions}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
+                                      <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
+                                    </div>
+                                    <div>
+                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
+                                      <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </ScrollArea>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {peBuyers.map(buyer => (

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown, ChevronUp, Trash } from 'lucide-react';
@@ -336,132 +337,134 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
             <p className="text-gray-500">No saved buyers yet. Add buyers from the Buyer List.</p>
           </div>
         ) : (
-          <ScrollArea className="h-[600px] w-full" orientation="both">
-            <div className="min-w-max">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-blueknight-500">
-                    <TableHead className="text-white font-medium w-[180px]">Company Name</TableHead>
-                    {activeTab === 'strategic' && (
-                      <>
-                        <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
-                        <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
-                      </>
-                    )}
-                    <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                    <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
-                    <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
-                    <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
-                    <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
-                    <TableHead className="text-white font-medium w-[100px]">Rank</TableHead>
-                    <TableHead className="text-white font-medium w-[180px]">Feedback</TableHead>
-                    <TableHead className="text-white font-medium w-[120px]">Rationale</TableHead>
-                    <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-                    <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {buyers.map((buyer) => (
-                    <React.Fragment key={buyer.id}>
-                      <TableRow className="hover:bg-green-50 bg-green-50">
-                        <TableCell className="font-medium">{buyer.name}</TableCell>
-                        {activeTab === 'strategic' && (
-                          <>
-                            <TableCell>{buyer.location}</TableCell>
-                            <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-                          </>
-                        )}
-                        <TableCell>{buyer.description}</TableCell>
-                        <TableCell>{buyer.rationale.offering}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {buyer.primaryIndustries?.map((industry, i) => (
-                              <span key={i} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
-                                {industry}
-                              </span>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {buyer.targetCustomerTypes?.map((type, i) => (
-                              <span key={i} className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                {type}
-                              </span>
-                            ))}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
-                            {buyer.maTrackRecord}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <select
-                            value={buyer.rank || ''}
-                            onChange={(e) => handleRankChange(
-                              buyer.id, 
-                              e.target.value ? parseInt(e.target.value) : null
-                            )}
-                            className="block w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400 focus:border-transparent"
-                          >
-                            <option value="">-</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                          </select>
-                        </TableCell>
-                        <TableCell>
-                          <input
-                            type="text"
-                            value={buyer.feedback}
-                            onChange={(e) => handleFeedbackChange(buyer.id, e.target.value)}
-                            placeholder="Add feedback..."
-                            className="block w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400 focus:border-transparent"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Collapsible 
-                            open={expandedRationales.includes(buyer.id)}
-                            onOpenChange={() => toggleRationale(buyer.id)}
-                          >
-                            <CollapsibleTrigger className="flex items-center px-3 py-1.5 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                              Rationale
-                              {expandedRationales.includes(buyer.id) ? (
-                                <ChevronUp className="h-4 w-4 ml-1" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4 ml-1" />
-                              )}
-                            </CollapsibleTrigger>
-                          </Collapsible>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
-                              <div
-                                className="bg-blueknight-500 h-2 rounded-full"
-                                style={{ width: `${buyer.matchingScore}%` }}
-                              />
+          <div className="relative overflow-auto">
+            <ScrollArea className="h-[600px] w-full" orientation="both">
+              <div className="min-w-max">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-blueknight-500">
+                      <TableHead className="text-white font-medium w-[180px] sticky left-0 bg-blueknight-500 z-10">Company Name</TableHead>
+                      {activeTab === 'strategic' && (
+                        <>
+                          <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
+                          <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
+                        </>
+                      )}
+                      <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
+                      <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
+                      <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
+                      <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
+                      <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
+                      <TableHead className="text-white font-medium w-[100px]">Rank</TableHead>
+                      <TableHead className="text-white font-medium w-[180px]">Feedback</TableHead>
+                      <TableHead className="text-white font-medium w-[120px]">Rationale</TableHead>
+                      <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
+                      <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {buyers.map((buyer) => (
+                      <React.Fragment key={buyer.id}>
+                        <TableRow className="hover:bg-green-50 bg-green-50">
+                          <TableCell className="font-medium sticky left-0 bg-green-50 z-10">{buyer.name}</TableCell>
+                          {activeTab === 'strategic' && (
+                            <>
+                              <TableCell>{buyer.location}</TableCell>
+                              <TableCell>{buyer.employees.toLocaleString()}</TableCell>
+                            </>
+                          )}
+                          <TableCell>{buyer.description}</TableCell>
+                          <TableCell>{buyer.rationale.offering}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {buyer.primaryIndustries?.map((industry, i) => (
+                                <span key={i} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
+                                  {industry}
+                                </span>
+                              ))}
                             </div>
-                            <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <button
-                            onClick={() => handleRemoveBuyer(buyer.id)}
-                            className="text-xs px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center"
-                          >
-                            <Trash className="h-3 w-3 mr-1" />
-                            Remove
-                          </button>
-                        </TableCell>
-                      </TableRow>
-                    </React.Fragment>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </ScrollArea>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {buyer.targetCustomerTypes?.map((type, i) => (
+                                <span key={i} className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">
+                                  {type}
+                                </span>
+                              ))}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
+                              {buyer.maTrackRecord}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <select
+                              value={buyer.rank || ''}
+                              onChange={(e) => handleRankChange(
+                                buyer.id, 
+                                e.target.value ? parseInt(e.target.value) : null
+                              )}
+                              className="block w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400 focus:border-transparent"
+                            >
+                              <option value="">-</option>
+                              <option value="1">1</option>
+                              <option value="2">2</option>
+                              <option value="3">3</option>
+                            </select>
+                          </TableCell>
+                          <TableCell>
+                            <input
+                              type="text"
+                              value={buyer.feedback}
+                              onChange={(e) => handleFeedbackChange(buyer.id, e.target.value)}
+                              placeholder="Add feedback..."
+                              className="block w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400 focus:border-transparent"
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <Collapsible 
+                              open={expandedRationales.includes(buyer.id)}
+                              onOpenChange={() => toggleRationale(buyer.id)}
+                            >
+                              <CollapsibleTrigger className="flex items-center px-3 py-1.5 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
+                                Rationale
+                                {expandedRationales.includes(buyer.id) ? (
+                                  <ChevronUp className="h-4 w-4 ml-1" />
+                                ) : (
+                                  <ChevronDown className="h-4 w-4 ml-1" />
+                                )}
+                              </CollapsibleTrigger>
+                            </Collapsible>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center">
+                              <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
+                                <div
+                                  className="bg-blueknight-500 h-2 rounded-full"
+                                  style={{ width: `${buyer.matchingScore}%` }}
+                                />
+                              </div>
+                              <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <button
+                              onClick={() => handleRemoveBuyer(buyer.id)}
+                              className="text-xs px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center"
+                            >
+                              <Trash className="h-3 w-3 mr-1" />
+                              Remove
+                            </button>
+                          </TableCell>
+                        </TableRow>
+                      </React.Fragment>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </ScrollArea>
+          </div>
         )}
       </div>
     </div>
