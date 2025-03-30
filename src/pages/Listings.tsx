@@ -1,10 +1,17 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import ListingTable from '../components/listings/ListingTable';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 // Mock data
 const mockListings = [

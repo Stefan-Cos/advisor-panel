@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown, ChevronUp, Trash } from 'lucide-react';
@@ -357,16 +356,45 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                       <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
                       <TableHead className="text-white font-medium w-[100px]">Rank</TableHead>
                       <TableHead className="text-white font-medium w-[180px]">Feedback</TableHead>
-                      <TableHead className="text-white font-medium w-[120px]">Rationale</TableHead>
+                      <TableHead className="text-white font-medium w-[150px]">Rationale & Actions</TableHead>
                       <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-                      <TableHead className="text-white font-medium w-[100px]">Action</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {buyers.map((buyer) => (
                       <React.Fragment key={buyer.id}>
                         <TableRow className="hover:bg-green-50 bg-green-50">
-                          <TableCell className="font-medium sticky left-0 z-10 bg-green-50">{buyer.name}</TableCell>
+                          <TableCell 
+                            className="font-medium sticky left-0 z-10 bg-green-50"
+                            style={{position: 'sticky', left: 0}}
+                          >
+                            <div>
+                              <div>{buyer.name}</div>
+                              <div className="flex items-center mt-1 gap-2">
+                                <Collapsible 
+                                  open={expandedRationales.includes(buyer.id)}
+                                  onOpenChange={() => toggleRationale(buyer.id)}
+                                >
+                                  <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
+                                    Rationale
+                                    {expandedRationales.includes(buyer.id) ? (
+                                      <ChevronUp className="h-3 w-3 ml-1" />
+                                    ) : (
+                                      <ChevronDown className="h-3 w-3 ml-1" />
+                                    )}
+                                  </CollapsibleTrigger>
+                                </Collapsible>
+                                
+                                <button
+                                  onClick={() => handleRemoveBuyer(buyer.id)}
+                                  className="flex items-center justify-center p-1 rounded-full bg-red-100 text-red-600 hover:bg-red-200"
+                                  title="Remove buyer"
+                                >
+                                  <Trash className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          </TableCell>
                           {activeTab === 'strategic' && (
                             <>
                               <TableCell>{buyer.location}</TableCell>
@@ -423,19 +451,29 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                             />
                           </TableCell>
                           <TableCell>
-                            <Collapsible 
-                              open={expandedRationales.includes(buyer.id)}
-                              onOpenChange={() => toggleRationale(buyer.id)}
-                            >
-                              <CollapsibleTrigger className="flex items-center px-3 py-1.5 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                                Rationale
-                                {expandedRationales.includes(buyer.id) ? (
-                                  <ChevronUp className="h-4 w-4 ml-1" />
-                                ) : (
-                                  <ChevronDown className="h-4 w-4 ml-1" />
-                                )}
-                              </CollapsibleTrigger>
-                            </Collapsible>
+                            <div className="flex items-center gap-2">
+                              <Collapsible 
+                                open={expandedRationales.includes(buyer.id)}
+                                onOpenChange={() => toggleRationale(buyer.id)}
+                              >
+                                <CollapsibleTrigger className="flex items-center px-3 py-1.5 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
+                                  Rationale
+                                  {expandedRationales.includes(buyer.id) ? (
+                                    <ChevronUp className="h-4 w-4 ml-1" />
+                                  ) : (
+                                    <ChevronDown className="h-4 w-4 ml-1" />
+                                  )}
+                                </CollapsibleTrigger>
+                              </Collapsible>
+                              
+                              <button
+                                onClick={() => handleRemoveBuyer(buyer.id)}
+                                className="p-1.5 rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center"
+                                title="Remove buyer"
+                              >
+                                <Trash className="h-4 w-4" />
+                              </button>
+                            </div>
                           </TableCell>
                           <TableCell>
                             <div className="flex items-center">
@@ -447,15 +485,6 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                               </div>
                               <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
                             </div>
-                          </TableCell>
-                          <TableCell>
-                            <button
-                              onClick={() => handleRemoveBuyer(buyer.id)}
-                              className="text-xs px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 flex items-center"
-                            >
-                              <Trash className="h-3 w-3 mr-1" />
-                              Remove
-                            </button>
                           </TableCell>
                         </TableRow>
                       </React.Fragment>

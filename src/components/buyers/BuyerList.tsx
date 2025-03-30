@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag, Plus, Check } from 'lucide-react';
+import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag, Plus, Check, Trash } from 'lucide-react';
 import BuyerCard from './BuyerCard';
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -548,7 +547,10 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                     {strategicBuyers.map((buyer) => (
                       <React.Fragment key={buyer.id}>
                         <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-                          <TableCell className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}>
+                          <TableCell 
+                            className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
+                            style={{position: 'sticky', left: 0}}
+                          >
                             <div className="flex items-center justify-between">
                               <div>
                                 <div className="flex items-center gap-2">
