@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
-import ListingTable from '../components/listings/ListingTable';
 import {
   Table,
   TableBody,
@@ -68,6 +68,12 @@ const mockListings = [
 ];
 
 const Listings = () => {
+  const statusColors = {
+    active: 'bg-green-50 text-green-700',
+    inactive: 'bg-red-50 text-red-700',
+    pending: 'bg-yellow-50 text-yellow-700',
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
@@ -88,7 +94,47 @@ const Listings = () => {
             </Link>
           </div>
           
-          <ListingTable listings={mockListings} />
+          <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-blueknight-500">
+                  <TableHead className="text-white font-medium">ID</TableHead>
+                  <TableHead className="text-white font-medium">Company Name</TableHead>
+                  <TableHead className="text-white font-medium">Project Title</TableHead>
+                  <TableHead className="text-white font-medium">Date</TableHead>
+                  <TableHead className="text-white font-medium">Status</TableHead>
+                  <TableHead className="text-white font-medium">Saved Buyers</TableHead>
+                  <TableHead className="text-white font-medium">Advisor</TableHead>
+                  <TableHead className="text-white font-medium text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {mockListings.map((listing) => (
+                  <TableRow key={listing.id} className="hover:bg-gray-50">
+                    <TableCell className="font-medium">{listing.id}</TableCell>
+                    <TableCell>{listing.companyName}</TableCell>
+                    <TableCell>{listing.projectTitle}</TableCell>
+                    <TableCell>{new Date(listing.date).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[listing.status]}`}>
+                        {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
+                      </span>
+                    </TableCell>
+                    <TableCell>{listing.savedBuyers}</TableCell>
+                    <TableCell>{listing.advisorCreated}</TableCell>
+                    <TableCell className="text-right">
+                      <Link
+                        to={`/listings/${listing.id}`}
+                        className="text-blueknight-600 hover:text-blueknight-700 text-sm font-medium"
+                      >
+                        View Details
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </main>
       </div>
     </div>
