@@ -112,7 +112,7 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
                     to={`/listings/${listing.id}`}
                     className="text-blueknight-500 hover:text-blueknight-700 font-medium"
                   >
-                    View Listing
+                    View Project
                   </Link>
                 </td>
               </tr>

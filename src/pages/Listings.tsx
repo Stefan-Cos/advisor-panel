@@ -70,14 +70,14 @@ const Listings = () => {
         
         <main className="flex-1 p-6">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl font-bold text-blueknight-800">All Listings ({mockListings.length})</h1>
+            <h1 className="text-2xl font-bold text-blueknight-800">All Projects ({mockListings.length})</h1>
             
             <Link
               to="/add-listing"
               className="btn-primary flex items-center"
             >
               <Plus className="mr-2 h-5 w-5" />
-              Add Listing
+              Add Project
             </Link>
           </div>
           
