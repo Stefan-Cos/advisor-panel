@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import BuyerTable from '../buyers/BuyerTable';
+import BuyerList from '../buyers/BuyerList';
 import SavedList from '../buyers/SavedList';
 import BuyerPreferencesForm from '../forms/BuyerPreferencesForm';
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -72,7 +72,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         </TabsList>
         
         <TabsContent value="buyer-list" className="mt-6 w-full">
-          <BuyerTable listingId={id} />
+          <BuyerList listingId={id} />
         </TabsContent>
         
         <TabsContent value="saved-list" className="mt-6 w-full">
