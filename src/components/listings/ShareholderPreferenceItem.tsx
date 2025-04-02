@@ -10,7 +10,7 @@ interface ShareholderPreferenceItemProps {
     noPreference: boolean;
   };
   isEditing: boolean;
-  onChange: (key: keyof typeof preferences) => void;
+  onChange: (key: keyof ShareholderPreferenceItemProps['preferences']) => void;
 }
 
 const ShareholderPreferenceItem: React.FC<ShareholderPreferenceItemProps> = ({
