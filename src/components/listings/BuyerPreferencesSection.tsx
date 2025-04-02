@@ -42,11 +42,11 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ prefe
   return (
     <div className="animate-fade-in">
       <h3 className="text-lg font-semibold text-blueknight-700 mb-3">Buyer Preferences</h3>
-      <div className="space-y-4">
+      <div className="grid grid-cols-5 gap-6">
         {/* Countries Section */}
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-2">Country of Buyer</h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col space-y-2">
             {preferences.countries.map((country) => (
               <Badge key={country.name} variant="outline" className={`${importanceColors[country.importance]}`}>
                 {country.name}
@@ -61,7 +61,7 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ prefe
         {/* Industries Section */}
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-2">Industries of Buyers</h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col space-y-2">
             {preferences.industries.map((industry) => (
               <Badge key={industry.name} variant="outline" className={`${importanceColors[industry.importance]}`}>
                 {industry.name}
@@ -76,7 +76,7 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ prefe
         {/* Customer Sectors Section */}
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-2">Customer Sectors</h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col space-y-2">
             {preferences.endUserSectors.map((sector) => (
               <Badge key={sector.name} variant="outline" className={`${importanceColors[sector.importance]}`}>
                 {sector.name}
@@ -91,7 +91,7 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ prefe
         {/* Keywords Section */}
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-2">Buyer Keywords</h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col space-y-2">
             {preferences.keywords.map((keyword) => (
               <Badge key={keyword.name} variant="outline" className={`${importanceColors[keyword.importance]}`}>
                 {keyword.name}
@@ -106,7 +106,7 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ prefe
         {/* Shareholder Preferences Section */}
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-2">Shareholders' acquirer preference</h4>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col space-y-2">
             {getActiveShareholderPreferences().map((pref) => (
               <Badge key={pref} variant="secondary">
                 {pref}
