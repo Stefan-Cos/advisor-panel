@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag, Plus, Check, Trash, Search } from 'lucide-react';
 import BuyerCard from './BuyerCard';
@@ -737,8 +738,16 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
             {savedBuyers.map((buyer) => (
               <BuyerCard 
                 key={buyer.id}
-                buyer={buyer}
-                onRemove={() => handleRemoveBuyer(buyer.id)}
+                id={buyer.id}
+                name={buyer.name}
+                type={buyer.type}
+                location={buyer.location}
+                sector={buyer.sector}
+                offering={buyer.offering}
+                customers={buyer.customers}
+                fitPercentage={buyer.matchingScore}
+                addedToSaved={true}
+                onAddToSaved={() => handleRemoveBuyer(buyer.id)}
               />
             ))}
           </div>
