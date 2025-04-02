@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface Preference {
   name: string;
@@ -21,9 +22,13 @@ interface BuyerPreferencesSectionProps {
       noPreference: boolean;
     };
   };
+  onEditPreferences?: () => void;
 }
 
-const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ preferences }) => {
+const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ 
+  preferences,
+  onEditPreferences 
+}) => {
   const importanceColors = {
     high: 'bg-red-50 text-red-700 border-red-200',
     medium: 'bg-yellow-50 text-yellow-700 border-yellow-200',
@@ -41,7 +46,18 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ prefe
 
   return (
     <div className="animate-fade-in">
-      <h3 className="text-lg font-semibold text-blueknight-700 mb-3">Buyer Preferences</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-semibold text-blueknight-700">Buyer Preferences</h3>
+        {onEditPreferences && (
+          <Button 
+            onClick={onEditPreferences}
+            variant="outline"
+            className="px-3 py-1 text-sm border border-blueknight-300 rounded-md text-blueknight-700 hover:bg-blueknight-50 h-auto"
+          >
+            Edit Preferences
+          </Button>
+        )}
+      </div>
       <div className="grid grid-cols-5 gap-6">
         {/* Countries Section */}
         <div>
@@ -103,9 +119,9 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ prefe
           </div>
         </div>
 
-        {/* Shareholder Preferences Section */}
+        {/* Buyer Preference Section (renamed from Shareholder Preferences) */}
         <div>
-          <h4 className="text-sm font-medium text-gray-600 mb-2">Shareholders' acquirer preference</h4>
+          <h4 className="text-sm font-medium text-gray-600 mb-2">Buyer Preference</h4>
           <div className="flex flex-col space-y-2">
             {getActiveShareholderPreferences().map((pref) => (
               <Badge key={pref} variant="secondary">

@@ -67,6 +67,10 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   
   const [preferencesOpen, setPreferencesOpen] = React.useState(false);
 
+  const handleOpenPreferencesEditor = () => {
+    setPreferencesOpen(true);
+  };
+
   return (
     <div className="animate-fade-in space-y-8 w-full relative">
       <Card>
@@ -83,7 +87,10 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           
           {/* Buyer Preferences Summary Section */}
           <div className="mb-6">
-            <BuyerPreferencesSection preferences={samplePreferences} />
+            <BuyerPreferencesSection 
+              preferences={samplePreferences} 
+              onEditPreferences={handleOpenPreferencesEditor}
+            />
           </div>
           
           {/* Preferences Dialog - kept for future use if needed */}
