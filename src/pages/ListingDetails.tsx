@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import ListingDetails from '../components/listings/ListingDetails';
-import SavedList from '../components/buyers/SavedList';
 
 const ListingDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,12 +30,6 @@ const ListingDetailsPage = () => {
         <main className="flex-1 p-6 overflow-auto">
           <div className="w-full">
             <ListingDetails {...listingData} />
-            
-            {/* Display SavedList with the listing ID */}
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Saved Buyers</h2>
-              <SavedList listingId={id || '1'} />
-            </div>
           </div>
         </main>
       </div>

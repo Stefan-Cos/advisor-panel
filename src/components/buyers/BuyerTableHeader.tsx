@@ -10,7 +10,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { KeywordSearch } from './BuyerFilters';
+
+export interface KeywordSearch {
+  text: string;
+  operator: 'AND' | 'OR' | 'NOT';
+  field: 'offering' | 'sector' | 'customers' | 'keywords';
+}
 
 interface BuyerTableHeaderProps {
   title: string;
@@ -20,7 +25,7 @@ interface BuyerTableHeaderProps {
   sortDirection?: 'asc' | 'desc' | null;
   onSort?: () => void;
   onSearch?: (field: string) => void;
-  searchField?: keyof KeywordSearch['field'];
+  searchField?: 'offering' | 'sector' | 'customers' | 'keywords';
 }
 
 const BuyerTableHeader: React.FC<BuyerTableHeaderProps> = ({
@@ -39,17 +44,23 @@ const BuyerTableHeader: React.FC<BuyerTableHeaderProps> = ({
         <span>{title}</span>
         <div className="flex items-center space-x-1">
           {searchable && onSearch && searchField && (
-            <PopoverTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="h-5 w-5 text-white hover:text-white hover:bg-blueknight-600 rounded-full"
-                onClick={() => onSearch(searchField)}
-              >
-                <Search className="h-3 w-3" />
-                <span className="sr-only">Search {title}</span>
-              </Button>
-            </PopoverTrigger>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-5 w-5 text-white hover:text-white hover:bg-blueknight-600 rounded-full"
+                >
+                  <Search className="h-3 w-3" />
+                  <span className="sr-only">Search {title}</span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <div className="p-2">
+                  <p className="text-sm font-medium">Search {title}</p>
+                </div>
+              </PopoverContent>
+            </Popover>
           )}
           
           {sortable && onSort && (
