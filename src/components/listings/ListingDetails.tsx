@@ -7,10 +7,8 @@ import AIAssistantChat from '../ui/AIAssistantChat';
 import { Badge } from "@/components/ui/badge";
 import BuyerPreferencesEditor from './BuyerPreferencesEditor';
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BuyerPreferencesSection from './BuyerPreferencesSection';
-import { Settings } from 'lucide-react';
 
 interface ListingDetailsProps {
   id: string;
@@ -84,20 +82,11 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           </div>
           
           {/* Buyer Preferences Summary Section */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="mb-6">
             <BuyerPreferencesSection preferences={samplePreferences} />
-            
-            <Button 
-              onClick={() => setPreferencesOpen(true)}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Settings size={16} />
-              Edit Preferences
-            </Button>
           </div>
           
-          {/* Preferences Dialog */}
+          {/* Preferences Dialog - kept for future use if needed */}
           <Dialog open={preferencesOpen} onOpenChange={setPreferencesOpen}>
             <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
