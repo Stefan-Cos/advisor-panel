@@ -66,6 +66,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   };
   
   const [preferencesOpen, setPreferencesOpen] = React.useState(false);
+  const [activeTab, setActiveTab] = React.useState<'buyer-list' | 'saved-list' | 'crm'>('buyer-list');
 
   const handleOpenPreferencesEditor = () => {
     setPreferencesOpen(true);
@@ -105,7 +106,12 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         </CardContent>
       </Card>
       
-      <Tabs defaultValue="buyer-list" className="w-full">
+      <Tabs 
+        defaultValue="buyer-list" 
+        className="w-full"
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as 'buyer-list' | 'saved-list' | 'crm')}
+      >
         <TabsList className="grid w-full grid-cols-3 bg-white border border-gray-200 rounded-md shadow-sm">
           <TabsTrigger value="buyer-list" className="data-[state=active]:bg-blueknight-500 data-[state=active]:text-white font-medium">
             Buyer List
