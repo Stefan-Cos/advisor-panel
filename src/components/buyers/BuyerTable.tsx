@@ -19,6 +19,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { format } from 'date-fns';
 import { Input } from "@/components/ui/input";
@@ -588,71 +595,101 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   HQ
                 </label>
-                <select className="input-field w-full px-3 py-2 border border-gray-300 rounded-md">
-                  <option value="">All Countries</option>
-                  <option value="USA">USA</option>
-                  <option value="UK">UK</option>
-                  <option value="Germany">Germany</option>
-                  <option value="Canada">Canada</option>
-                </select>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="All Countries" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Countries</SelectItem>
+                    <SelectItem value="usa">USA</SelectItem>
+                    <SelectItem value="uk">UK</SelectItem>
+                    <SelectItem value="germany">Germany</SelectItem>
+                    <SelectItem value="canada">Canada</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Minimum Employees
                 </label>
-                <select className="input-field w-full px-3 py-2 border border-gray-300 rounded-md">
-                  <option value="0">Any</option>
-                  <option value="100">100+</option>
-                  <option value="500">500+</option>
-                  <option value="1000">1000+</option>
-                </select>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Any</SelectItem>
+                    <SelectItem value="100">100+</SelectItem>
+                    <SelectItem value="500">500+</SelectItem>
+                    <SelectItem value="1000">1000+</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Minimum Revenue ($M)
                 </label>
-                <select className="input-field w-full px-3 py-2 border border-gray-300 rounded-md">
-                  <option value="0">Any</option>
-                  <option value="50">$50M+</option>
-                  <option value="100">$100M+</option>
-                  <option value="250">$250M+</option>
-                </select>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Any</SelectItem>
+                    <SelectItem value="50">$50M+</SelectItem>
+                    <SelectItem value="100">$100M+</SelectItem>
+                    <SelectItem value="250">$250M+</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Minimum Cash ($M)
                 </label>
-                <select className="input-field w-full px-3 py-2 border border-gray-300 rounded-md">
-                  <option value="0">Any</option>
-                  <option value="10">$10M+</option>
-                  <option value="25">$25M+</option>
-                  <option value="50">$50M+</option>
-                </select>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0">Any</SelectItem>
+                    <SelectItem value="10">$10M+</SelectItem>
+                    <SelectItem value="25">$25M+</SelectItem>
+                    <SelectItem value="50">$50M+</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   PE/VC Backed
                 </label>
-                <select className="input-field w-full px-3 py-2 border border-gray-300 rounded-md">
-                  <option value="">Any</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                </select>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="any">Any</SelectItem>
+                    <SelectItem value="yes">Yes</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Public
                 </label>
-                <select className="input-field w-full px-3 py-2 border border-gray-300 rounded-md">
-                  <option value="">Any</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                </select>
+                <Select>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="any">Any</SelectItem>
+                    <SelectItem value="yes">Yes</SelectItem>
+                    <SelectItem value="no">No</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             
