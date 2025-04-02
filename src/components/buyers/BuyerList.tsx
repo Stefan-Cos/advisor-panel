@@ -363,9 +363,9 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="">Any score</SelectItem>
-                            <SelectItem value="gt85">High (> 85%)</SelectItem>
+                            <SelectItem value="gt85">High (&gt; 85%)</SelectItem>
                             <SelectItem value="70-85">Medium (70-85%)</SelectItem>
-                            <SelectItem value="lt70">Low (< 70%)</SelectItem>
+                            <SelectItem value="lt70">Low (&lt; 70%)</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
