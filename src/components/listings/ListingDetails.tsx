@@ -3,12 +3,14 @@ import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BuyerList from '../buyers/BuyerList';
 import SavedList from '../buyers/SavedList';
-import BuyerPreferencesSection from './BuyerPreferencesSection';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus } from "lucide-react";
 import AIAssistantChat from '../ui/AIAssistantChat';
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface ListingDetailsProps {
   id: string;
@@ -23,7 +25,7 @@ interface ListingDetailsProps {
 
 interface Preference {
   name: string;
-  importance: 'high' | 'medium' | 'low';
+  importance: 'high' | 'medium' | 'low' | 'N/A';
 }
 
 // Sample preferences data - in a real app, this would be fetched from API
@@ -37,7 +39,20 @@ const samplePreferences = {
     { name: 'Technology', importance: 'high' as const },
     { name: 'Healthcare', importance: 'medium' as const }
   ],
+  endUserSectors: [
+    { name: 'Enterprise', importance: 'high' as const },
+    { name: 'SMB', importance: 'medium' as const }
+  ],
+  keywords: [
+    { name: 'Software', importance: 'high' as const },
+    { name: 'SaaS', importance: 'medium' as const },
+    { name: 'Cloud', importance: 'low' as const }
+  ],
   acquisitionReason: 'Technology Acquisition',
+  potentialBuyers: [
+    { name: 'Microsoft', importance: 'high' as const },
+    { name: 'Google', importance: 'medium' as const }
+  ],
   shareholderPreference: {
     privateEquity: true,
     peBacked: false,
@@ -46,12 +61,28 @@ const samplePreferences = {
   }
 };
 
+const importanceOptions = [
+  { label: 'High', value: 'high' },
+  { label: 'Medium', value: 'medium' },
+  { label: 'Low', value: 'low' },
+  { label: 'N/A', value: 'N/A' },
+];
+
+const acquisitionReasons = [
+  "Market Expansion",
+  "Technology Acquisition",
+  "Talent Acquisition",
+  "Diversification",
+  "Cost Synergies",
+  "Vertical Integration",
+  "Horizontal Integration",
+  "Geographic Expansion"
+];
+
 const ListingDetails: React.FC<ListingDetailsProps> = ({
   id,
-  companyName,
   projectTitle,
   status,
-  date,
 }) => {
   const statusColors = {
     active: 'bg-green-50 text-green-700',
@@ -61,52 +92,187 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
 
   const [preferences, setPreferences] = useState(samplePreferences);
   const [isEditingPreferences, setIsEditingPreferences] = useState(false);
+  const { toast } = useToast();
+
+  // New input states
+  const [newInputs, setNewInputs] = useState({
+    country: '',
+    industry: '',
+    endUserSector: '',
+    keyword: '',
+    potentialBuyer: '',
+  });
 
   const toggleEditPreferences = () => {
+    if (isEditingPreferences) {
+      // Save changes
+      toast({
+        title: "Preferences Updated",
+        description: "Your buyer preferences have been saved",
+      });
+    }
     setIsEditingPreferences(!isEditingPreferences);
   };
 
-  const updatePreference = (type: 'countries' | 'industries', index: number, field: 'name' | 'importance', value: string) => {
-    setPreferences(prev => {
-      const newPreferences = {...prev};
-      if (field === 'importance') {
-        // Ensure importance is one of the valid types
-        const importanceValue = value as 'high' | 'medium' | 'low';
-        newPreferences[type][index] = {
-          ...newPreferences[type][index],
-          [field]: importanceValue
-        };
-      } else {
-        newPreferences[type][index] = {
-          ...newPreferences[type][index],
-          [field]: value
-        };
-      }
-      return newPreferences;
-    });
+  // Handle adding new items
+  const handleAddItem = (
+    type: 'countries' | 'industries' | 'endUserSectors' | 'keywords' | 'potentialBuyers',
+    inputKey: 'country' | 'industry' | 'endUserSector' | 'keyword' | 'potentialBuyer'
+  ) => {
+    if (newInputs[inputKey] && newInputs[inputKey].trim() !== '') {
+      setPreferences(prev => ({
+        ...prev,
+        [type]: [...prev[type], { name: newInputs[inputKey], importance: 'N/A' as const }]
+      }));
+      
+      setNewInputs(prev => ({
+        ...prev,
+        [inputKey]: ''
+      }));
+    }
   };
 
-  const updateAcquisitionReason = (value: string) => {
+  // Handle removing items
+  const handleRemoveItem = (
+    type: 'countries' | 'industries' | 'endUserSectors' | 'keywords' | 'potentialBuyers',
+    name: string
+  ) => {
+    setPreferences(prev => ({
+      ...prev,
+      [type]: prev[type].filter(item => item.name !== name)
+    }));
+  };
+
+  // Handle importance change
+  const handleImportanceChange = (
+    type: 'countries' | 'industries' | 'endUserSectors' | 'keywords' | 'potentialBuyers',
+    name: string,
+    importance: 'high' | 'medium' | 'low' | 'N/A'
+  ) => {
+    setPreferences(prev => ({
+      ...prev,
+      [type]: prev[type].map(item => 
+        item.name === name ? { ...item, importance } : item
+      )
+    }));
+  };
+
+  // Handle acquisition reason change
+  const handleAcquisitionReasonChange = (value: string) => {
     setPreferences(prev => ({
       ...prev,
       acquisitionReason: value
     }));
   };
 
-  const updateShareholderPreference = (key: keyof typeof preferences.shareholderPreference, value: boolean) => {
+  // Handle shareholder preference change
+  const handleShareholderPreferenceChange = (key: keyof typeof preferences.shareholderPreference) => {
     setPreferences(prev => ({
       ...prev,
       shareholderPreference: {
         ...prev.shareholderPreference,
-        [key]: value
+        [key]: !prev.shareholderPreference[key]
       }
     }));
+  };
+
+  // Render preference item - whether in view or edit mode
+  const renderPreferenceItem = (
+    type: 'countries' | 'industries' | 'endUserSectors' | 'keywords' | 'potentialBuyers',
+    title: string,
+    description: string,
+    inputKey: 'country' | 'industry' | 'endUserSector' | 'keyword' | 'potentialBuyer',
+    placeholder: string
+  ) => {
+    const items = preferences[type];
+    
+    return (
+      <div className="mb-6 border-b border-gray-100 pb-6">
+        <div className="flex items-start mb-2">
+          <div className="flex-1">
+            <h4 className="text-sm font-semibold text-blueknight-700">{title}</h4>
+            <p className="text-xs text-gray-500">{description}</p>
+          </div>
+          <div className="text-sm font-medium">Importance</div>
+        </div>
+        
+        {/* Items list */}
+        {items.length > 0 && (
+          <div className="space-y-2 mb-3">
+            {items.map((item, index) => (
+              <div key={index} className="flex items-center justify-between">
+                <span className="text-sm text-gray-700">{item.name}</span>
+                <div className="flex items-center gap-3">
+                  {isEditingPreferences ? (
+                    <>
+                      <Select 
+                        value={item.importance} 
+                        onValueChange={(value) => handleImportanceChange(type, item.name, value as 'high' | 'medium' | 'low' | 'N/A')}
+                      >
+                        <SelectTrigger className="w-24 h-8 text-xs">
+                          <SelectValue placeholder="Importance" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {importanceOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value} className="text-xs">
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItem(type, item.name)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <ChevronUp className="h-4 w-4" />
+                      </button>
+                    </>
+                  ) : (
+                    <Badge variant="outline" className={`
+                      text-xs
+                      ${item.importance === 'high' ? 'bg-red-50 text-red-700 border-red-200' : ''}
+                      ${item.importance === 'medium' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : ''}
+                      ${item.importance === 'low' ? 'bg-green-50 text-green-700 border-green-200' : ''}
+                      ${item.importance === 'N/A' ? 'bg-gray-50 text-gray-700 border-gray-200' : ''}
+                    `}>
+                      {item.importance}
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+        
+        {/* Add new item input - only visible in edit mode */}
+        {isEditingPreferences && (
+          <div className="flex items-center gap-2">
+            <Input
+              placeholder={placeholder}
+              value={newInputs[inputKey]}
+              onChange={(e) => setNewInputs(prev => ({ ...prev, [inputKey]: e.target.value }))}
+              className="text-sm h-9"
+            />
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm"
+              onClick={() => handleAddItem(type, inputKey)}
+              className="flex items-center justify-center w-9 h-9 p-0 min-w-0"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
     <div className="animate-fade-in space-y-8 w-full relative">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-        <div className="flex justify-between items-start">
+        <div className="flex justify-between items-start mb-6">
           <div>
             <h1 className="text-2xl font-bold text-blueknight-800">{projectTitle}</h1>
           </div>
@@ -125,116 +291,165 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           </div>
         </div>
         
-        {/* Editable Buyer Preferences Section */}
-        <div className="mt-6 pt-6 border-t border-gray-100">
-          <h3 className="text-sm font-medium text-gray-500 mb-4">Buyer Preferences</h3>
-          {isEditingPreferences ? (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {/* Countries - Editable */}
-              <div>
-                <h4 className="text-sm font-semibold text-blueknight-700 mb-2">Preferred Countries</h4>
-                <div className="space-y-2">
-                  {preferences.countries.map((country, index) => (
-                    <div key={index} className="flex flex-col gap-1">
-                      <input 
-                        type="text" 
-                        value={country.name} 
-                        onChange={(e) => updatePreference('countries', index, 'name', e.target.value)}
-                        className="text-sm border border-gray-300 rounded px-2 py-1"
-                      />
-                      <select 
-                        value={country.importance} 
-                        onChange={(e) => updatePreference('countries', index, 'importance', e.target.value)}
-                        className="text-xs border border-gray-300 rounded px-2 py-1"
-                      >
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
-                      </select>
-                    </div>
-                  ))}
+        {/* Buyer Preferences Section */}
+        <div className="mt-2">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-blueknight-800">Buyer Preference</h2>
+          </div>
+          
+          <div className="space-y-0">
+            {/* Countries */}
+            {renderPreferenceItem(
+              'countries',
+              'Country of buyer',
+              'Enter as many countries as you want or use \'Any\'',
+              'country',
+              'Add country or \'Any\''
+            )}
+            
+            {/* Industries */}
+            {renderPreferenceItem(
+              'industries',
+              'What industries should the buyer operate in',
+              'Start with most important or use \'Any\'',
+              'industry',
+              'Add industry or \'Any\''
+            )}
+            
+            {/* End-user sectors */}
+            {renderPreferenceItem(
+              'endUserSectors',
+              'What end-user sectors should the buyer serve',
+              'Start with most important or use \'Any\'',
+              'endUserSector',
+              'Add end-user sector or \'Any\''
+            )}
+            
+            {/* Keywords */}
+            {renderPreferenceItem(
+              'keywords',
+              'Sector keywords for the buyer',
+              'Provide 6 to 9 keywords',
+              'keyword',
+              'Add keyword'
+            )}
+            
+            {/* Acquisition reason */}
+            <div className="mb-6 border-b border-gray-100 pb-6">
+              <div className="flex items-start mb-2">
+                <div className="flex-1">
+                  <h4 className="text-sm font-semibold text-blueknight-700">Most likely reason for acquisition</h4>
+                  <p className="text-xs text-gray-500">Why would a buyer acquire this company?</p>
                 </div>
+                <div className="text-sm font-medium">Importance</div>
               </div>
               
-              {/* Industries - Editable */}
-              <div>
-                <h4 className="text-sm font-semibold text-blueknight-700 mb-2">Industry Focus</h4>
-                <div className="space-y-2">
-                  {preferences.industries.map((industry, index) => (
-                    <div key={index} className="flex flex-col gap-1">
-                      <input 
-                        type="text" 
-                        value={industry.name} 
-                        onChange={(e) => updatePreference('industries', index, 'name', e.target.value)}
-                        className="text-sm border border-gray-300 rounded px-2 py-1"
-                      />
-                      <select 
-                        value={industry.importance} 
-                        onChange={(e) => updatePreference('industries', index, 'importance', e.target.value)}
-                        className="text-xs border border-gray-300 rounded px-2 py-1"
-                      >
-                        <option value="high">High</option>
-                        <option value="medium">Medium</option>
-                        <option value="low">Low</option>
-                      </select>
-                    </div>
-                  ))}
+              {isEditingPreferences ? (
+                <div className="flex gap-2">
+                  <Select 
+                    value={preferences.acquisitionReason} 
+                    onValueChange={handleAcquisitionReasonChange}
+                  >
+                    <SelectTrigger className="w-full text-sm">
+                      <SelectValue placeholder="Select a reason" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {acquisitionReasons.map((reason) => (
+                        <SelectItem key={reason} value={reason} className="text-sm">
+                          {reason}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select defaultValue="N/A" disabled>
+                    <SelectTrigger className="w-24 h-9 text-xs">
+                      <SelectValue placeholder="Importance" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {importanceOptions.map((option) => (
+                        <SelectItem key={option.value} value={option.value} className="text-xs">
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+              ) : (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">{preferences.acquisitionReason}</span>
+                  <Badge variant="outline" className="text-xs bg-gray-50 text-gray-700 border-gray-200">
+                    N/A
+                  </Badge>
+                </div>
+              )}
+            </div>
+            
+            {/* Potential buyers */}
+            {renderPreferenceItem(
+              'potentialBuyers',
+              'Potential buyers',
+              'List companies that would be a good fit',
+              'potentialBuyer',
+              'Add potential buyer'
+            )}
+            
+            {/* Shareholders' acquirer preference */}
+            <div className="mb-6">
+              <div className="mb-2">
+                <h4 className="text-sm font-semibold text-blueknight-700">Shareholders' acquirer preference</h4>
               </div>
               
-              {/* Acquisition Reason - Editable */}
-              <div>
-                <h4 className="text-sm font-semibold text-blueknight-700 mb-2">Acquisition Reason</h4>
-                <textarea 
-                  value={preferences.acquisitionReason}
-                  onChange={(e) => updateAcquisitionReason(e.target.value)}
-                  className="text-sm border border-gray-300 rounded px-2 py-1 w-full"
-                  rows={3}
-                />
-              </div>
-              
-              {/* Shareholder Preference - Editable */}
-              <div>
-                <h4 className="text-sm font-semibold text-blueknight-700 mb-2">Acquirer Type</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="privateEquity" 
-                      checked={preferences.shareholderPreference.privateEquity}
-                      onCheckedChange={(checked) => updateShareholderPreference('privateEquity', checked as boolean)}
-                    />
-                    <label htmlFor="privateEquity" className="text-sm text-gray-700">Private Equity</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="peBacked" 
-                      checked={preferences.shareholderPreference.peBacked}
-                      onCheckedChange={(checked) => updateShareholderPreference('peBacked', checked as boolean)}
-                    />
-                    <label htmlFor="peBacked" className="text-sm text-gray-700">PE-Backed</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="strategicTrade" 
-                      checked={preferences.shareholderPreference.strategicTrade}
-                      onCheckedChange={(checked) => updateShareholderPreference('strategicTrade', checked as boolean)}
-                    />
-                    <label htmlFor="strategicTrade" className="text-sm text-gray-700">Strategic Trade</label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="noPreference" 
-                      checked={preferences.shareholderPreference.noPreference}
-                      onCheckedChange={(checked) => updateShareholderPreference('noPreference', checked as boolean)}
-                    />
-                    <label htmlFor="noPreference" className="text-sm text-gray-700">No Preference</label>
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="privateEquity" 
+                    checked={preferences.shareholderPreference.privateEquity}
+                    onCheckedChange={() => isEditingPreferences && handleShareholderPreferenceChange('privateEquity')}
+                    disabled={!isEditingPreferences}
+                  />
+                  <label htmlFor="privateEquity" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Private Equity
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="peBacked" 
+                    checked={preferences.shareholderPreference.peBacked}
+                    onCheckedChange={() => isEditingPreferences && handleShareholderPreferenceChange('peBacked')}
+                    disabled={!isEditingPreferences}
+                  />
+                  <label htmlFor="peBacked" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    PE-Backed
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="strategicTrade" 
+                    checked={preferences.shareholderPreference.strategicTrade}
+                    onCheckedChange={() => isEditingPreferences && handleShareholderPreferenceChange('strategicTrade')}
+                    disabled={!isEditingPreferences}
+                  />
+                  <label htmlFor="strategicTrade" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Strategic Trade
+                  </label>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <Checkbox 
+                    id="noPreference" 
+                    checked={preferences.shareholderPreference.noPreference}
+                    onCheckedChange={() => isEditingPreferences && handleShareholderPreferenceChange('noPreference')}
+                    disabled={!isEditingPreferences}
+                  />
+                  <label htmlFor="noPreference" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    No Preference
+                  </label>
                 </div>
               </div>
             </div>
-          ) : (
-            <BuyerPreferencesSection preferences={preferences} />
-          )}
+          </div>
         </div>
       </div>
       

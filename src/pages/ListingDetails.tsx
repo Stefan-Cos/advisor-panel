@@ -11,7 +11,6 @@ const ListingDetailsPage = () => {
   // Mock data - in a real app, fetch this based on the ID
   const listingData = {
     id: id || '1',
-    companyName: 'Tech Solutions Enterprise',
     projectTitle: 'Enterprise IT Solutions Company',
     revenue: '$10M - $50M',
     industry: 'Technology',
