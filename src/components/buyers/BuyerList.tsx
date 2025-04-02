@@ -1,6 +1,5 @@
-
-import React, { useState } from 'react';
-import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag, Plus, Check, Trash } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag, Plus, Check, Search } from 'lucide-react';
 import BuyerCard from './BuyerCard';
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -23,6 +22,16 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BuyerListProps {
   listingId: string;
@@ -290,12 +299,46 @@ const peBuyers = [
   }
 ];
 
+interface FilterState {
+  hq: string[];
+  employees: string;
+  revenue: string;
+  cash: string;
+  peBacked: string;
+  public: string;
+  minScore: string;
+  sortBy: string;
+}
+
+interface KeywordSearch {
+  text: string;
+  operator: 'AND' | 'OR' | 'NOT';
+  field: 'offering' | 'sector' | 'customers' | 'keywords';
+}
+
 const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const { toast } = useToast();
+  
+  const [filters, setFilters] = useState<FilterState>({
+    hq: [],
+    employees: '',
+    revenue: '',
+    cash: '',
+    peBacked: '',
+    public: '',
+    minScore: '0',
+    sortBy: 'fit'
+  });
+  
+  const [keywordSearches, setKeywordSearches] = useState<KeywordSearch[]>([
+    { text: '', operator: 'AND', field: 'offering' }
+  ]);
+  
+  const [filteredBuyers, setFilteredBuyers] = useState<any[]>([]);
   
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
@@ -309,16 +352,176 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   
   const buyers = activeTab === 'strategic' ? strategicBuyers : peBuyers;
   
+  useEffect(() => {
+    // Apply filters whenever filters change or active tab changes
+    applyFilters();
+  }, [filters, keywordSearches, activeTab]);
+  
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
   
-  const handleFilterApply = () => {
+  const handleFilterChange = (field: keyof FilterState, value: any) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
+  };
+  
+  const handleHQFilterChange = (country: string) => {
+    setFilters(prev => {
+      const currentHQs = [...prev.hq];
+      if (currentHQs.includes(country)) {
+        return { ...prev, hq: currentHQs.filter(c => c !== country) };
+      } else {
+        return { ...prev, hq: [...currentHQs, country] };
+      }
+    });
+  };
+  
+  const handleKeywordSearchChange = (index: number, field: keyof KeywordSearch, value: any) => {
+    setKeywordSearches(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+  
+  const addKeywordSearch = () => {
+    setKeywordSearches(prev => [
+      ...prev, 
+      { text: '', operator: 'AND', field: 'offering' }
+    ]);
+  };
+  
+  const removeKeywordSearch = (index: number) => {
+    setKeywordSearches(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const applyFilters = () => {
+    let filtered = [...buyers];
+    
+    // Filter by HQ if any are selected
+    if (filters.hq.length > 0) {
+      filtered = filtered.filter(buyer => filters.hq.includes(buyer.location));
+    }
+    
+    // Filter by employees
+    if (filters.employees) {
+      const [min, max] = filters.employees.split('-').map(Number);
+      filtered = filtered.filter(buyer => {
+        if (!max) return buyer.employees >= min;
+        return buyer.employees >= min && buyer.employees <= max;
+      });
+    }
+    
+    // Filter by min score
+    if (filters.minScore && Number(filters.minScore) > 0) {
+      filtered = filtered.filter(buyer => buyer.matchingScore >= Number(filters.minScore));
+    }
+    
+    // Filter by PE/VC backed
+    if (filters.peBacked) {
+      const isPeBacked = filters.peBacked === 'yes';
+      // For demo purposes, assume even IDs are PE-backed
+      filtered = filtered.filter(buyer => {
+        // This is a placeholder. In a real app, you'd use actual PE-backed data
+        const buyerIsPeBacked = parseInt(buyer.id.replace('buyer', '')) % 2 === 0;
+        return buyerIsPeBacked === isPeBacked;
+      });
+    }
+    
+    // Filter by public status
+    if (filters.public) {
+      const isPublic = filters.public === 'yes';
+      // For demo purposes, assume buyers with IDs divisible by 3 are public
+      filtered = filtered.filter(buyer => {
+        // This is a placeholder. In a real app, you'd use actual public status data
+        const buyerIsPublic = parseInt(buyer.id.replace('buyer', '')) % 3 === 0;
+        return buyerIsPublic === isPublic;
+      });
+    }
+    
+    // Apply keyword searches
+    if (keywordSearches.length > 0) {
+      keywordSearches.forEach(ks => {
+        if (!ks.text.trim()) return; // Skip empty searches
+        
+        const searchTerms = ks.text.toLowerCase().trim().split(/\s+/);
+        
+        if (ks.operator === 'AND') {
+          filtered = filtered.filter(buyer => {
+            let field = '';
+            switch (ks.field) {
+              case 'offering': field = buyer.offering?.toLowerCase() || ''; break;
+              case 'sector': field = buyer.sector?.toLowerCase() || ''; break;
+              case 'customers': field = buyer.customers?.toLowerCase() || ''; break;
+              case 'keywords': 
+                field = buyer.keywords ? buyer.keywords.join(' ').toLowerCase() : '';
+                break;
+            }
+            return searchTerms.every(term => field.includes(term));
+          });
+        } else if (ks.operator === 'OR') {
+          filtered = filtered.filter(buyer => {
+            let field = '';
+            switch (ks.field) {
+              case 'offering': field = buyer.offering?.toLowerCase() || ''; break;
+              case 'sector': field = buyer.sector?.toLowerCase() || ''; break;
+              case 'customers': field = buyer.customers?.toLowerCase() || ''; break;
+              case 'keywords': 
+                field = buyer.keywords ? buyer.keywords.join(' ').toLowerCase() : '';
+                break;
+            }
+            return searchTerms.some(term => field.includes(term));
+          });
+        } else if (ks.operator === 'NOT') {
+          filtered = filtered.filter(buyer => {
+            let field = '';
+            switch (ks.field) {
+              case 'offering': field = buyer.offering?.toLowerCase() || ''; break;
+              case 'sector': field = buyer.sector?.toLowerCase() || ''; break;
+              case 'customers': field = buyer.customers?.toLowerCase() || ''; break;
+              case 'keywords': 
+                field = buyer.keywords ? buyer.keywords.join(' ').toLowerCase() : '';
+                break;
+            }
+            return !searchTerms.some(term => field.includes(term));
+          });
+        }
+      });
+    }
+    
+    // Sort results
+    if (filters.sortBy === 'fit') {
+      filtered.sort((a, b) => b.matchingScore - a.matchingScore);
+    } else if (filters.sortBy === 'name-asc') {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (filters.sortBy === 'name-desc') {
+      filtered.sort((a, b) => b.name.localeCompare(a.name));
+    }
+    
+    setFilteredBuyers(filtered);
     toast({
       title: "Filters Applied",
-      description: "Your search filters have been applied",
+      description: `Showing ${filtered.length} of ${buyers.length} buyers`,
     });
+  };
+  
+  const resetFilters = () => {
+    setFilters({
+      hq: [],
+      employees: '',
+      revenue: '',
+      cash: '',
+      peBacked: '',
+      public: '',
+      minScore: '0',
+      sortBy: 'fit'
+    });
+    setKeywordSearches([{ text: '', operator: 'AND', field: 'offering' }]);
     setShowFilters(false);
+    toast({
+      title: "Filters Reset",
+      description: "All filters have been cleared",
+    });
   };
 
   const getMATrackRecordColor = (record: string) => {
@@ -342,29 +545,13 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
     );
   };
 
-  const formatReportDate = (dateString: string) => {
-    try {
-      const date = new Date(dateString);
-      return new Intl.DateTimeFormat('en', { month: 'short', year: '2-digit' }).format(date);
-    } catch (error) {
-      console.error("Error formatting date:", error);
-      return "N/A";
-    }
-  };
+  // Get unique countries from the buyers list
+  const uniqueCountries = Array.from(new Set(buyers.map(buyer => buyer.location)));
 
-  const handleAIAssistant = () => {
-    toast({
-      title: "AI Assistant",
-      description: "AI is analyzing buyer data to provide personalized recommendations...",
-    });
-  };
-
-  const handleKeywords = () => {
-    toast({
-      title: "Keywords Management",
-      description: "Keyword management feature opened",
-    });
-  };
+  useEffect(() => {
+    // Initialize filtered buyers when component mounts
+    setFilteredBuyers(buyers);
+  }, [buyers]);
 
   return (
     <div className="animate-fade-in">
@@ -397,87 +584,94 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
             <Popover>
               <PopoverTrigger asChild>
                 <button className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                  <UserCircle className="h-4 w-4 text-purple-500" />
-                  <span>Buyer Preferences</span>
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80 p-4">
-                <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-gray-900">Buyer Preferences</h3>
-                  <div className="space-y-2">
-                    <div>
-                      <label className="text-xs font-medium text-gray-700">Industry Focus</label>
-                      <Input
-                        type="text"
-                        placeholder="e.g., Healthcare, Technology"
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-gray-700">Deal Size</label>
-                      <Input
-                        type="text"
-                        placeholder="e.g., $10M - $50M"
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-medium text-gray-700">Geographic Focus</label>
-                      <Input
-                        type="text"
-                        placeholder="e.g., North America, Europe"
-                        className="h-8 text-sm"
-                      />
-                    </div>
-                  </div>
-                  <button className="w-full px-3 py-2 text-sm font-medium bg-purple-500 text-white rounded-md hover:bg-purple-600">
-                    Save Preferences
-                  </button>
-                </div>
-              </PopoverContent>
-            </Popover>
-            
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
                   <Tag className="h-4 w-4 text-green-500" />
                   <span>Keywords</span>
                 </button>
               </PopoverTrigger>
-              <PopoverContent className="w-80 p-4">
+              <PopoverContent className="w-96 p-4 bg-white">
                 <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-gray-900">Manage Keywords</h3>
-                  <div className="space-y-2">
-                    <Input
-                      type="text"
-                      placeholder="Add keywords..."
-                      className="h-8 text-sm"
-                    />
-                    <div className="flex flex-wrap gap-2 pt-2">
-                      <span className="inline-flex items-center px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                        Healthcare 
-                        <button className="ml-1 text-blue-500 hover:text-blue-700">×</button>
-                      </span>
-                      <span className="inline-flex items-center px-2 py-1 text-xs bg-green-50 text-green-700 rounded-full">
-                        Software 
-                        <button className="ml-1 text-green-500 hover:text-green-700">×</button>
-                      </span>
-                      <span className="inline-flex items-center px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded-full">
-                        SaaS 
-                        <button className="ml-1 text-purple-500 hover:text-purple-700">×</button>
-                      </span>
-                      <span className="inline-flex items-center px-2 py-1 text-xs bg-yellow-50 text-yellow-700 rounded-full">
-                        B2B 
-                        <button className="ml-1 text-yellow-500 hover:text-yellow-700">×</button>
-                      </span>
+                  <h3 className="text-sm font-semibold text-gray-900">Boolean Keyword Search</h3>
+                  <p className="text-xs text-gray-500">
+                    Search across Offering, Sectors, Customer Types, and Keywords fields using boolean operators.
+                  </p>
+                  
+                  {keywordSearches.map((search, index) => (
+                    <div key={index} className="space-y-2 pt-2 border-t border-gray-100 first:border-0 first:pt-0">
+                      <div className="flex gap-2 items-center">
+                        {index > 0 && (
+                          <Select
+                            value={search.operator}
+                            onValueChange={(value: any) => handleKeywordSearchChange(index, 'operator', value)}
+                          >
+                            <SelectTrigger className="w-20">
+                              <SelectValue placeholder="AND" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="AND">AND</SelectItem>
+                              <SelectItem value="OR">OR</SelectItem>
+                              <SelectItem value="NOT">NOT</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                        
+                        <Select
+                          value={search.field}
+                          onValueChange={(value: any) => handleKeywordSearchChange(index, 'field', value)}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue placeholder="Field" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="offering">Offering</SelectItem>
+                            <SelectItem value="sector">Sectors</SelectItem>
+                            <SelectItem value="customers">Customer Types</SelectItem>
+                            <SelectItem value="keywords">Keywords</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        
+                        <div className="flex-1 relative">
+                          <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                            <Search className="h-4 w-4 text-gray-400" />
+                          </div>
+                          <Input
+                            value={search.text}
+                            onChange={(e) => handleKeywordSearchChange(index, 'text', e.target.value)}
+                            placeholder="Enter search terms..."
+                            className="pl-8"
+                          />
+                        </div>
+                        
+                        {keywordSearches.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeKeywordSearch(index)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <span className="sr-only">Remove</span>
+                            <div className="h-4 w-4">×</div>
+                          </Button>
+                        )}
+                      </div>
                     </div>
+                  ))}
+                  
+                  <div className="flex justify-between">
+                    <Button
+                      variant="outline"
+                      onClick={addKeywordSearch}
+                      className="text-xs"
+                    >
+                      + Add Condition
+                    </Button>
+                    
+                    <Button
+                      onClick={applyFilters}
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      Apply Search
+                    </Button>
                   </div>
-                  <button
-                    onClick={handleKeywords}
-                    className="w-full px-3 py-2 text-sm font-medium bg-green-500 text-white rounded-md hover:bg-green-600"
-                  >
-                    Apply Keywords
-                  </button>
                 </div>
               </PopoverContent>
             </Popover>
@@ -507,477 +701,63 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
               </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              {/* HQ Filter Section */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Country
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  HQ Location
                 </label>
-                <select className="input-field">
-                  <option value="">All Countries</option>
-                  <option value="USA">USA</option>
-                  <option value="UK">UK</option>
-                  <option value="Germany">Germany</option>
-                  <option value="Canada">Canada</option>
-                </select>
+                <div className="space-y-2 max-h-40 overflow-y-auto p-2 border border-gray-200 rounded-md bg-white">
+                  {uniqueCountries.map((country) => (
+                    <div key={country} className="flex items-center">
+                      <Checkbox
+                        id={`hq-${country}`}
+                        checked={filters.hq.includes(country)}
+                        onCheckedChange={() => handleHQFilterChange(country)}
+                      />
+                      <label htmlFor={`hq-${country}`} className="ml-2 text-sm">
+                        {country}
+                      </label>
+                    </div>
+                  ))}
+                </div>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sector
-                </label>
-                <select className="input-field">
-                  <option value="">All Sectors</option>
-                  <option value="Medtech">Medtech</option>
-                  <option value="Life sciences">Life Sciences</option>
-                  <option value="Healthcare">Healthcare</option>
-                  <option value="Technology">Technology</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Minimum Fit Score
-                </label>
-                <select className="input-field">
-                  <option value="0">Any</option>
-                  <option value="60">60%+</option>
-                  <option value="70">70%+</option>
-                  <option value="80">80%+</option>
-                  <option value="90">90%+</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sort By
-                </label>
-                <select className="input-field">
-                  <option value="fit">Fit Score (High to Low)</option>
-                  <option value="name-asc">Name (A-Z)</option>
-                  <option value="name-desc">Name (Z-A)</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={handleFilterApply}
-                className="px-4 py-2 bg-blueknight-500 text-white rounded-md text-sm font-medium hover:bg-blueknight-600"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        )}
-        
-        {activeTab === 'strategic' ? (
-          <div className="relative overflow-hidden">
-            <ScrollArea className="h-[600px] w-full" orientation="both">
-              <div className="min-w-max">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-blueknight-500">
-                      <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">Company Name</TableHead>
-                      <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
-                      <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
-                      <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                      <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
-                      <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
-                      <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
-                      <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
-                      <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {strategicBuyers.map((buyer) => (
-                      <React.Fragment key={buyer.id}>
-                        <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-                          <TableCell 
-                            className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
-                            style={{position: 'sticky', left: 0}}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <div className="flex items-center gap-2">
-                                  <span>{buyer.name}</span>
-                                </div>
-                                <div className="flex items-center mt-1 gap-2">
-                                  <Collapsible 
-                                    open={expandedRationales.includes(buyer.id)}
-                                    onOpenChange={() => toggleRationale(buyer.id)}
-                                  >
-                                    <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                                      Rationale
-                                      {expandedRationales.includes(buyer.id) ? (
-                                        <ChevronUp className="h-3 w-3 ml-1" />
-                                      ) : (
-                                        <ChevronDown className="h-3 w-3 ml-1" />
-                                      )}
-                                    </CollapsibleTrigger>
-                                  </Collapsible>
-                                  
-                                  <button
-                                    onClick={() => handleAddToSaved(buyer.id)}
-                                    disabled={savedBuyers.includes(buyer.id)}
-                                    className={`flex items-center justify-center p-1 rounded-full ${
-                                      savedBuyers.includes(buyer.id)
-                                        ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                                        : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
-                                    }`}
-                                    title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-                                  >
-                                    {savedBuyers.includes(buyer.id) ? (
-                                      <Check className="h-3.5 w-3.5" />
-                                    ) : (
-                                      <Plus className="h-3.5 w-3.5" />
-                                    )}
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{buyer.location}</TableCell>
-                          <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-                          <TableCell>{buyer.description}</TableCell>
-                          <TableCell>{buyer.offering}</TableCell>
-                          <TableCell>{buyer.sector}</TableCell>
-                          <TableCell>{buyer.customers}</TableCell>
-                          <TableCell>
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
-                              {buyer.maTrackRecord}
-                            </span>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center">
-                              <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
-                                <div
-                                  className="bg-blueknight-500 h-2 rounded-full"
-                                  style={{ width: `${buyer.matchingScore}%` }}
-                                />
-                              </div>
-                              <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                        {expandedRationales.includes(buyer.id) && (
-                          <TableRow className="bg-green-50">
-                            <TableCell colSpan={9} className="p-0">
-                              <div className="p-4">
-                                <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
-                                  <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
-                                      <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
-                                    </div>
-                                  
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
-                                      <div className="flex flex-wrap gap-1 mt-1">
-                                        {buyer.primaryIndustries?.map((industry, i) => (
-                                          <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                                            {industry}
-                                          </span>
-                                        )) || "Not provided"}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
-                                      <div className="flex flex-wrap gap-1 mt-1">
-                                        {buyer.keywords?.map((keyword, i) => (
-                                          <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                            {keyword}
-                                          </span>
-                                        )) || "Not provided"}
-                                      </div>
-                                    </div>
-                                  
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
-                                      <p className="text-sm text-gray-600">
-                                        {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
-                                    <div>
-                                      <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
-                                      <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-xs text-gray-500 mb-1">Website</h4>
-                                      <p className="text-sm font-medium text-blue-500 hover:underline cursor-pointer">Visit</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
-                                      <p className="text-sm font-medium">{buyer.location}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
-                                      <p className="text-sm font-medium">{buyer.employees.toLocaleString()}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
-                                      <p className="text-sm font-medium">$125.5</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
-                                      <p className="text-sm font-medium">$45.2</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
-                                      <p className="text-sm font-medium">Mar 24</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
-                                      <p className="text-sm font-medium">No</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-xs text-gray-500 mb-1">Public</h4>
-                                      <p className="text-sm font-medium">Yes</p>
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-                                  <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
-                                  <div className="space-y-4">
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Previous Transactions</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.previousTransactions}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </ScrollArea>
-          </div>
-        ) : (
-          <div className="relative overflow-hidden">
-            <ScrollArea className="h-[600px] w-full" orientation="both">
-              <div className="min-w-max">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-blueknight-500">
-                      <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">Fund Name</TableHead>
-                      <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
-                      <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                      <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
-                      <TableHead className="text-white font-medium w-[250px]">Previous Acquisitions</TableHead>
-                      <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {peBuyers.map((buyer) => (
-                      <React.Fragment key={buyer.id}>
-                        <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-                          <TableCell 
-                            className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
-                          >
-                            <div>
-                              <div>{buyer.name}</div>
-                              <div className="flex items-center mt-1 gap-2">
-                                <Collapsible 
-                                  open={expandedRationales.includes(buyer.id)}
-                                  onOpenChange={() => toggleRationale(buyer.id)}
-                                >
-                                  <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                                    Rationale
-                                    {expandedRationales.includes(buyer.id) ? (
-                                      <ChevronUp className="h-3 w-3 ml-1" />
-                                    ) : (
-                                      <ChevronDown className="h-3 w-3 ml-1" />
-                                    )}
-                                  </CollapsibleTrigger>
-                                </Collapsible>
-                                
-                                <button
-                                  onClick={() => handleAddToSaved(buyer.id)}
-                                  disabled={savedBuyers.includes(buyer.id)}
-                                  className={`flex items-center justify-center p-1 rounded-full ${
-                                    savedBuyers.includes(buyer.id)
-                                      ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                                      : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
-                                  }`}
-                                  title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-                                >
-                                  {savedBuyers.includes(buyer.id) ? (
-                                    <Check className="h-3.5 w-3.5" />
-                                  ) : (
-                                    <Plus className="h-3.5 w-3.5" />
-                                  )}
-                                </button>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell>{buyer.location}</TableCell>
-                          <TableCell>{buyer.description}</TableCell>
-                          <TableCell>{buyer.sector}</TableCell>
-                          <TableCell>{buyer.previousAcquisitions}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center">
-                              <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
-                                <div
-                                  className="bg-blueknight-500 h-2 rounded-full"
-                                  style={{ width: `${buyer.matchingScore}%` }}
-                                />
-                              </div>
-                              <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                        
-                        {expandedRationales.includes(buyer.id) && (
-                          <TableRow className="bg-green-50">
-                            <TableCell colSpan={6} className="p-0">
-                              <div className="p-4">
-                                <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
-                                  <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Fund Information</h3>
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
-                                      <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
-                                    </div>
-                                  
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
-                                      <div className="flex flex-wrap gap-1 mt-1">
-                                        {buyer.primaryIndustries?.map((industry, i) => (
-                                          <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                                            {industry}
-                                          </span>
-                                        )) || "Not provided"}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Type</h4>
-                                      <div className="flex flex-wrap gap-1">
-                                        {buyer.investmentType?.map((type, i) => (
-                                          <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                            {type}
-                                          </span>
-                                        )) || "Not provided"}
-                                      </div>
-                                    </div>
-                                    
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Geography</h4>
-                                      <div className="flex flex-wrap gap-1">
-                                        {buyer.geography?.map((geo, i) => (
-                                          <span key={i} className="px-2 py-1 text-xs bg-cyan-50 text-cyan-700 rounded-full">
-                                            {geo}
-                                          </span>
-                                        )) || "Not provided"}
-                                      </div>
-                                    </div>
-                                    
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Size</h4>
-                                      <p className="text-sm text-gray-600">${buyer.investmentSize}</p>
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Revenue ($M)</h4>
-                                      <p className="text-sm text-gray-600">{buyer.revenue}</p>
-                                    </div>
-                                    
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">EBITDA ($M)</h4>
-                                      <p className="text-sm text-gray-600">{buyer.ebitda}</p>
-                                    </div>
-                                    
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Focus</h4>
-                                      <p className="text-sm text-gray-600">{buyer.industryFocus}</p>
-                                    </div>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Preferences</h4>
-                                    <div className="flex flex-wrap gap-1">
-                                      {buyer.industryPreferences?.map((pref, i) => (
-                                        <span key={i} className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded-full">
-                                          {pref}
-                                        </span>
-                                      )) || "Not provided"}
-                                    </div>
-                                  </div>
-                                </div>
-                                
-                                <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-                                  <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
-                                  <div className="space-y-4">
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Previous Transactions</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.previousTransactions}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
-                                    </div>
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
-                                      <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </ScrollArea>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default BuyerList;
+              {/* Numeric Filters Section */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Employees
+                  </label>
+                  <Select
+                    value={filters.employees}
+                    onValueChange={(value) => handleFilterChange('employees', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Any</SelectItem>
+                      <SelectItem value="0-500">0-500</SelectItem>
+                      <SelectItem value="500-1000">500-1000</SelectItem>
+                      <SelectItem value="1000-5000">1000-5000</SelectItem>
+                      <SelectItem value="5000-">5000+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Revenue
+                  </label>
+                  <Select
+                    value={filters.revenue}
+                    onValueChange={(value) => handleFilterChange('revenue', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Any</SelectItem>
+                      <SelectItem value="0-10">$0-10M</SelectItem>
+                      <SelectItem value="10-50">$10
