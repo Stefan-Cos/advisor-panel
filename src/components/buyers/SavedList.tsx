@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { ChevronDown, ChevronUp, Trash } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash, Search, Filter } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -15,6 +15,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import BuyerFilters, { FilterState, KeywordSearch } from './BuyerFilters';
+import BuyerTableHeader from './BuyerTableHeader';
 
 interface SavedListProps {
   listingId: string;
@@ -248,9 +250,32 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
   const [strategicBuyers, setStrategicBuyers] = useState<SavedBuyer[]>(sampleStrategicBuyers);
   const [peBuyers, setPEBuyers] = useState<SavedBuyer[]>(samplePEBuyers);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filteredBuyers, setFilteredBuyers] = useState<SavedBuyer[]>([]);
   const { toast } = useToast();
   
+  const [filters, setFilters] = useState<FilterState>({
+    hq: [],
+    employees: '',
+    revenue: '',
+    cash: '',
+    peBacked: '',
+    public: '',
+    minScore: '0',
+    sortBy: 'fit'
+  });
+  
+  const [keywordSearches, setKeywordSearches] = useState<KeywordSearch[]>([
+    { text: '', operator: 'AND', field: 'offering' }
+  ]);
+  
   const buyers = activeTab === 'strategic' ? strategicBuyers : peBuyers;
+  
+  useEffect(() => {
+    setFilteredBuyers(buyers);
+  }, [buyers, activeTab]);
+  
+  const uniqueCountries = Array.from(new Set(buyers.map(buyer => buyer.location)));
   
   const handleRankChange = (id: string, rank: number | null) => {
     if (activeTab === 'strategic') {
@@ -304,6 +329,196 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
     );
   };
   
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+  
+  const handleFilterChange = (field: keyof FilterState, value: any) => {
+    setFilters(prev => ({ ...prev, [field]: value }));
+  };
+  
+  const handleHQFilterChange = (country: string) => {
+    setFilters(prev => {
+      const currentHQs = [...prev.hq];
+      if (currentHQs.includes(country)) {
+        return { ...prev, hq: currentHQs.filter(c => c !== country) };
+      } else {
+        return { ...prev, hq: [...currentHQs, country] };
+      }
+    });
+  };
+  
+  const handleKeywordSearchChange = (index: number, field: keyof KeywordSearch, value: any) => {
+    setKeywordSearches(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+  
+  const addKeywordSearch = () => {
+    setKeywordSearches(prev => [
+      ...prev, 
+      { text: '', operator: 'AND', field: 'offering' }
+    ]);
+  };
+  
+  const removeKeywordSearch = (index: number) => {
+    setKeywordSearches(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const applyFilters = () => {
+    let filtered = [...buyers];
+    
+    if (filters.hq.length > 0) {
+      filtered = filtered.filter(buyer => filters.hq.includes(buyer.location));
+    }
+    
+    if (filters.employees && activeTab === 'strategic') {
+      const [min, max] = filters.employees.split('-').map(Number);
+      filtered = filtered.filter(buyer => {
+        const employees = 'employees' in buyer ? buyer.employees : 0;
+        if (!max) return employees >= min;
+        return employees >= min && employees <= max;
+      });
+    }
+    
+    if (filters.minScore && Number(filters.minScore) > 0) {
+      filtered = filtered.filter(buyer => buyer.matchingScore >= Number(filters.minScore));
+    }
+    
+    if (filters.peBacked) {
+      const isPeBacked = filters.peBacked === 'yes';
+      filtered = filtered.filter(buyer => {
+        const buyerIsPeBacked = buyer.type === 'pe' || (buyer.type === 'strategic' && buyer.isPEVCBacked === true);
+        return buyerIsPeBacked === isPeBacked;
+      });
+    }
+    
+    if (filters.public) {
+      const isPublic = filters.public === 'yes';
+      filtered = filtered.filter(buyer => {
+        const buyerIsPublic = buyer.type === 'strategic' && buyer.isPublic === true;
+        return buyerIsPublic === isPublic;
+      });
+    }
+    
+    if (keywordSearches.length > 0) {
+      keywordSearches.forEach(ks => {
+        if (!ks.text.trim()) return;
+        
+        const searchTerms = ks.text.toLowerCase().trim().split(/\s+/);
+        
+        if (ks.operator === 'AND') {
+          filtered = filtered.filter(buyer => {
+            let field = '';
+            switch (ks.field) {
+              case 'offering': 
+                field = buyer.rationale.offering.toLowerCase(); 
+                break;
+              case 'sector': 
+                field = buyer.sector.toLowerCase(); 
+                break;
+              case 'customers': 
+                field = buyer.rationale.customers.toLowerCase(); 
+                break;
+              case 'keywords': 
+                field = buyer.keywords ? buyer.keywords.join(' ').toLowerCase() : '';
+                break;
+            }
+            return searchTerms.every(term => field.includes(term));
+          });
+        } else if (ks.operator === 'OR') {
+          filtered = filtered.filter(buyer => {
+            let field = '';
+            switch (ks.field) {
+              case 'offering': 
+                field = buyer.rationale.offering.toLowerCase(); 
+                break;
+              case 'sector': 
+                field = buyer.sector.toLowerCase(); 
+                break;
+              case 'customers': 
+                field = buyer.rationale.customers.toLowerCase(); 
+                break;
+              case 'keywords': 
+                field = buyer.keywords ? buyer.keywords.join(' ').toLowerCase() : '';
+                break;
+            }
+            return searchTerms.some(term => field.includes(term));
+          });
+        } else if (ks.operator === 'NOT') {
+          filtered = filtered.filter(buyer => {
+            let field = '';
+            switch (ks.field) {
+              case 'offering': 
+                field = buyer.rationale.offering.toLowerCase(); 
+                break;
+              case 'sector': 
+                field = buyer.sector.toLowerCase(); 
+                break;
+              case 'customers': 
+                field = buyer.rationale.customers.toLowerCase(); 
+                break;
+              case 'keywords': 
+                field = buyer.keywords ? buyer.keywords.join(' ').toLowerCase() : '';
+                break;
+            }
+            return !searchTerms.some(term => field.includes(term));
+          });
+        }
+      });
+    }
+    
+    if (filters.sortBy === 'fit') {
+      filtered.sort((a, b) => b.matchingScore - a.matchingScore);
+    } else if (filters.sortBy === 'name-asc') {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (filters.sortBy === 'name-desc') {
+      filtered.sort((a, b) => b.name.localeCompare(a.name));
+    }
+    
+    setFilteredBuyers(filtered);
+    toast({
+      title: "Filters Applied",
+      description: `Showing ${filtered.length} of ${buyers.length} buyers`,
+    });
+  };
+  
+  const resetFilters = () => {
+    setFilters({
+      hq: [],
+      employees: '',
+      revenue: '',
+      cash: '',
+      peBacked: '',
+      public: '',
+      minScore: '0',
+      sortBy: 'fit'
+    });
+    setKeywordSearches([{ text: '', operator: 'AND', field: 'offering' }]);
+    setShowFilters(false);
+    setFilteredBuyers(buyers);
+    toast({
+      title: "Filters Reset",
+      description: "All filters have been cleared",
+    });
+  };
+
+  const openSearchPopover = (field: keyof KeywordSearch['field']) => {
+    const existingSearchIndex = keywordSearches.findIndex(ks => ks.field === field);
+    
+    if (existingSearchIndex >= 0) {
+    } else {
+      setKeywordSearches(prev => [
+        ...prev,
+        { text: '', operator: 'AND', field }
+      ]);
+    }
+    
+    setShowFilters(true);
+  };
+
   const formatReportDate = (dateString: string) => {
     try {
       const date = new Date(dateString);
@@ -330,7 +545,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
   return (
     <div className="animate-fade-in">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center mb-6">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex space-x-4">
             <button 
               onClick={() => setActiveTab('strategic')}
@@ -353,9 +568,30 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
               PE Funds
             </button>
           </div>
+          
+          <BuyerFilters
+            filters={filters}
+            keywordSearches={keywordSearches}
+            showFilters={showFilters}
+            uniqueCountries={uniqueCountries}
+            onToggleFilters={toggleFilters}
+            onFilterChange={handleFilterChange}
+            onHQFilterChange={handleHQFilterChange}
+            onKeywordSearchChange={handleKeywordSearchChange}
+            onAddKeywordSearch={addKeywordSearch}
+            onRemoveKeywordSearch={removeKeywordSearch}
+            applyFilters={applyFilters}
+            resetFilters={resetFilters}
+          />
         </div>
         
-        {buyers.length === 0 ? (
+        {showFilters && (
+          <div className="mb-6">
+            {/* Filters are now handled by the BuyerFilters component */}
+          </div>
+        )}
+        
+        {filteredBuyers.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-gray-500">No saved buyers yet. Add buyers from the Buyer List.</p>
           </div>
@@ -369,27 +605,95 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                       {activeTab === 'strategic' ? (
                         <>
                           <TableHead className="text-white font-medium w-[180px] sticky left-0 z-20 bg-blueknight-500">Company Name</TableHead>
-                          <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
-                          <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
+                          <BuyerTableHeader 
+                            title="HQ" 
+                            width="120px" 
+                            sortable={true} 
+                            onSort={() => {
+                              handleFilterChange('sortBy', 
+                                filters.sortBy === 'name-asc' ? 'name-desc' : 'name-asc'
+                              );
+                              applyFilters();
+                            }}
+                            sortDirection={
+                              filters.sortBy === 'name-asc' ? 'asc' : 
+                              filters.sortBy === 'name-desc' ? 'desc' : null
+                            }
+                          />
+                          <BuyerTableHeader 
+                            title="Employees" 
+                            width="120px" 
+                            sortable={true}
+                            onSort={() => {
+                              setShowFilters(true);
+                            }}
+                          />
                           <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                          <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
-                          <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
-                          <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
+                          <BuyerTableHeader 
+                            title="Offering" 
+                            width="250px"
+                            searchable={true}
+                            onSearch={openSearchPopover}
+                            searchField="offering"
+                          />
+                          <BuyerTableHeader 
+                            title="Sectors" 
+                            width="180px"
+                            searchable={true}
+                            onSearch={openSearchPopover}
+                            searchField="sector"
+                          />
+                          <BuyerTableHeader 
+                            title="Customer Types" 
+                            width="180px"
+                            searchable={true}
+                            onSearch={openSearchPopover}
+                            searchField="customers"
+                          />
                           <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
                           <TableHead className="text-white font-medium w-[100px]">Rank</TableHead>
                           <TableHead className="text-white font-medium w-[180px]">Feedback</TableHead>
-                          <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
+                          <BuyerTableHeader 
+                            title="Match Score" 
+                            width="120px"
+                            sortable={true}
+                            onSort={() => {
+                              handleFilterChange('sortBy', 'fit');
+                              applyFilters();
+                            }}
+                            sortDirection={filters.sortBy === 'fit' ? 'desc' : null}
+                          />
                         </>
                       ) : (
                         <>
                           <TableHead className="text-white font-medium w-[180px] sticky left-0 z-20 bg-blueknight-500">Fund Name</TableHead>
-                          <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
+                          <BuyerTableHeader 
+                            title="HQ" 
+                            width="120px"
+                            sortable={true}
+                            onSort={() => setShowFilters(true)}
+                          />
                           <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                          <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
+                          <BuyerTableHeader 
+                            title="Sectors" 
+                            width="180px"
+                            searchable={true}
+                            onSearch={openSearchPopover}
+                            searchField="sector"
+                          />
                           <TableHead className="text-white font-medium w-[250px]">Previous Acquisitions</TableHead>
                           <TableHead className="text-white font-medium w-[100px]">Rank</TableHead>
                           <TableHead className="text-white font-medium w-[180px]">Feedback</TableHead>
-                          <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
+                          <BuyerTableHeader 
+                            title="Match Score" 
+                            width="120px"
+                            sortable={true}
+                            onSort={() => {
+                              handleFilterChange('sortBy', 'fit');
+                              applyFilters();
+                            }}
+                            sortDirection={filters.sortBy === 'fit' ? 'desc' : null}
+                          />
                         </>
                       )}
                     </TableRow>
