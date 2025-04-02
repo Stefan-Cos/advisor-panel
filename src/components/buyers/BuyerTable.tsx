@@ -29,6 +29,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { format } from 'date-fns';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BuyerTableProps {
   listingId: string;
@@ -251,7 +258,47 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   });
   const [tempKeyword, setTempKeyword] = useState('');
   const [activeField, setActiveField] = useState<keyof SearchCriteria | null>(null);
+  const [companyNameSearch, setCompanyNameSearch] = useState('');
+  const [hqFilter, setHqFilter] = useState<string>('');
+  const [employeesFilter, setEmployeesFilter] = useState<string>('');
+  const [matchScoreFilter, setMatchScoreFilter] = useState<string>('');
+  const [showCompanySearch, setShowCompanySearch] = useState(false);
+  const [showHqFilter, setShowHqFilter] = useState(false);
+  const [showEmployeesFilter, setShowEmployeesFilter] = useState(false);
+  const [showMatchScoreFilter, setShowMatchScoreFilter] = useState(false);
   const { toast } = useToast();
+  
+  const filteredBuyers = activeTab === 'strategic' 
+    ? strategicBuyers.filter(buyer => {
+        const matchesCompanyName = companyNameSearch 
+          ? buyer.name.toLowerCase().includes(companyNameSearch.toLowerCase()) 
+          : true;
+        
+        const matchesHq = hqFilter 
+          ? buyer.hq === hqFilter
+          : true;
+        
+        const matchesEmployees = employeesFilter 
+          ? (employeesFilter === '1000+' ? buyer.employees >= 1000 :
+             employeesFilter === '500+' ? buyer.employees >= 500 :
+             employeesFilter === '100+' ? buyer.employees >= 100 : true)
+          : true;
+        
+        const matchesScore = matchScoreFilter
+          ? (matchScoreFilter === '90+' ? buyer.matchingScore >= 90 :
+             matchScoreFilter === '80+' ? buyer.matchingScore >= 80 :
+             matchScoreFilter === '70+' ? buyer.matchingScore >= 70 : true)
+          : true;
+        
+        return matchesCompanyName && matchesHq && matchesEmployees && matchesScore;
+      })
+    : peBuyers;
+  
+  const getUniqueHqValues = () => {
+    const uniqueHqs = new Set<string>();
+    strategicBuyers.forEach(buyer => uniqueHqs.add(buyer.hq));
+    return Array.from(uniqueHqs);
+  };
   
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
@@ -840,18 +887,224 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
           <Table className="w-full table-fixed">
             <TableHeader>
               <TableRow className="bg-blueknight-500">
-                <TableHead className="text-white font-medium w-[180px]">Company Name</TableHead>
+                {activeTab === 'strategic' ? (
+                  <>
+                    <TableHead className="text-white font-medium w-[180px]">
+                      <div className="flex items-center justify-between">
+                        <span>Company Name</span>
+                        <Popover open={showCompanySearch} onOpenChange={setShowCompanySearch}>
+                          <PopoverTrigger asChild>
+                            <button className="text-white hover:bg-blueknight-600 p-1 rounded">
+                              <Search className="h-4 w-4" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-72 p-3" align="start">
+                            <div className="space-y-2">
+                              <h3 className="text-sm font-medium">Search Company Name</h3>
+                              <Input
+                                placeholder="Type to search..."
+                                value={companyNameSearch}
+                                onChange={(e) => setCompanyNameSearch(e.target.value)}
+                                className="text-sm"
+                              />
+                              <div className="flex justify-between">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    setCompanyNameSearch('');
+                                    setShowCompanySearch(false);
+                                  }}
+                                  className="text-xs"
+                                >
+                                  Clear
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => setShowCompanySearch(false)}
+                                  className="text-xs"
+                                >
+                                  Apply
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-white font-medium w-[180px]">
+                      <div className="flex items-center justify-between">
+                        <span>HQ</span>
+                        <Popover open={showHqFilter} onOpenChange={setShowHqFilter}>
+                          <PopoverTrigger asChild>
+                            <button className="text-white hover:bg-blueknight-600 p-1 rounded">
+                              <Filter className="h-4 w-4" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-72 p-3" align="start">
+                            <div className="space-y-2">
+                              <h3 className="text-sm font-medium">Filter by HQ</h3>
+                              <Select 
+                                value={hqFilter} 
+                                onValueChange={(value) => setHqFilter(value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select country" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">All Countries</SelectItem>
+                                  {getUniqueHqValues().map((hq) => (
+                                    <SelectItem key={hq} value={hq}>{hq}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <div className="flex justify-between">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    setHqFilter('');
+                                    setShowHqFilter(false);
+                                  }}
+                                  className="text-xs"
+                                >
+                                  Clear
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => setShowHqFilter(false)}
+                                  className="text-xs"
+                                >
+                                  Apply
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-white font-medium w-[180px]">
+                      <div className="flex items-center justify-between">
+                        <span>Employees</span>
+                        <Popover open={showEmployeesFilter} onOpenChange={setShowEmployeesFilter}>
+                          <PopoverTrigger asChild>
+                            <button className="text-white hover:bg-blueknight-600 p-1 rounded">
+                              <Filter className="h-4 w-4" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-72 p-3" align="start">
+                            <div className="space-y-2">
+                              <h3 className="text-sm font-medium">Filter by Employees</h3>
+                              <Select 
+                                value={employeesFilter} 
+                                onValueChange={(value) => setEmployeesFilter(value)}
+                              >
+                                <SelectTrigger className="w-full">
+                                  <SelectValue placeholder="Select range" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">Any</SelectItem>
+                                  <SelectItem value="100+">100+</SelectItem>
+                                  <SelectItem value="500+">500+</SelectItem>
+                                  <SelectItem value="1000+">1000+</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <div className="flex justify-between">
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  onClick={() => {
+                                    setEmployeesFilter('');
+                                    setShowEmployeesFilter(false);
+                                  }}
+                                  className="text-xs"
+                                >
+                                  Clear
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  onClick={() => setShowEmployeesFilter(false)}
+                                  className="text-xs"
+                                >
+                                  Apply
+                                </Button>
+                              </div>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </TableHead>
+                  </>
+                ) : (
+                  <>
+                    <TableHead className="text-white font-medium w-[180px]">Company Name</TableHead>
+                    <TableHead className="text-white font-medium w-[180px]">HQ</TableHead>
+                    <TableHead className="text-white font-medium w-[180px]">Employees</TableHead>
+                  </>
+                )}
                 <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
                 <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
                 <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
                 <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
                 <TableHead className="text-white font-medium w-[120px]">Rationale</TableHead>
-                <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
+                <TableHead className="text-white font-medium w-[120px]">
+                  <div className="flex items-center justify-between">
+                    <span>Match Score</span>
+                    {activeTab === 'strategic' && (
+                      <Popover open={showMatchScoreFilter} onOpenChange={setShowMatchScoreFilter}>
+                        <PopoverTrigger asChild>
+                          <button className="text-white hover:bg-blueknight-600 p-1 rounded">
+                            <Filter className="h-4 w-4" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-72 p-3" align="start">
+                          <div className="space-y-2">
+                            <h3 className="text-sm font-medium">Filter by Match Score</h3>
+                            <Select 
+                              value={matchScoreFilter} 
+                              onValueChange={(value) => setMatchScoreFilter(value)}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select minimum score" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="">Any</SelectItem>
+                                <SelectItem value="70+">70%+</SelectItem>
+                                <SelectItem value="80+">80%+</SelectItem>
+                                <SelectItem value="90+">90%+</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <div className="flex justify-between">
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                onClick={() => {
+                                  setMatchScoreFilter('');
+                                  setShowMatchScoreFilter(false);
+                                }}
+                                className="text-xs"
+                              >
+                                Clear
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                onClick={() => setShowMatchScoreFilter(false)}
+                                className="text-xs"
+                              >
+                                Apply
+                              </Button>
+                            </div>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </div>
+                </TableHead>
                 <TableHead className="text-white font-medium w-[100px]"><span className="sr-only">Actions</span></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {buyers.map((buyer) => (
+              {filteredBuyers.map((buyer) => (
                 <React.Fragment key={buyer.id}>
                   <TableRow 
                     className={`${savedBuyers.includes(buyer.id) ? 'bg-green-50 hover:bg-green-100' : 'hover:bg-gray-50'}`}
