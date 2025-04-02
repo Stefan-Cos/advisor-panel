@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Filter, SlidersHorizontal, ChevronDown, ChevronUp, UserCircle, Tag, Plus, Check, Search } from 'lucide-react';
 import BuyerCard from './BuyerCard';
@@ -760,4 +761,171 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
                     <SelectContent>
                       <SelectItem value="">Any</SelectItem>
                       <SelectItem value="0-10">$0-10M</SelectItem>
-                      <SelectItem value="10-50">$10
+                      <SelectItem value="10-50">$10-50M</SelectItem>
+                      <SelectItem value="50-100">$50-100M</SelectItem>
+                      <SelectItem value="100-">$100M+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Cash
+                  </label>
+                  <Select
+                    value={filters.cash}
+                    onValueChange={(value) => handleFilterChange('cash', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Any</SelectItem>
+                      <SelectItem value="0-5">$0-5M</SelectItem>
+                      <SelectItem value="5-20">$5-20M</SelectItem>
+                      <SelectItem value="20-50">$20-50M</SelectItem>
+                      <SelectItem value="50-">$50M+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              {/* Boolean Filters Section */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    PE/VC-Backed
+                  </label>
+                  <Select
+                    value={filters.peBacked}
+                    onValueChange={(value) => handleFilterChange('peBacked', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Any</SelectItem>
+                      <SelectItem value="yes">Yes</SelectItem>
+                      <SelectItem value="no">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Public
+                  </label>
+                  <Select
+                    value={filters.public}
+                    onValueChange={(value) => handleFilterChange('public', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Any</SelectItem>
+                      <SelectItem value="yes">Yes</SelectItem>
+                      <SelectItem value="no">No</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Min. Score
+                  </label>
+                  <Select
+                    value={filters.minScore}
+                    onValueChange={(value) => handleFilterChange('minScore', value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Any" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Any</SelectItem>
+                      <SelectItem value="50">50+</SelectItem>
+                      <SelectItem value="70">70+</SelectItem>
+                      <SelectItem value="80">80+</SelectItem>
+                      <SelectItem value="90">90+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            
+            {/* Sort and Action Buttons */}
+            <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-gray-700">Sort by:</span>
+                <Select
+                  value={filters.sortBy}
+                  onValueChange={(value) => handleFilterChange('sortBy', value)}
+                >
+                  <SelectTrigger className="w-40">
+                    <SelectValue placeholder="Fit Score" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="fit">Fit Score</SelectItem>
+                    <SelectItem value="name-asc">Name (A-Z)</SelectItem>
+                    <SelectItem value="name-desc">Name (Z-A)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  onClick={resetFilters}
+                >
+                  Reset
+                </Button>
+                <Button
+                  onClick={applyFilters}
+                  className="bg-blueknight-500 hover:bg-blueknight-600 text-white"
+                >
+                  Apply Filters
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Buyer List Cards/Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredBuyers.map(buyer => (
+            <BuyerCard
+              key={buyer.id}
+              id={buyer.id}
+              name={buyer.name}
+              type={buyer.type}
+              location={buyer.location}
+              sector={buyer.sector}
+              offering={buyer.offering}
+              customers={buyer.customers}
+              fitPercentage={buyer.matchingScore}
+              addedToSaved={savedBuyers.includes(buyer.id)}
+              onAddToSaved={handleAddToSaved}
+            />
+          ))}
+        </div>
+        
+        {filteredBuyers.length === 0 && (
+          <div className="text-center py-12">
+            <UserCircle className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900">No buyers found</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Try adjusting your search or filters to find what you're looking for.
+            </p>
+            <div className="mt-6">
+              <Button onClick={resetFilters} variant="outline">
+                Reset filters
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default BuyerList;
