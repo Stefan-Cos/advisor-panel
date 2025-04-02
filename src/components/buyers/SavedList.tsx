@@ -51,6 +51,14 @@ interface SavedBuyer {
   parentCompany?: string;
   aum?: number;
   investments?: string;
+  previousAcquisitions?: string;
+  investmentType?: string[];
+  geography?: string[];
+  investmentSize?: string;
+  revenueRange?: string;
+  ebitda?: string;
+  industryFocus?: string;
+  industryPreferences?: string[];
   maTrackRecord: 'High' | 'Medium' | 'Low';
 }
 

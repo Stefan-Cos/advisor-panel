@@ -22,13 +22,13 @@ interface ListingDetailsProps {
 // Sample preferences data - in a real app, this would be fetched from API
 const samplePreferences = {
   countries: [
-    { name: 'United States', importance: 'high' },
-    { name: 'United Kingdom', importance: 'medium' },
-    { name: 'Germany', importance: 'low' }
+    { name: 'United States', importance: 'high' as const },
+    { name: 'United Kingdom', importance: 'medium' as const },
+    { name: 'Germany', importance: 'low' as const }
   ],
   industries: [
-    { name: 'Technology', importance: 'high' },
-    { name: 'Healthcare', importance: 'medium' }
+    { name: 'Technology', importance: 'high' as const },
+    { name: 'Healthcare', importance: 'medium' as const }
   ],
   acquisitionReason: 'Technology Acquisition',
   shareholderPreference: {
