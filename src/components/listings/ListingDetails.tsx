@@ -1,11 +1,12 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BuyerList from '../buyers/BuyerList';
 import SavedList from '../buyers/SavedList';
-import BuyerPreferencesForm from '../forms/BuyerPreferencesForm';
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import BuyerPreferencesSection from './BuyerPreferencesSection';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import AIAssistantChat from '../ui/AIAssistantChat';
+import BuyerPreferencesForm from '../forms/BuyerPreferencesForm';
 
 interface ListingDetailsProps {
   id: string;
@@ -17,6 +18,26 @@ interface ListingDetailsProps {
   status: 'active' | 'inactive' | 'pending';
   date: string;
 }
+
+// Sample preferences data - in a real app, this would be fetched from API
+const samplePreferences = {
+  countries: [
+    { name: 'United States', importance: 'high' },
+    { name: 'United Kingdom', importance: 'medium' },
+    { name: 'Germany', importance: 'low' }
+  ],
+  industries: [
+    { name: 'Technology', importance: 'high' },
+    { name: 'Healthcare', importance: 'medium' }
+  ],
+  acquisitionReason: 'Technology Acquisition',
+  shareholderPreference: {
+    privateEquity: true,
+    peBacked: false,
+    strategicTrade: true,
+    noPreference: false
+  }
+};
 
 const ListingDetails: React.FC<ListingDetailsProps> = ({
   id,
@@ -44,10 +65,16 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
             <Dialog>
               <DialogTrigger asChild>
                 <button className="px-3 py-1 text-sm border border-blueknight-300 rounded-md text-blueknight-700 hover:bg-blueknight-50">
-                  Buyer Preferences
+                  Edit Buyer Preferences
                 </button>
               </DialogTrigger>
               <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Buyer Preferences</DialogTitle>
+                  <DialogDescription>
+                    Set your preferences for potential buyers.
+                  </DialogDescription>
+                </DialogHeader>
                 <BuyerPreferencesForm />
               </DialogContent>
             </Dialog>
@@ -56,6 +83,11 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </span>
           </div>
+        </div>
+        
+        {/* Buyer Preferences Section - Always visible below company name */}
+        <div className="mt-6 pt-6 border-t border-gray-100">
+          <BuyerPreferencesSection preferences={samplePreferences} />
         </div>
       </div>
       
