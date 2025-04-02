@@ -39,28 +39,52 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ prefe
 
   return (
     <div className="animate-fade-in">
-      <h3 className="text-lg font-semibold text-blueknight-700 mb-2">Buyer Preferences</h3>
-      <div className="flex flex-wrap gap-3">
-        {preferences.countries.slice(0, 2).map((country) => (
-          <Badge key={country.name} variant="outline" className={`${importanceColors[country.importance]}`}>
-            {country.name}
-          </Badge>
-        ))}
-        {preferences.industries.slice(0, 2).map((industry) => (
-          <Badge key={industry.name} variant="outline" className={`${importanceColors[industry.importance]}`}>
-            {industry.name}
-          </Badge>
-        ))}
-        {getActiveShareholderPreferences().slice(0, 2).map((pref) => (
-          <Badge key={pref} variant="secondary">
-            {pref}
-          </Badge>
-        ))}
-        {preferences.countries.length + preferences.industries.length + getActiveShareholderPreferences().length > 6 && (
-          <Badge variant="outline" className="bg-gray-100 text-gray-700">
-            +{preferences.countries.length + preferences.industries.length + getActiveShareholderPreferences().length - 6} more
-          </Badge>
-        )}
+      <h3 className="text-lg font-semibold text-blueknight-700 mb-3">Buyer Preferences</h3>
+      <div className="grid grid-cols-3 gap-4">
+        {/* Countries Section */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-600 mb-2">Country of Buyer</h4>
+          <div className="flex flex-wrap gap-2">
+            {preferences.countries.map((country) => (
+              <Badge key={country.name} variant="outline" className={`${importanceColors[country.importance]}`}>
+                {country.name}
+              </Badge>
+            ))}
+            {preferences.countries.length === 0 && (
+              <span className="text-sm text-gray-500">None specified</span>
+            )}
+          </div>
+        </div>
+
+        {/* Industries Section */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-600 mb-2">Industries</h4>
+          <div className="flex flex-wrap gap-2">
+            {preferences.industries.map((industry) => (
+              <Badge key={industry.name} variant="outline" className={`${importanceColors[industry.importance]}`}>
+                {industry.name}
+              </Badge>
+            ))}
+            {preferences.industries.length === 0 && (
+              <span className="text-sm text-gray-500">None specified</span>
+            )}
+          </div>
+        </div>
+
+        {/* Shareholder Preferences Section */}
+        <div>
+          <h4 className="text-sm font-medium text-gray-600 mb-2">Shareholder Type</h4>
+          <div className="flex flex-wrap gap-2">
+            {getActiveShareholderPreferences().map((pref) => (
+              <Badge key={pref} variant="secondary">
+                {pref}
+              </Badge>
+            ))}
+            {getActiveShareholderPreferences().length === 0 && (
+              <span className="text-sm text-gray-500">None specified</span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
