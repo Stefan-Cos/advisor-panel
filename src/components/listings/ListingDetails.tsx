@@ -7,6 +7,10 @@ import AIAssistantChat from '../ui/AIAssistantChat';
 import { Badge } from "@/components/ui/badge";
 import BuyerPreferencesEditor from './BuyerPreferencesEditor';
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import BuyerPreferencesSection from './BuyerPreferencesSection';
+import { Settings } from 'lucide-react';
 
 interface ListingDetailsProps {
   id: string;
@@ -62,6 +66,8 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
     inactive: 'bg-red-50 text-red-700',
     pending: 'bg-yellow-50 text-yellow-700',
   };
+  
+  const [preferencesOpen, setPreferencesOpen] = React.useState(false);
 
   return (
     <div className="animate-fade-in space-y-8 w-full relative">
@@ -77,8 +83,29 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
             </span>
           </div>
           
-          {/* Buyer Preferences Section */}
-          <BuyerPreferencesEditor initialPreferences={samplePreferences} />
+          {/* Buyer Preferences Summary Section */}
+          <div className="flex justify-between items-center mb-6">
+            <BuyerPreferencesSection preferences={samplePreferences} />
+            
+            <Button 
+              onClick={() => setPreferencesOpen(true)}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Settings size={16} />
+              Edit Preferences
+            </Button>
+          </div>
+          
+          {/* Preferences Dialog */}
+          <Dialog open={preferencesOpen} onOpenChange={setPreferencesOpen}>
+            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Buyer Preferences</DialogTitle>
+              </DialogHeader>
+              <BuyerPreferencesEditor initialPreferences={samplePreferences} />
+            </DialogContent>
+          </Dialog>
         </CardContent>
       </Card>
       
