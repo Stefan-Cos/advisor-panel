@@ -17,7 +17,7 @@ const ListingDetailsPage = () => {
     industry: 'Technology',
     country: 'United States',
     status: 'active' as const,
-    date: '2024-06-15'
+    date: '15 June 2024'
   };
 
   return (
