@@ -5,10 +5,7 @@ import BuyerListNew from '../buyers/BuyerListNew';
 import SavedList from '../buyers/SavedList';
 import AIAssistantChat from '../ui/AIAssistantChat';
 import { Badge } from "@/components/ui/badge";
-import BuyerPreferencesEditor from './BuyerPreferencesEditor';
 import { Card, CardContent } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import BuyerPreferencesSection from './BuyerPreferencesSection';
 
 interface ListingDetailsProps {
   id: string;
@@ -21,38 +18,6 @@ interface ListingDetailsProps {
   date: string;
 }
 
-const samplePreferences = {
-  countries: [
-    { name: 'United States', importance: 'high' as const },
-    { name: 'United Kingdom', importance: 'medium' as const },
-    { name: 'Germany', importance: 'low' as const }
-  ],
-  industries: [
-    { name: 'Technology', importance: 'high' as const },
-    { name: 'Healthcare', importance: 'medium' as const }
-  ],
-  endUserSectors: [
-    { name: 'Enterprise', importance: 'high' as const },
-    { name: 'SMB', importance: 'medium' as const }
-  ],
-  keywords: [
-    { name: 'Software', importance: 'high' as const },
-    { name: 'SaaS', importance: 'medium' as const },
-    { name: 'Cloud', importance: 'low' as const }
-  ],
-  acquisitionReason: 'Technology Acquisition',
-  potentialBuyers: [
-    { name: 'Microsoft', importance: 'high' as const },
-    { name: 'Google', importance: 'medium' as const }
-  ],
-  shareholderPreference: {
-    privateEquity: true,
-    peBacked: false,
-    strategicTrade: true,
-    noPreference: false
-  }
-};
-
 const ListingDetails: React.FC<ListingDetailsProps> = ({
   id,
   projectTitle,
@@ -62,12 +27,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
     active: 'bg-green-50 text-green-700',
     inactive: 'bg-red-50 text-red-700',
     pending: 'bg-yellow-50 text-yellow-700',
-  };
-  
-  const [preferencesOpen, setPreferencesOpen] = React.useState(false);
-
-  const handleOpenPreferencesEditor = () => {
-    setPreferencesOpen(true);
   };
 
   return (
@@ -84,21 +43,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
             </span>
           </div>
           
-          <div className="mb-6">
-            <BuyerPreferencesSection 
-              preferences={samplePreferences} 
-              onEditPreferences={handleOpenPreferencesEditor}
-            />
-          </div>
-          
-          <Dialog open={preferencesOpen} onOpenChange={setPreferencesOpen}>
-            <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Buyer Preferences</DialogTitle>
-              </DialogHeader>
-              <BuyerPreferencesEditor initialPreferences={samplePreferences} />
-            </DialogContent>
-          </Dialog>
+          {/* The BuyerPreferencesSection has been removed from here */}
         </CardContent>
       </Card>
       
