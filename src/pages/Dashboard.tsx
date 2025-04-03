@@ -65,20 +65,22 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Match your active projects with the right strategic and PE buyers using our targeted search algorithms.
                 </p>
-                <div className="mt-auto flex gap-3">
-                  <Link
-                    to="/add-listing"
-                    className="inline-flex items-center justify-center flex-1 rounded-md bg-blueknight-500 px-2 py-2 text-sm font-medium text-white hover:bg-blueknight-600 transition-colors"
-                  >
-                    <Plus className="mr-1 h-4 w-4" />
-                    Create Buyer Search
-                  </Link>
-                  <Link
-                    to="/listings?tab=active-projects"
-                    className="inline-flex items-center justify-center flex-1 rounded-md bg-blueknight-300 px-2 py-2 text-sm font-medium text-white hover:bg-blueknight-400 transition-colors"
-                  >
-                    View Searches
-                  </Link>
+                <div className="mt-auto">
+                  <div className="flex flex-col space-y-2">
+                    <Link
+                      to="/add-listing"
+                      className="inline-flex items-center justify-center w-full rounded-md bg-blueknight-500 px-4 py-2 text-sm font-medium text-white hover:bg-blueknight-600 transition-colors"
+                    >
+                      <Plus className="mr-1 h-4 w-4" />
+                      Create Buyer Search
+                    </Link>
+                    <Link
+                      to="/listings?tab=active-projects"
+                      className="inline-flex items-center justify-center w-full rounded-md bg-blueknight-300 px-4 py-2 text-sm font-medium text-white hover:bg-blueknight-400 transition-colors"
+                    >
+                      View Searches
+                    </Link>
+                  </div>
                 </div>
               </CardContent>
             </Card>
