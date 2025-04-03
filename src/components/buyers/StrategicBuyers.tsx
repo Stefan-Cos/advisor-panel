@@ -205,6 +205,7 @@ const strategicBuyers = [
 const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers, onAddToSaved }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchCompany, setSearchCompany] = useState<string>('');
+  const [showSearchField, setShowSearchField] = useState<boolean>(false);
   
   const filteredBuyers = strategicBuyers.filter(buyer => 
     buyer.name.toLowerCase().includes(searchCompany.toLowerCase())
@@ -237,6 +238,13 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers, onAddToS
     return 'text-red-600';
   };
 
+  const toggleSearchField = () => {
+    setShowSearchField(!showSearchField);
+    if (!showSearchField === false) {
+      setSearchCompany('');
+    }
+  };
+
   return (
     <div className="relative overflow-hidden">
       <ScrollArea className="h-[600px] w-full" orientation="both">
@@ -247,15 +255,32 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers, onAddToS
                 <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">
                   <div className="flex flex-col space-y-2">
                     <span>Company Name</span>
-                    <div className="relative">
-                      <Input
-                        type="text"
-                        placeholder="Search companies..."
-                        value={searchCompany}
-                        onChange={(e) => setSearchCompany(e.target.value)}
-                        className="h-8 px-3 py-1 text-black bg-white border-gray-300 text-xs rounded-md"
-                      />
-                      <Search className="h-3.5 w-3.5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    <div className="flex items-center">
+                      {showSearchField ? (
+                        <div className="relative w-full">
+                          <Input
+                            type="text"
+                            placeholder="Search companies..."
+                            value={searchCompany}
+                            onChange={(e) => setSearchCompany(e.target.value)}
+                            className="h-8 px-3 py-1 text-black bg-white border-gray-300 text-xs rounded-md pr-8"
+                            autoFocus
+                          />
+                          <button 
+                            onClick={toggleSearchField}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            <Search className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <button 
+                          onClick={toggleSearchField}
+                          className="px-2 py-1 bg-white text-gray-600 rounded-md hover:bg-gray-100"
+                        >
+                          <Search className="h-3.5 w-3.5" />
+                        </button>
+                      )}
                     </div>
                   </div>
                 </TableHead>
