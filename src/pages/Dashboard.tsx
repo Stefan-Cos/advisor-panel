@@ -4,13 +4,13 @@ import { Link } from 'react-router-dom';
 import { Search, Users, Plus, ArrowRight } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
-import ActiveProjects from '../components/dashboard/ActiveProjects';
+import TotalProjects from '../components/dashboard/TotalProjects';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
 const Dashboard = () => {
   // Mock data
-  const activeProjectsCount = 3;
+  const totalProjectsCount = 3;
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -25,13 +25,13 @@ const Dashboard = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <ActiveProjects count={activeProjectsCount} month="February" />
+            <TotalProjects count={totalProjectsCount} month="February" />
             
             <div className="premium-card p-6 animate-scale-in col-span-2">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Stats</h2>
               <div className="grid grid-cols-3 gap-4">
                 <div className="bg-blueknight-50 rounded-lg p-4">
-                  <p className="text-sm text-blueknight-600">Active Projects</p>
+                  <p className="text-sm text-blueknight-600">Total Projects</p>
                   <p className="text-2xl font-bold text-blueknight-800 mt-1">3</p>
                 </div>
                 
