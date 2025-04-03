@@ -2,12 +2,12 @@
 import React from 'react';
 import { BarChart3 } from 'lucide-react';
 
-interface ActiveListingsProps {
+interface ActiveProjectsProps {
   count: number;
   month: string;
 }
 
-const ActiveListings: React.FC<ActiveListingsProps> = ({ count, month }) => {
+const ActiveProjects: React.FC<ActiveProjectsProps> = ({ count, month }) => {
   return (
     <div className="premium-card p-6 animate-scale-in">
       <div className="flex items-center justify-between mb-4">
@@ -30,10 +30,10 @@ const ActiveListings: React.FC<ActiveListingsProps> = ({ count, month }) => {
           <option value="December">December</option>
         </select>
       </div>
-      <h3 className="text-lg font-medium text-gray-900">Active Listings</h3>
+      <h3 className="text-lg font-medium text-gray-900">Active Projects</h3>
       <p className="text-4xl font-bold text-blueknight-500 mt-2">{count}</p>
     </div>
   );
 };
 
-export default ActiveListings;
+export default ActiveProjects;
