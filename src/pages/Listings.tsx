@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
@@ -167,7 +168,7 @@ const Listings = () => {
                   </Badge>
                   <h3 className="text-xl font-semibold text-gray-800 mb-3">Pitch Support</h3>
                   <p className="text-gray-600 text-center max-w-md mb-6">
-                    Get ahead on future mandates by identifying potential buyers for prospects you're actively pitching - and boost your chances of winning the deal by showing them relevant buyers.
+                    Win new clients faster by showing them relevant buyers during your pitch.
                   </p>
                   <div className="h-48 w-full max-w-md relative opacity-80">
                     <img

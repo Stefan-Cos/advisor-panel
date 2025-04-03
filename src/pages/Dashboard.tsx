@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Users, Plus, ArrowRight } from 'lucide-react';
@@ -99,7 +100,7 @@ const Dashboard = () => {
               <CardContent className="p-6 flex flex-col h-52">
                 <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Pitch Support</h3>
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
-                  Get ahead on future mandates by identifying potential buyers for prospects you're actively pitching - and boost your chances of winning the deal by showing them relevant buyers.
+                  Win new clients faster by showing them relevant buyers during your pitch.
                 </p>
                 <div className="mt-auto">
                   <button
