@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, Search, Mail } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
@@ -490,21 +489,21 @@ const BuyerMandates = () => {
             <div className="overflow-hidden">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-blueknight-500">
-                    <TableHead className="text-white font-medium w-12"></TableHead>
-                    <TableHead className="text-white font-medium">Buyer ID</TableHead>
-                    <TableHead className="text-white font-medium">Buyer HQ</TableHead>
-                    <TableHead className="text-white font-medium">Buyer Type</TableHead>
-                    <TableHead className="text-white font-medium">Actively Looking</TableHead>
-                    <TableHead className="text-white font-medium">Criteria #</TableHead>
-                    <TableHead className="text-white font-medium">Criteria Created</TableHead>
-                    <TableHead className="text-white font-medium">Target HQ</TableHead>
-                    <TableHead className="text-white font-medium">Target Revenue</TableHead>
-                    <TableHead className="text-white font-medium">Target EBITDA</TableHead>
-                    <TableHead className="text-white font-medium">Target EV</TableHead>
-                    <TableHead className="text-white font-medium">Target Offering</TableHead>
-                    <TableHead className="text-white font-medium">Target Sectors</TableHead>
-                    <TableHead className="text-white font-medium">Target Customers</TableHead>
+                  <TableRow>
+                    <TableHead className="bg-blueknight-500 text-white font-medium w-12"></TableHead>
+                    <TableHead className="bg-blueknight-500 text-white font-medium">Buyer ID</TableHead>
+                    <TableHead className="bg-blueknight-500 text-white font-medium">Buyer HQ</TableHead>
+                    <TableHead className="bg-blueknight-500 text-white font-medium">Buyer Type</TableHead>
+                    <TableHead className="bg-blueknight-500 text-white font-medium">Actively Looking</TableHead>
+                    <TableHead className="bg-blueknight-500 text-white font-medium">Criteria #</TableHead>
+                    <TableHead className="bg-blueknight-400 text-white font-medium">Criteria Created</TableHead>
+                    <TableHead className="bg-blueknight-400 text-white font-medium">Target HQ</TableHead>
+                    <TableHead className="bg-blueknight-400 text-white font-medium">Target Revenue</TableHead>
+                    <TableHead className="bg-blueknight-400 text-white font-medium">Target EBITDA</TableHead>
+                    <TableHead className="bg-blueknight-400 text-white font-medium">Target EV</TableHead>
+                    <TableHead className="bg-blueknight-400 text-white font-medium">Target Offering</TableHead>
+                    <TableHead className="bg-blueknight-400 text-white font-medium">Target Sectors</TableHead>
+                    <TableHead className="bg-blueknight-400 text-white font-medium">Target Customers</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
