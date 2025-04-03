@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BuyerListNew from '../buyers/BuyerListNew';
@@ -126,7 +127,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-12 text-center">
             <h3 className="text-xl font-medium text-gray-700">CRM Features Coming Soon</h3>
             <p className="text-gray-500 mt-2">
-              Our CRM functionality will be available in a future update. Stay tuned for enhanced client management tools.
+              Our CRM functionality will be available in a future update. Stay tuned for enhanced contacting management tools.
             </p>
           </div>
         </TabsContent>
