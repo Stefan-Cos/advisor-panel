@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X, Search } from 'lucide-react';
+import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X, Search, Keywords } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -53,6 +53,13 @@ interface Buyer {
     previousTransactions: string;
     financialStrength: string;
     overall: string;
+    scores?: {
+      offering: number;
+      customers: number;
+      previousTransactions: number;
+      financialStrength: number;
+      overall: number;
+    };
   };
   matchingScore: number;
   longDescription?: string;
@@ -89,6 +96,7 @@ interface SearchCriteria {
   };
 }
 
+// Add rationale scores to the strategic buyers data
 const strategicBuyers: Buyer[] = [
   {
     id: 'buyer1',
@@ -113,7 +121,14 @@ const strategicBuyers: Buyer[] = [
       customers: 'Strong overlap in customer base within the healthcare and financial sectors, which could lead to cross-selling opportunities.',
       previousTransactions: 'Acquired three complementary software companies in the last 2 years, demonstrating experience in successful post-merger integration.',
       financialStrength: 'Solid balance sheet with consistent revenue growth over the past 5 years and strong cash reserves for potential acquisitions.',
-      overall: 'Tech Innovations Inc. presents a strong strategic fit due to complementary technology, overlapping customer base, and financial capability to execute the acquisition.'
+      overall: 'Tech Innovations Inc. presents a strong strategic fit due to complementary technology, overlapping customer base, and financial capability to execute the acquisition.',
+      scores: {
+        offering: 95,
+        customers: 90,
+        previousTransactions: 88,
+        financialStrength: 92,
+        overall: 91
+      }
     },
     matchingScore: 92
   },
@@ -140,7 +155,14 @@ const strategicBuyers: Buyer[] = [
       customers: 'Strong presence in European healthcare systems which would open new markets for our client.',
       previousTransactions: 'Completed one strategic acquisition in the clinical workflow space last year, showing appetite for growth through acquisition.',
       financialStrength: 'Steady growth and good profitability metrics, though cash reserves are moderate.',
-      overall: 'Global HealthTech offers excellent geographic expansion opportunities and product synergies, despite somewhat limited acquisition funds.'
+      overall: 'Global HealthTech offers excellent geographic expansion opportunities and product synergies, despite somewhat limited acquisition funds.',
+      scores: {
+        offering: 88,
+        customers: 90,
+        previousTransactions: 78,
+        financialStrength: 75,
+        overall: 85
+      }
     },
     matchingScore: 85
   },
@@ -167,7 +189,14 @@ const strategicBuyers: Buyer[] = [
       customers: 'Strong position in DACH region healthcare providers, complementing our client\'s North American focus.',
       previousTransactions: 'No recent acquisition history, but their parent company has completed several technology acquisitions in the past 3 years.',
       financialStrength: 'Recently received PE backing, providing acquisition capabilities despite smaller size.',
-      overall: 'MediSoft presents an interesting opportunity for international expansion with their strong regional presence and newly available capital for acquisitions.'
+      overall: 'MediSoft presents an interesting opportunity for international expansion with their strong regional presence and newly available capital for acquisitions.',
+      scores: {
+        offering: 82,
+        customers: 85,
+        previousTransactions: 70,
+        financialStrength: 76,
+        overall: 78
+      }
     },
     matchingScore: 78
   }
@@ -238,7 +267,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
-  const [showPreferences, setShowPreferences] = useState(false);
+  const [showKeywords, setShowKeywords] = useState(false);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
   const [showSearchForm, setShowSearchForm] = useState(false);
@@ -267,12 +296,12 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   
   const toggleFilters = () => {
     setShowFilters(!showFilters);
-    if (showPreferences) setShowPreferences(false);
+    if (showKeywords) setShowKeywords(false);
     if (showAIAssistant) setShowAIAssistant(false);
   };
   
-  const togglePreferences = () => {
-    setShowPreferences(!showPreferences);
+  const toggleKeywords = () => {
+    setShowKeywords(!showKeywords);
     if (showFilters) setShowFilters(false);
     if (showAIAssistant) setShowAIAssistant(false);
   };
@@ -280,7 +309,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   const toggleAIAssistant = () => {
     setShowAIAssistant(!showAIAssistant);
     if (showFilters) setShowFilters(false);
-    if (showPreferences) setShowPreferences(false);
+    if (showKeywords) setShowKeywords(false);
   };
   
   const toggleSearchForm = () => {
@@ -303,12 +332,12 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
     setShowFilters(false);
   };
 
-  const handlePreferencesApply = () => {
+  const handleKeywordsApply = () => {
     toast({
-      title: "Preferences Applied",
-      description: "Your buyer preferences have been applied",
+      title: "Keywords Applied",
+      description: "Your keyword filters have been applied",
     });
-    setShowPreferences(false);
+    setShowKeywords(false);
   };
 
   const handleAIAssistantQuery = (e: React.FormEvent<HTMLFormElement>) => {
@@ -373,6 +402,14 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
       description: "Your keyword search has been applied",
     });
     setShowSearchForm(false);
+  };
+
+  // Function to get match score badge style based on score value
+  const getScoreBadgeStyle = (score: number) => {
+    if (score >= 90) return "bg-green-50 text-green-700";
+    if (score >= 75) return "bg-blue-50 text-blue-700";
+    if (score >= 60) return "bg-yellow-50 text-yellow-700";
+    return "bg-gray-50 text-gray-700";
   };
 
   return (
@@ -440,15 +477,15 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
             </button>
             
             <button
-              onClick={togglePreferences}
+              onClick={toggleKeywords}
               className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
-                showPreferences 
+                showKeywords
                   ? 'bg-blueknight-500 text-white' 
                   : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
               } rounded-md`}
             >
-              <SlidersHorizontal className="h-4 w-4" />
-              <span>Buyer Preferences</span>
+              <Keywords className="h-4 w-4" />
+              <span>Keywords</span>
             </button>
           </div>
         </div>
@@ -700,15 +737,15 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
           </div>
         )}
         
-        {showPreferences && (
+        {showKeywords && (
           <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-700 flex items-center">
                 <SlidersHorizontal className="h-4 w-4 mr-2" />
-                Buyer Preferences
+                Buyer Keywords
               </h3>
               <button 
-                onClick={() => setShowPreferences(false)}
+                onClick={() => setShowKeywords(false)}
                 className="text-sm text-gray-500 hover:text-gray-700"
               >
                 Close
@@ -767,332 +804,4 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                         <label htmlFor="tech-high" className="text-xs">High</label>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="medium" id="tech-medium" />
-                        <label htmlFor="tech-medium" className="text-xs">Medium</label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="low" id="tech-low" />
-                        <label htmlFor="tech-low" className="text-xs">Low</label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm text-gray-600">Healthcare</label>
-                    <RadioGroup defaultValue="medium" className="flex space-x-2">
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="high" id="health-high" />
-                        <label htmlFor="health-high" className="text-xs">High</label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="medium" id="health-medium" />
-                        <label htmlFor="health-medium" className="text-xs">Medium</label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="low" id="health-low" />
-                        <label htmlFor="health-low" className="text-xs">Low</label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-b border-gray-200 pb-4">
-                <h4 className="text-sm font-medium text-gray-800 mb-3">What sector keywords are most relevant?</h4>
-                <div className="flex flex-wrap gap-2">
-                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
-                    Software
-                  </div>
-                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
-                    Healthcare IT
-                  </div>
-                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
-                    Enterprise
-                  </div>
-                  <div className="bg-blueknight-50 text-blueknight-700 px-3 py-1 rounded-full text-xs">
-                    SaaS
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-b border-gray-200 pb-4">
-                <h4 className="text-sm font-medium text-gray-800 mb-3">What is the most likely reason for acquisition?</h4>
-                <select className="input-field w-full">
-                  <option value="market-expansion">Market Expansion</option>
-                  <option value="tech-acquisition">Technology Acquisition</option>
-                  <option value="talent-acquisition">Talent Acquisition</option>
-                  <option value="portfolio-diversification">Portfolio Diversification</option>
-                </select>
-              </div>
-            </div>
-            
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={handlePreferencesApply}
-                className="px-4 py-2 bg-blueknight-500 text-white rounded-md text-sm font-medium hover:bg-blueknight-600"
-              >
-                Apply Preferences
-              </button>
-            </div>
-          </div>
-        )}
-        
-        <div className="overflow-auto">
-          <Table className="w-full table-fixed">
-            <TableHeader>
-              <TableRow className="bg-blueknight-500">
-                <TableHead className="text-white font-medium w-[180px]">Company Name</TableHead>
-                <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
-                <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
-                <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
-                <TableHead className="text-white font-medium w-[120px]">Rationale</TableHead>
-                <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-                <TableHead className="text-white font-medium w-[100px]"><span className="sr-only">Actions</span></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {buyers.map((buyer) => (
-                <React.Fragment key={buyer.id}>
-                  <TableRow 
-                    className={`${savedBuyers.includes(buyer.id) ? 'bg-green-50 hover:bg-green-100' : 'hover:bg-gray-50'}`}
-                  >
-                    <TableCell className="font-medium">{buyer.name}</TableCell>
-                    <TableCell>{buyer.description}</TableCell>
-                    <TableCell>{buyer.rationale.offering}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {buyer.primaryIndustries?.map((industry, i) => (
-                          <span key={i} className="px-2 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
-                            {industry}
-                          </span>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {buyer.targetCustomerTypes?.map((type, i) => (
-                          <span key={i} className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">
-                            {type}
-                          </span>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Collapsible 
-                        open={expandedRationales.includes(buyer.id)}
-                        onOpenChange={() => toggleRationale(buyer.id)}
-                      >
-                        <CollapsibleTrigger className="flex items-center px-3 py-1.5 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                          Rationale
-                          {expandedRationales.includes(buyer.id) ? (
-                            <ChevronUp className="h-4 w-4 ml-1" />
-                          ) : (
-                            <ChevronDown className="h-4 w-4 ml-1" />
-                          )}
-                        </CollapsibleTrigger>
-                      </Collapsible>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
-                          <div
-                            className="bg-blueknight-500 h-2 rounded-full"
-                            style={{ width: `${buyer.matchingScore}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      {!savedBuyers.includes(buyer.id) ? (
-                        <button
-                          onClick={() => handleAddToSaved(buyer.id)}
-                          className="text-xs px-2 py-1 bg-blueknight-500 text-white rounded hover:bg-blueknight-600"
-                        >
-                          Save
-                        </button>
-                      ) : (
-                        <span className="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">
-                          Saved
-                        </span>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                  {expandedRationales.includes(buyer.id) && (
-                    <TableRow className={savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-gray-50'}>
-                      <TableCell colSpan={8} className="p-0">
-                        <div className="p-4">
-                          <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
-                            <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
-                                <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {buyer.primaryIndustries?.map((industry, i) => (
-                                    <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                                      {industry}
-                                    </span>
-                                  )) || "Not provided"}
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {buyer.keywords?.map((keyword, i) => (
-                                    <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                      {keyword}
-                                    </span>
-                                  )) || "Not provided"}
-                                </div>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
-                                <p className="text-sm text-gray-600">
-                                  {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700">Parent Company</h4>
-                                <p className="text-sm text-gray-600">{buyer.parentCompany || "None/Independent"}</p>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700">Website</h4>
-                                <p className="text-sm text-gray-600">
-                                  {buyer.website ? (
-                                    <a href={buyer.website} target="_blank" rel="noopener noreferrer" className="text-blueknight-500 hover:underline">
-                                      Visit
-                                    </a>
-                                  ) : "Not provided"}
-                                </p>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700">HQ</h4>
-                                <p className="text-sm text-gray-600">{buyer.hq}</p>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700">Employees</h4>
-                                <p className="text-sm text-gray-600">{buyer.employees.toLocaleString()}</p>
-                              </div>
-                              
-                              {activeTab === 'strategic' ? (
-                                <>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700">Revenue ($M)</h4>
-                                    <p className="text-sm text-gray-600">${buyer.revenue.toFixed(1)}</p>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700">Cash ($M)</h4>
-                                    <p className="text-sm text-gray-600">${buyer.cash.toFixed(1)}</p>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700">Reported Date</h4>
-                                    <p className="text-sm text-gray-600">{formatReportDate(buyer.reportedDate)}</p>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700">PE/VC-Backed</h4>
-                                    <p className="text-sm text-gray-600">
-                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                        buyer.isPEVCBacked ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
-                                      }`}>
-                                        {buyer.isPEVCBacked ? 'Yes' : 'No'}
-                                      </span>
-                                    </p>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700">Public</h4>
-                                    <p className="text-sm text-gray-600">
-                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                        buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
-                                      }`}>
-                                        {buyer.isPublic ? 'Yes' : 'No'}
-                                      </span>
-                                    </p>
-                                  </div>
-                                </>
-                              ) : (
-                                <>
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700">AUM ($M)</h4>
-                                    <p className="text-sm text-gray-600">${buyer.aum?.toFixed(1)}</p>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700">Investments</h4>
-                                    <p className="text-sm text-gray-600">{buyer.investments}</p>
-                                  </div>
-                                  
-                                  <div>
-                                    <h4 className="text-sm font-semibold text-gray-700">Public</h4>
-                                    <p className="text-sm text-gray-600">
-                                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                        buyer.isPublic ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-700'
-                                      }`}>
-                                        {buyer.isPublic ? 'Yes' : 'No'}
-                                      </span>
-                                    </p>
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-                            <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
-                            <div className="grid grid-cols-1 gap-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Previous Transactions</h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.previousTransactions}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default BuyerTable;
+                        <RadioGroupItem value="medium" id="tech-medium
