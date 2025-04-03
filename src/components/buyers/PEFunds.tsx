@@ -326,7 +326,8 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers, onAddToSaved }) => {
                               </div>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            {/* First row - Investment Type, Geography, Industry Preferences, Total Investments */}
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Type</h4>
                                 <div className="flex flex-wrap gap-1">
@@ -350,12 +351,29 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers, onAddToSaved }) => {
                               </div>
                               
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">EV Range</h4>
-                                <p className="text-sm text-gray-600">{buyer.investmentSize}</p>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Preferences</h4>
+                                <div className="flex flex-wrap gap-1">
+                                  {buyer.industryPreferences?.map((pref, i) => (
+                                    <span key={i} className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded-full">
+                                      {pref}
+                                    </span>
+                                  )) || "Not provided"}
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Total Investments</h4>
+                                <p className="text-sm text-gray-600">{(buyer.investments?.split(' ')[0]) || "N/A"}</p>
                               </div>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                            {/* Second row - EV Range, Revenue, EBITDA, AUM */}
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">EV Range</h4>
+                                <p className="text-sm text-gray-600">{buyer.investmentSize}</p>
+                              </div>
+                              
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-2">Revenue ($M)</h4>
                                 <p className="text-sm text-gray-600">{buyer.revenue}</p>
@@ -369,22 +387,6 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers, onAddToSaved }) => {
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-2">AUM ($M)</h4>
                                 <p className="text-sm text-gray-600">{buyer.aum.toFixed(1)}</p>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Total Investments</h4>
-                                <p className="text-sm text-gray-600">{buyer.investments}</p>
-                              </div>
-                            </div>
-                            
-                            <div>
-                              <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Preferences</h4>
-                              <div className="flex flex-wrap gap-1">
-                                {buyer.industryPreferences?.map((pref, i) => (
-                                  <span key={i} className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded-full">
-                                    {pref}
-                                  </span>
-                                )) || "Not provided"}
                               </div>
                             </div>
                           </div>
