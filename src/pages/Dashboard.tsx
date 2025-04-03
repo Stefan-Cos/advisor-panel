@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Users, Plus, ArrowRight } from 'lucide-react';
@@ -25,7 +24,7 @@ const Dashboard = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <TotalProjects count={totalProjectsCount} month="February" />
+            <TotalProjects count={totalProjectsCount} />
             
             <div className="premium-card p-6 animate-scale-in col-span-2">
               <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Stats</h2>
@@ -51,7 +50,6 @@ const Dashboard = () => {
           <h2 className="text-xl font-semibold text-blueknight-800 mb-6">Project Options</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Option 1: Buyer Search for Active Project */}
             <Card className="premium-card overflow-hidden animate-fade-in h-full">
               <div className="h-48 bg-gray-200 relative">
                 <img
@@ -77,7 +75,6 @@ const Dashboard = () => {
               </CardContent>
             </Card>
             
-            {/* Option 2: Buyer Search for Pitch (Coming Soon) */}
             <Card className="premium-card overflow-hidden animate-fade-in h-full relative opacity-80">
               <div className="absolute top-4 right-4 z-10">
                 <Badge variant="secondary" className="bg-blueknight-100 text-blueknight-700 border border-blueknight-200">
@@ -108,7 +105,6 @@ const Dashboard = () => {
               </CardContent>
             </Card>
             
-            {/* Option 3: Find New Clients (Coming Soon) */}
             <Card className="premium-card overflow-hidden animate-fade-in h-full relative opacity-80">
               <div className="absolute top-4 right-4 z-10">
                 <Badge variant="secondary" className="bg-blueknight-100 text-blueknight-700 border border-blueknight-200">
