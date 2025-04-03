@@ -30,7 +30,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   };
 
   return (
-    <div className="animate-fade-in space-y-8 w-full relative">
+    <div className="space-y-8 w-full relative">
       <Card>
         <CardContent className="p-6">
           <div className="flex justify-between items-start">
