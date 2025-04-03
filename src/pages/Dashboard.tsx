@@ -63,7 +63,7 @@ const Dashboard = () => {
               <CardContent className="p-6 flex flex-col h-52">
                 <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Active Projects</h3>
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
-                  Connect your active projects with potential buyers through our targeted search algorithm and maximize your deals.
+                  Match your active projects with the right strategic and PE buyers using our targeted search algorithms.
                 </p>
                 <div className="mt-auto flex gap-3">
                   <Link

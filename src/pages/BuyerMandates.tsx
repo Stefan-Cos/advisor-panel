@@ -200,8 +200,11 @@ const BuyerMandates = () => {
         <Sidebar />
         
         <main className="flex-1 p-6">
-          <div className="mb-8">
+          <div className="mb-4">
             <h1 className="text-2xl font-bold text-blueknight-800">Active Buyer Mandates ({mockBuyerMandates.length})</h1>
+            <p className="text-gray-600 mt-2">
+              The Active Buyer Mandates list features strategic and financial buyers who have shared their acquisition criteria with BlueKnight and are actively seeking new opportunities.
+            </p>
           </div>
           
           <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
