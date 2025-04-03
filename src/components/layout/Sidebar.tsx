@@ -8,7 +8,8 @@ import {
   Settings, 
   Users,
   BarChart,
-  LogOut 
+  LogOut,
+  Building
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -26,6 +27,7 @@ const Sidebar = () => {
   const navItems = [
     { path: '/dashboard', label: 'Overview', icon: <LayoutDashboard className="h-5 w-5" /> },
     { path: '/listings', label: 'Projects', icon: <ListFilter className="h-5 w-5" /> },
+    { path: '/buyer-mandates', label: 'Active Buyer Mandates', icon: <Building className="h-5 w-5" /> },
     { path: '/messages', label: 'Messages', icon: <MessageSquare className="h-5 w-5" /> },
   ];
   
