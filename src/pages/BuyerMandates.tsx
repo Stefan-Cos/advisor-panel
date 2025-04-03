@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Filter, SlidersHorizontal, Search, Mail } from 'lucide-react';
+import { Filter, SlidersHorizontal, Search, Mail, ArrowUp } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import {
@@ -134,6 +133,9 @@ const BuyerMandates = () => {
     { value: '', operator: 'AND' }
   ]);
   
+  // State to track which buyers have been contacted
+  const [contactedBuyers, setContactedBuyers] = useState<string[]>([]);
+  
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
@@ -151,6 +153,9 @@ const BuyerMandates = () => {
       title: "Contact Request Sent",
       description: `Your request to contact buyer ${buyerId} has been sent to BlueKnight`,
     });
+    
+    // Add this buyer ID to the contacted buyers list
+    setContactedBuyers(prev => [...prev, buyerId]);
   };
   
   // Handle keyword changes for each category
@@ -514,27 +519,33 @@ const BuyerMandates = () => {
                   {mockBuyerMandates.map((mandate) => (
                     <TableRow key={mandate.id} className="hover:bg-gray-50">
                       <TableCell className="w-12">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <button className="text-blueknight-600 hover:text-blueknight-800">
-                              <Mail className="h-5 w-5" />
-                            </button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Contact BlueKnight</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Have a client who might be a fit? Click below to request an introduction to the buyer through BlueKnight
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleContactBuyer(mandate.id)}>
-                                Yes, Contact
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
+                        {contactedBuyers.includes(mandate.id) ? (
+                          <div className="text-green-600">
+                            <ArrowUp className="h-5 w-5" />
+                          </div>
+                        ) : (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <button className="text-blueknight-600 hover:text-blueknight-800">
+                                <Mail className="h-5 w-5" />
+                              </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Contact BlueKnight</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  Have a client who might be a fit? Click below to request an introduction to the buyer through BlueKnight
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleContactBuyer(mandate.id)}>
+                                  Yes, Contact
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </TableCell>
                       <TableCell className="font-medium">{mandate.id}</TableCell>
                       <TableCell>{mandate.buyerHQ}</TableCell>
