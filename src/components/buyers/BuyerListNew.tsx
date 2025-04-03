@@ -1010,9 +1010,15 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
         )}
         
         {activeTab === 'strategic' ? (
-          <StrategicBuyers listingId={listingId} onSave={handleAddToSaved} />
+          <StrategicBuyers 
+            savedBuyers={savedBuyers} 
+            onAddToSaved={handleAddToSaved} 
+          />
         ) : (
-          <PEFunds listingId={listingId} onSave={handleAddToSaved} />
+          <PEFunds 
+            savedBuyers={savedBuyers} 
+            onAddToSaved={handleAddToSaved}
+          />
         )}
       </div>
     </div>

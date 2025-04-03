@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/collapsible";
 
 interface PEFundsProps {
-  savedBuyers: string[];
+  savedBuyers?: string[];
   onAddToSaved: (id: string) => void;
 }
 
@@ -209,7 +209,7 @@ const peBuyers = [
   }
 ];
 
-const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers, onAddToSaved }) => {
+const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers = [], onAddToSaved }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   
   const toggleRationale = (buyerId: string) => {
