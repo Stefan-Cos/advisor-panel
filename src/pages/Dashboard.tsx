@@ -37,12 +37,12 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="bg-blueknight-50 rounded-lg p-4">
-                  <p className="text-sm text-blueknight-600">Buyer Pitches</p>
+                  <p className="text-sm text-blueknight-600">Pitch Support</p>
                   <p className="text-2xl font-bold text-blueknight-800 mt-1">0</p>
                 </div>
                 
                 <div className="bg-blueknight-50 rounded-lg p-4">
-                  <p className="text-sm text-blueknight-600">Client Opportunities</p>
+                  <p className="text-sm text-blueknight-600">Source New Mandates</p>
                   <p className="text-2xl font-bold text-blueknight-800 mt-1">0</p>
                 </div>
               </div>
@@ -98,7 +98,7 @@ const Dashboard = () => {
                 <div className="absolute inset-0 bg-blueknight-800/20"></div>
               </div>
               <CardContent className="p-6 flex flex-col h-52">
-                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Buyer Pitches</h3>
+                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Pitch Support</h3>
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Prepare for future projects by finding potential buyers before your client is ready to list their business.
                 </p>
@@ -128,7 +128,7 @@ const Dashboard = () => {
                 <div className="absolute inset-0 bg-blueknight-800/20"></div>
               </div>
               <CardContent className="p-6 flex flex-col h-52">
-                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Client Opportunities</h3>
+                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Source New Mandates</h3>
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Discover potential clients looking to sell their businesses through our AI-powered matching system.
                 </p>

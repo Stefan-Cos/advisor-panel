@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
@@ -94,13 +95,13 @@ const Listings = () => {
                 value="buyer-pitches"
                 className="data-[state=active]:bg-[#001437] data-[state=active]:text-white"
               >
-                Buyer Pitches
+                Pitch Support
               </TabsTrigger>
               <TabsTrigger 
                 value="client-opportunities"
                 className="data-[state=active]:bg-[#001437] data-[state=active]:text-white"
               >
-                Client Opportunities
+                Source New Mandates
               </TabsTrigger>
             </TabsList>
             
@@ -165,7 +166,7 @@ const Listings = () => {
                   <Badge variant="secondary" className="mb-4 bg-blueknight-100 text-blueknight-700 border border-blueknight-200">
                     Coming Soon
                   </Badge>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Buyer Pitches</h3>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Pitch Support</h3>
                   <p className="text-gray-600 text-center max-w-md mb-6">
                     Prepare for future projects by finding potential buyers before your client is ready to list their business.
                   </p>
@@ -187,7 +188,7 @@ const Listings = () => {
                   <Badge variant="secondary" className="mb-4 bg-blueknight-100 text-blueknight-700 border border-blueknight-200">
                     Coming Soon
                   </Badge>
-                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Client Opportunities</h3>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Source New Mandates</h3>
                   <p className="text-gray-600 text-center max-w-md mb-6">
                     Discover potential clients looking to sell their businesses through our AI-powered matching system.
                   </p>
