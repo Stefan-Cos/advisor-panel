@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, Search } from 'lucide-react';
 import StrategicBuyers from './StrategicBuyers';
