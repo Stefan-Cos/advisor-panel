@@ -753,7 +753,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                       </div>
                                     </div>
                                     
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                                       <div>
                                         <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Type</h4>
                                         <div className="flex flex-wrap gap-1">
@@ -777,36 +777,41 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                       </div>
                                       
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Size</h4>
-                                        <p className="text-sm text-gray-600">${buyer.investmentSize}</p>
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Preferences</h4>
+                                        <div className="flex flex-wrap gap-1">
+                                          {buyer.industryPreferences?.map((pref, i) => (
+                                            <span key={i} className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded-full">
+                                              {pref}
+                                            </span>
+                                          )) || "Not provided"}
+                                        </div>
+                                      </div>
+                                      
+                                      <div>
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Total Investments</h4>
+                                        <p className="text-sm text-gray-600">{(buyer.investments?.split(' ')[0]) || "N/A"}</p>
                                       </div>
                                     </div>
                                     
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                                      <div>
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">EV Range</h4>
+                                        <p className="text-sm text-gray-600">${buyer.investmentSize}</p>
+                                      </div>
+                                      
                                       <div>
                                         <h4 className="text-sm font-semibold text-gray-700 mb-2">Revenue ($M)</h4>
-                                        <p className="text-sm text-gray-600">{buyer.revenueRange || "Not provided"}</p>
+                                        <p className="text-sm text-gray-600">{buyer.revenueRange || buyer.revenue}</p>
                                       </div>
                                       
                                       <div>
                                         <h4 className="text-sm font-semibold text-gray-700 mb-2">EBITDA ($M)</h4>
-                                        <p className="text-sm text-gray-600">{buyer.ebitda || "Not provided"}</p>
+                                        <p className="text-sm text-gray-600">{buyer.ebitda}</p>
                                       </div>
                                       
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Focus</h4>
-                                        <p className="text-sm text-gray-600">{buyer.industryFocus || "Not provided"}</p>
-                                      </div>
-                                    </div>
-                                    
-                                    <div>
-                                      <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Preferences</h4>
-                                      <div className="flex flex-wrap gap-1">
-                                        {buyer.industryPreferences?.map((pref, i) => (
-                                          <span key={i} className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded-full">
-                                            {pref}
-                                          </span>
-                                        )) || "Not provided"}
+                                        <h4 className="text-sm font-semibold text-gray-700 mb-2">AUM ($M)</h4>
+                                        <p className="text-sm text-gray-600">{buyer.aum?.toFixed(1) || "N/A"}</p>
                                       </div>
                                     </div>
                                   </div>
@@ -819,18 +824,9 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'offering'))}`}>
                                             {getRationaleScore(buyer.id, 'offering')}%
                                           </span>
-                                          <h4 className="text-sm font-semibold text-gray-700">Offering</h4>
+                                          <h4 className="text-sm font-semibold text-gray-700">Sectors</h4>
                                         </div>
                                         <p className="text-sm text-gray-600 mt-1">{buyer.rationale.offering}</p>
-                                      </div>
-                                      <div>
-                                        <div className="flex items-center">
-                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'customers'))}`}>
-                                            {getRationaleScore(buyer.id, 'customers')}%
-                                          </span>
-                                          <h4 className="text-sm font-semibold text-gray-700">Customers</h4>
-                                        </div>
-                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.customers}</p>
                                       </div>
                                       <div>
                                         <div className="flex items-center">
