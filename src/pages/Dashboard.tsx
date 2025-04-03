@@ -1,38 +1,16 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Search, Users, Plus, ArrowRight } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import ActiveListings from '../components/dashboard/ActiveListings';
-import ListingCard from '../components/dashboard/ListingCard';
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 const Dashboard = () => {
   // Mock data
   const activeListingsCount = 3;
-  const recentListings = [
-    {
-      id: '1',
-      title: 'Tech Solutions Enterprise',
-      companyName: 'TechCorp Ltd',
-      description: 'Leading provider of enterprise technology solutions with strong market presence in North America.',
-      type: 'M & A'
-    },
-    {
-      id: '2',
-      title: 'MedTech Innovations',
-      companyName: 'HealthTech Inc',
-      description: 'Innovative medical technology company specializing in diagnostic equipment and software.',
-      type: 'M & A'
-    },
-    {
-      id: '3',
-      title: 'Global Logistics Systems',
-      companyName: 'LogiTech Group',
-      description: 'End-to-end logistics management software with global customer base and strong revenue growth.',
-      type: 'M & A'
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -44,14 +22,6 @@ const Dashboard = () => {
         <main className="flex-1 p-6">
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-2xl font-bold text-blueknight-800">Dashboard</h1>
-            
-            <Link
-              to="/add-listing"
-              className="btn-primary flex items-center"
-            >
-              <Plus className="mr-2 h-5 w-5" />
-              Add Listing
-            </Link>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -78,19 +48,96 @@ const Dashboard = () => {
             </div>
           </div>
           
-          <h2 className="text-xl font-semibold text-blueknight-800 mb-6">Recent Listings</h2>
+          <h2 className="text-xl font-semibold text-blueknight-800 mb-6">Project Options</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {recentListings.map((listing) => (
-              <ListingCard
-                key={listing.id}
-                id={listing.id}
-                title={listing.title}
-                companyName={listing.companyName}
-                description={listing.description}
-                type={listing.type}
-              />
-            ))}
+            {/* Option 1: Buyer Search for Active Project */}
+            <Card className="premium-card overflow-hidden animate-fade-in h-full">
+              <div className="h-48 bg-gray-200 relative">
+                <img
+                  src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&h=250&q=80"
+                  alt="Buyer Search"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <CardContent className="p-6 flex flex-col h-52">
+                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Buyer Search for Active Project</h3>
+                <p className="text-sm text-gray-600 mb-6 flex-grow">
+                  Connect your active projects with potential buyers through our targeted search algorithm and maximize your deals.
+                </p>
+                <div className="mt-auto">
+                  <Link
+                    to="/add-listing"
+                    className="btn-primary flex items-center justify-center w-full"
+                  >
+                    <Plus className="mr-2 h-5 w-5" />
+                    Add Project
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Option 2: Buyer Search for Pitch (Coming Soon) */}
+            <Card className="premium-card overflow-hidden animate-fade-in h-full relative opacity-80">
+              <div className="absolute top-4 right-4 z-10">
+                <Badge variant="secondary" className="bg-blueknight-100 text-blueknight-700 border border-blueknight-200">
+                  Coming Soon
+                </Badge>
+              </div>
+              <div className="h-48 bg-gray-200 relative">
+                <img
+                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&h=250&q=80"
+                  alt="Pitch Search"
+                  className="w-full h-full object-cover filter grayscale-[30%]"
+                />
+                <div className="absolute inset-0 bg-blueknight-800/20"></div>
+              </div>
+              <CardContent className="p-6 flex flex-col h-52">
+                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Buyer Search for Pitch</h3>
+                <p className="text-sm text-gray-600 mb-6 flex-grow">
+                  Prepare for future projects by finding potential buyers before your client is ready to list their business.
+                </p>
+                <div className="mt-auto">
+                  <button
+                    className="btn-secondary flex items-center justify-center w-full opacity-70 cursor-not-allowed"
+                    disabled
+                  >
+                    Feature Launching Soon
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {/* Option 3: Find New Clients (Coming Soon) */}
+            <Card className="premium-card overflow-hidden animate-fade-in h-full relative opacity-80">
+              <div className="absolute top-4 right-4 z-10">
+                <Badge variant="secondary" className="bg-blueknight-100 text-blueknight-700 border border-blueknight-200">
+                  Coming Soon
+                </Badge>
+              </div>
+              <div className="h-48 bg-gray-200 relative">
+                <img
+                  src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=400&h=250&q=80"
+                  alt="Find New Clients"
+                  className="w-full h-full object-cover filter grayscale-[30%]"
+                />
+                <div className="absolute inset-0 bg-blueknight-800/20"></div>
+              </div>
+              <CardContent className="p-6 flex flex-col h-52">
+                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Find New Clients</h3>
+                <p className="text-sm text-gray-600 mb-6 flex-grow">
+                  Discover potential clients looking to sell their businesses through our AI-powered matching system.
+                </p>
+                <div className="mt-auto">
+                  <button
+                    className="btn-secondary flex items-center justify-center w-full opacity-70 cursor-not-allowed"
+                    disabled
+                  >
+                    Feature Launching Soon
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </main>
       </div>
