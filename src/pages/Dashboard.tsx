@@ -65,7 +65,7 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Match your active projects with the right strategic and PE buyers using our targeted search algorithms.
                 </p>
-                <div className="mt-auto flex gap-3">
+                <div className="mt-auto flex gap-3 h-10">
                   <Link
                     to="/add-listing"
                     className="inline-flex items-center justify-center flex-1 rounded-md bg-blueknight-500 px-4 py-2.5 h-10 text-sm font-medium text-white hover:bg-blueknight-600 transition-colors"
@@ -101,9 +101,9 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Win new clients faster by showing them relevant buyers during your pitch.
                 </p>
-                <div className="mt-auto">
+                <div className="mt-auto h-10">
                   <button
-                    className="btn-secondary flex items-center justify-center w-full opacity-70 cursor-not-allowed"
+                    className="inline-flex items-center justify-center w-full rounded-md bg-gray-200 px-4 py-2.5 h-10 text-sm font-medium text-gray-500 opacity-70 cursor-not-allowed"
                     disabled
                   >
                     Feature Launching Soon
@@ -131,9 +131,9 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Discover potential clients looking to sell their businesses through our AI-powered matching system.
                 </p>
-                <div className="mt-auto">
+                <div className="mt-auto h-10">
                   <button
-                    className="btn-secondary flex items-center justify-center w-full opacity-70 cursor-not-allowed"
+                    className="inline-flex items-center justify-center w-full rounded-md bg-gray-200 px-4 py-2.5 h-10 text-sm font-medium text-gray-500 opacity-70 cursor-not-allowed"
                     disabled
                   >
                     Feature Launching Soon
