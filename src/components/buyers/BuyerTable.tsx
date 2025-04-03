@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X, Search, Keywords } from 'lucide-react';
+import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X, Search } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import {
   Table,
@@ -517,7 +517,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                   : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50'
               } rounded-md`}
             >
-              <Keywords className="h-4 w-4" />
+              <SlidersHorizontal className="h-4 w-4" />
               <span>Keywords</span>
             </button>
           </div>
