@@ -65,19 +65,19 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Connect your active projects with potential buyers through our targeted search algorithm and maximize your deals.
                 </p>
-                <div className="mt-auto space-y-3">
+                <div className="mt-auto flex gap-3">
                   <Link
                     to="/add-listing"
-                    className="inline-flex items-center justify-center w-full rounded-md bg-blueknight-500 px-4 py-2 text-sm font-medium text-white hover:bg-blueknight-600 transition-colors"
+                    className="inline-flex items-center justify-center flex-1 rounded-md bg-blueknight-500 px-2 py-2 text-sm font-medium text-white hover:bg-blueknight-600 transition-colors"
                   >
-                    <Plus className="mr-2 h-5 w-5" />
+                    <Plus className="mr-1 h-4 w-4" />
                     Create Buyer Search
                   </Link>
                   <Link
                     to="/listings?tab=active-projects"
-                    className="inline-flex items-center justify-center w-full rounded-md bg-blueknight-300 px-4 py-2 text-sm font-medium text-white hover:bg-blueknight-400 transition-colors"
+                    className="inline-flex items-center justify-center flex-1 rounded-md bg-blueknight-300 px-2 py-2 text-sm font-medium text-white hover:bg-blueknight-400 transition-colors"
                   >
-                    View Projects
+                    View Searches
                   </Link>
                 </div>
               </CardContent>
