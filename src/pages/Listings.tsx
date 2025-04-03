@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, PencilLine } from 'lucide-react';
@@ -115,7 +114,7 @@ const Listings = () => {
                       <TableHead className="text-white font-medium text-center">Date</TableHead>
                       <TableHead className="text-white font-medium text-center">Saved Buyers</TableHead>
                       <TableHead className="text-white font-medium">Advisor</TableHead>
-                      <TableHead className="text-white font-medium text-center">Seller Form</TableHead>
+                      <TableHead className="text-white font-medium text-center">Project Form</TableHead>
                       <TableHead className="text-white font-medium text-center">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
