@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Check, Search } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
@@ -15,6 +15,8 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
+import { Command, CommandInput, CommandList } from "@/components/ui/command";
 
 interface PEFundsProps {
   savedBuyers?: string[];
@@ -211,6 +213,7 @@ const peBuyers = [
 
 const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers = [], onAddToSaved }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
+  const [companyNameSearch, setCompanyNameSearch] = useState('');
   
   const toggleRationale = (buyerId: string) => {
     setExpandedRationales(prev => 
@@ -226,8 +229,23 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers = [], onAddToSaved }) => 
     return 'text-red-600';
   };
 
+  // Filter the buyers based on company name search
+  const filteredBuyers = peBuyers.filter(buyer => 
+    buyer.name.toLowerCase().includes(companyNameSearch.toLowerCase())
+  );
+
   return (
     <div className="relative overflow-hidden">
+      <div className="mb-4">
+        <Command className="rounded-lg border shadow-md">
+          <CommandInput 
+            placeholder="Search by company name..." 
+            value={companyNameSearch}
+            onValueChange={setCompanyNameSearch}
+          />
+        </Command>
+      </div>
+      
       <ScrollArea className="h-[600px] w-full" orientation="both">
         <div className="min-w-max">
           <Table>
@@ -242,7 +260,7 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers = [], onAddToSaved }) => 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {peBuyers.map((buyer) => (
+              {filteredBuyers.map((buyer) => (
                 <React.Fragment key={buyer.id}>
                   <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
                     <TableCell 

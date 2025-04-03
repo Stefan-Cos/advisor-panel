@@ -98,7 +98,6 @@ interface SearchCriteria {
   };
 }
 
-// Add rationale scores to the strategic buyers data
 const strategicBuyers: Buyer[] = [
   {
     id: 'buyer1',
@@ -284,7 +283,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   const [activeField, setActiveField] = useState<keyof SearchCriteria | null>(null);
   const [companyNameSearch, setCompanyNameSearch] = useState('');
   
-  // Filter options
   const [selectedMinimumScores, setSelectedMinimumScores] = useState<string[]>([]);
   const [showMinimumScoreDropdown, setShowMinimumScoreDropdown] = useState(false);
   const [minimumScoreSearch, setMinimumScoreSearch] = useState('');
@@ -316,7 +314,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   
   const buyers = activeTab === 'strategic' ? strategicBuyers : peBuyers;
   
-  // Filter the buyers based on company name search
   const filteredBuyers = buyers.filter(buyer => 
     buyer.name.toLowerCase().includes(companyNameSearch.toLowerCase())
   );
@@ -431,7 +428,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
     setShowSearchForm(false);
   };
 
-  // Function to handle minimum score selection
   const handleMinimumScoreSelection = (value: string) => {
     setSelectedMinimumScores(prev => {
       if (prev.includes(value)) {
@@ -442,7 +438,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
     });
   };
 
-  // Function to get match score badge style based on score value
   const getScoreBadgeStyle = (score: number) => {
     if (score >= 90) return "bg-green-50 text-green-700";
     if (score >= 75) return "bg-blue-50 text-blue-700";
@@ -827,3 +822,11 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                 Close
               </button>
             </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default BuyerTable;
