@@ -71,12 +71,6 @@ const mockListings = [
 ];
 
 const Listings = () => {
-  const statusColors = {
-    active: 'bg-green-50 text-green-700',
-    inactive: 'bg-red-50 text-red-700',
-    pending: 'bg-yellow-50 text-yellow-700',
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
@@ -99,9 +93,24 @@ const Listings = () => {
           
           <Tabs defaultValue="active-projects" className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-6">
-              <TabsTrigger value="active-projects">Active Projects</TabsTrigger>
-              <TabsTrigger value="buyer-pitches">Buyer Pitches</TabsTrigger>
-              <TabsTrigger value="client-opportunities">Client Opportunities</TabsTrigger>
+              <TabsTrigger 
+                value="active-projects" 
+                className="data-[state=active]:bg-[#001437] data-[state=active]:text-white"
+              >
+                Active Projects
+              </TabsTrigger>
+              <TabsTrigger 
+                value="buyer-pitches"
+                className="data-[state=active]:bg-[#001437] data-[state=active]:text-white"
+              >
+                Buyer Pitches
+              </TabsTrigger>
+              <TabsTrigger 
+                value="client-opportunities"
+                className="data-[state=active]:bg-[#001437] data-[state=active]:text-white"
+              >
+                Client Opportunities
+              </TabsTrigger>
             </TabsList>
             
             <TabsContent value="active-projects">
@@ -113,9 +122,9 @@ const Listings = () => {
                       <TableHead className="text-white font-medium">Company Name</TableHead>
                       <TableHead className="text-white font-medium">Project Title</TableHead>
                       <TableHead className="text-white font-medium">Date</TableHead>
-                      <TableHead className="text-white font-medium">Status</TableHead>
                       <TableHead className="text-white font-medium">Saved Buyers</TableHead>
                       <TableHead className="text-white font-medium">Advisor</TableHead>
+                      <TableHead className="text-white font-medium">Seller Form</TableHead>
                       <TableHead className="text-white font-medium text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -126,13 +135,16 @@ const Listings = () => {
                         <TableCell>{listing.companyName}</TableCell>
                         <TableCell>{listing.projectTitle}</TableCell>
                         <TableCell>{new Date(listing.date).toLocaleDateString()}</TableCell>
-                        <TableCell>
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[listing.status]}`}>
-                            {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
-                          </span>
-                        </TableCell>
                         <TableCell>{listing.savedBuyers}</TableCell>
                         <TableCell>{listing.advisorCreated}</TableCell>
+                        <TableCell>
+                          <Link 
+                            to={`/add-listing/edit/${listing.id}`} 
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          >
+                            Edit
+                          </Link>
+                        </TableCell>
                         <TableCell className="text-right">
                           <Link
                             to={`/listings/${listing.id}`}
@@ -145,6 +157,16 @@ const Listings = () => {
                     ))}
                   </TableBody>
                 </Table>
+              </div>
+              
+              <div className="mt-6 flex justify-center">
+                <Link
+                  to="/add-listing"
+                  className="btn-primary flex items-center"
+                >
+                  <Plus className="mr-2 h-5 w-5" />
+                  Add Project
+                </Link>
               </div>
             </TabsContent>
             
