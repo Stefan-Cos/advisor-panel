@@ -110,9 +110,9 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
                 <td className="table-cell text-right">
                   <Link
                     to={`/listings/${listing.id}`}
-                    className="text-blueknight-500 hover:text-blueknight-700 font-medium"
+                    className="px-3 py-1.5 bg-blueknight-500 hover:bg-blueknight-600 text-white rounded-md text-sm font-medium transition-colors inline-block"
                   >
-                    View Project
+                    Create Buyer Search
                   </Link>
                 </td>
               </tr>

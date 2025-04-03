@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
@@ -139,9 +140,9 @@ const Listings = () => {
                         <TableCell className="text-right">
                           <Link
                             to={`/listings/${listing.id}`}
-                            className="text-blueknight-600 hover:text-blueknight-700 text-sm font-medium"
+                            className="px-3 py-1.5 bg-blueknight-500 hover:bg-blueknight-600 text-white rounded-md text-sm font-medium transition-colors inline-block"
                           >
-                            View Details
+                            Create Buyer Search
                           </Link>
                         </TableCell>
                       </TableRow>
