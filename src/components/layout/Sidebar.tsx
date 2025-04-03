@@ -25,7 +25,7 @@ const Sidebar = () => {
   
   const navItems = [
     { path: '/dashboard', label: 'Overview', icon: <LayoutDashboard className="h-5 w-5" /> },
-    { path: '/listings', label: 'Listings', icon: <ListFilter className="h-5 w-5" /> },
+    { path: '/listings', label: 'Projects', icon: <ListFilter className="h-5 w-5" /> },
     { path: '/messages', label: 'Messages', icon: <MessageSquare className="h-5 w-5" /> },
   ];
   

@@ -12,6 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 
 // Mock data
 const mockListings = [
@@ -94,47 +97,101 @@ const Listings = () => {
             </Link>
           </div>
           
-          <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-blueknight-500">
-                  <TableHead className="text-white font-medium">ID</TableHead>
-                  <TableHead className="text-white font-medium">Company Name</TableHead>
-                  <TableHead className="text-white font-medium">Project Title</TableHead>
-                  <TableHead className="text-white font-medium">Date</TableHead>
-                  <TableHead className="text-white font-medium">Status</TableHead>
-                  <TableHead className="text-white font-medium">Saved Buyers</TableHead>
-                  <TableHead className="text-white font-medium">Advisor</TableHead>
-                  <TableHead className="text-white font-medium text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {mockListings.map((listing) => (
-                  <TableRow key={listing.id} className="hover:bg-gray-50">
-                    <TableCell className="font-medium">{listing.id}</TableCell>
-                    <TableCell>{listing.companyName}</TableCell>
-                    <TableCell>{listing.projectTitle}</TableCell>
-                    <TableCell>{new Date(listing.date).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[listing.status]}`}>
-                        {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
-                      </span>
-                    </TableCell>
-                    <TableCell>{listing.savedBuyers}</TableCell>
-                    <TableCell>{listing.advisorCreated}</TableCell>
-                    <TableCell className="text-right">
-                      <Link
-                        to={`/listings/${listing.id}`}
-                        className="text-blueknight-600 hover:text-blueknight-700 text-sm font-medium"
-                      >
-                        View Details
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <Tabs defaultValue="active-projects" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="active-projects">Active Projects</TabsTrigger>
+              <TabsTrigger value="buyer-pitches">Buyer Pitches</TabsTrigger>
+              <TabsTrigger value="client-opportunities">Client Opportunities</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="active-projects">
+              <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-blueknight-500">
+                      <TableHead className="text-white font-medium">ID</TableHead>
+                      <TableHead className="text-white font-medium">Company Name</TableHead>
+                      <TableHead className="text-white font-medium">Project Title</TableHead>
+                      <TableHead className="text-white font-medium">Date</TableHead>
+                      <TableHead className="text-white font-medium">Status</TableHead>
+                      <TableHead className="text-white font-medium">Saved Buyers</TableHead>
+                      <TableHead className="text-white font-medium">Advisor</TableHead>
+                      <TableHead className="text-white font-medium text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {mockListings.map((listing) => (
+                      <TableRow key={listing.id} className="hover:bg-gray-50">
+                        <TableCell className="font-medium">{listing.id}</TableCell>
+                        <TableCell>{listing.companyName}</TableCell>
+                        <TableCell>{listing.projectTitle}</TableCell>
+                        <TableCell>{new Date(listing.date).toLocaleDateString()}</TableCell>
+                        <TableCell>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[listing.status]}`}>
+                            {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
+                          </span>
+                        </TableCell>
+                        <TableCell>{listing.savedBuyers}</TableCell>
+                        <TableCell>{listing.advisorCreated}</TableCell>
+                        <TableCell className="text-right">
+                          <Link
+                            to={`/listings/${listing.id}`}
+                            className="text-blueknight-600 hover:text-blueknight-700 text-sm font-medium"
+                          >
+                            View Details
+                          </Link>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="buyer-pitches">
+              <Card className="border border-gray-200 shadow-sm">
+                <CardContent className="flex flex-col items-center justify-center p-12">
+                  <Badge variant="secondary" className="mb-4 bg-blueknight-100 text-blueknight-700 border border-blueknight-200">
+                    Coming Soon
+                  </Badge>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Buyer Pitches</h3>
+                  <p className="text-gray-600 text-center max-w-md mb-6">
+                    Prepare for future projects by finding potential buyers before your client is ready to list their business.
+                  </p>
+                  <div className="h-48 w-full max-w-md relative opacity-80">
+                    <img
+                      src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&h=400&q=80"
+                      alt="Pitch Search"
+                      className="w-full h-full object-cover rounded-lg filter grayscale-[30%]"
+                    />
+                    <div className="absolute inset-0 bg-blueknight-800/20 rounded-lg"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="client-opportunities">
+              <Card className="border border-gray-200 shadow-sm">
+                <CardContent className="flex flex-col items-center justify-center p-12">
+                  <Badge variant="secondary" className="mb-4 bg-blueknight-100 text-blueknight-700 border border-blueknight-200">
+                    Coming Soon
+                  </Badge>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-3">Client Opportunities</h3>
+                  <p className="text-gray-600 text-center max-w-md mb-6">
+                    Discover potential clients looking to sell their businesses through our AI-powered matching system.
+                  </p>
+                  <div className="h-48 w-full max-w-md relative opacity-80">
+                    <img
+                      src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&h=400&q=80"
+                      alt="Find New Clients"
+                      className="w-full h-full object-cover rounded-lg filter grayscale-[30%]"
+                    />
+                    <div className="absolute inset-0 bg-blueknight-800/20 rounded-lg"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </main>
       </div>
     </div>

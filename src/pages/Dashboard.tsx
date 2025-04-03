@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Users, Plus, ArrowRight } from 'lucide-react';
@@ -30,7 +31,7 @@ const Dashboard = () => {
               <h2 className="text-lg font-medium text-gray-900 mb-4">Quick Stats</h2>
               <div className="grid grid-cols-3 gap-4">
                 <div className="bg-blueknight-50 rounded-lg p-4">
-                  <p className="text-sm text-blueknight-600">Total Projects</p>
+                  <p className="text-sm text-blueknight-600">Active Projects</p>
                   <p className="text-2xl font-bold text-blueknight-800 mt-1">3</p>
                 </div>
                 
@@ -59,17 +60,17 @@ const Dashboard = () => {
                 />
               </div>
               <CardContent className="p-6 flex flex-col h-52">
-                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Buyer Search for Active Project</h3>
+                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Active Projects</h3>
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Connect your active projects with potential buyers through our targeted search algorithm and maximize your deals.
                 </p>
                 <div className="mt-auto">
                   <Link
-                    to="/add-listing"
+                    to="/listings?tab=active-projects"
                     className="btn-primary flex items-center justify-center w-full"
                   >
                     <Plus className="mr-2 h-5 w-5" />
-                    Add Project
+                    View Projects
                   </Link>
                 </div>
               </CardContent>
@@ -90,7 +91,7 @@ const Dashboard = () => {
                 <div className="absolute inset-0 bg-blueknight-800/20"></div>
               </div>
               <CardContent className="p-6 flex flex-col h-52">
-                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Buyer Search for Pitch</h3>
+                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Buyer Pitches</h3>
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Prepare for future projects by finding potential buyers before your client is ready to list their business.
                 </p>
@@ -120,7 +121,7 @@ const Dashboard = () => {
                 <div className="absolute inset-0 bg-blueknight-800/20"></div>
               </div>
               <CardContent className="p-6 flex flex-col h-52">
-                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Find New Clients</h3>
+                <h3 className="font-semibold text-lg text-blueknight-800 mb-2">Client Opportunities</h3>
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Discover potential clients looking to sell their businesses through our AI-powered matching system.
                 </p>
