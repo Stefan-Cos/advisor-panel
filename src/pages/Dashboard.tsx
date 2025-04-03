@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Users, Plus, ArrowRight } from 'lucide-react';
@@ -68,14 +67,14 @@ const Dashboard = () => {
                 <div className="mt-auto flex gap-3">
                   <Link
                     to="/add-listing"
-                    className="inline-flex items-center justify-center flex-1 rounded-md bg-blueknight-500 px-4 py-2 text-sm font-medium text-white hover:bg-blueknight-600 transition-colors"
+                    className="inline-flex items-center justify-center flex-1 rounded-md bg-blueknight-500 px-4 py-2.5 h-10 text-sm font-medium text-white hover:bg-blueknight-600 transition-colors"
                   >
                     <Plus className="mr-1 h-4 w-4" />
                     Create Buyer Search
                   </Link>
                   <Link
                     to="/listings?tab=active-projects"
-                    className="inline-flex items-center justify-center flex-1 rounded-md bg-blueknight-300 px-4 py-2 text-sm font-medium text-white hover:bg-blueknight-400 transition-colors"
+                    className="inline-flex items-center justify-center flex-1 rounded-md bg-blueknight-300 px-4 py-2.5 h-10 text-sm font-medium text-white hover:bg-blueknight-400 transition-colors"
                   >
                     View Searches
                   </Link>
