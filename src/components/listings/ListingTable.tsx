@@ -80,12 +80,12 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
               <th scope="col" className="table-header text-white font-medium">Company Name</th>
               <th scope="col" className="table-header text-white font-medium">Project Title</th>
               <th scope="col" className="table-header text-white font-medium">Advisor Created</th>
-              <th scope="col" className="table-header text-white font-medium">Saved Buyers</th>
+              <th scope="col" className="table-header text-white font-medium text-center">Saved Buyers</th>
               <th scope="col" className="table-header text-white font-medium">Status</th>
               <th scope="col" className="table-header text-white font-medium">Date Created</th>
               <th scope="col" className="table-header text-white font-medium">Notification</th>
-              <th scope="col" className="table-header text-white font-medium">
-                <span className="sr-only">Action</span>
+              <th scope="col" className="table-header text-white font-medium text-center">
+                Actions
               </th>
             </tr>
           </thead>
@@ -95,7 +95,7 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
                 <td className="table-cell">{listing.companyName}</td>
                 <td className="table-cell">{listing.projectTitle}</td>
                 <td className="table-cell">{listing.advisorCreated || 'Admin'}</td>
-                <td className="table-cell">{listing.savedBuyers || 0}</td>
+                <td className="table-cell text-center">{listing.savedBuyers || 0}</td>
                 <td className="table-cell">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColors[listing.status]}`}>
                     {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
@@ -107,7 +107,7 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
                     {listing.notifications}
                   </span>
                 </td>
-                <td className="table-cell text-right">
+                <td className="table-cell text-center">
                   <Link
                     to={`/listings/${listing.id}`}
                     className="px-3 py-1.5 bg-blueknight-500 hover:bg-blueknight-600 text-white rounded-md text-sm font-medium transition-colors inline-block"

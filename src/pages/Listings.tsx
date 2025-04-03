@@ -114,10 +114,10 @@ const Listings = () => {
                       <TableHead className="text-white font-medium">Company Name</TableHead>
                       <TableHead className="text-white font-medium">Project Title</TableHead>
                       <TableHead className="text-white font-medium">Date</TableHead>
-                      <TableHead className="text-white font-medium">Saved Buyers</TableHead>
+                      <TableHead className="text-white font-medium text-center">Saved Buyers</TableHead>
                       <TableHead className="text-white font-medium">Advisor</TableHead>
                       <TableHead className="text-white font-medium">Seller Form</TableHead>
-                      <TableHead className="text-white font-medium text-right">Actions</TableHead>
+                      <TableHead className="text-white font-medium text-center">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -127,7 +127,7 @@ const Listings = () => {
                         <TableCell>{listing.companyName}</TableCell>
                         <TableCell>{listing.projectTitle}</TableCell>
                         <TableCell>{new Date(listing.date).toLocaleDateString()}</TableCell>
-                        <TableCell>{listing.savedBuyers}</TableCell>
+                        <TableCell className="text-center">{listing.savedBuyers}</TableCell>
                         <TableCell>{listing.advisorCreated}</TableCell>
                         <TableCell>
                           <Link 
@@ -137,7 +137,7 @@ const Listings = () => {
                             Edit
                           </Link>
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-center">
                           <Link
                             to={`/listings/${listing.id}`}
                             className="px-3 py-1.5 bg-blueknight-500 hover:bg-blueknight-600 text-white rounded-md text-sm font-medium transition-colors inline-block"
