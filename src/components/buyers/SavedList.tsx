@@ -327,6 +327,25 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
     }
   };
 
+  const getScoreColor = (score: number) => {
+    if (score >= 80) return 'bg-green-50 text-green-700';
+    if (score >= 60) return 'bg-yellow-50 text-yellow-700';
+    return 'bg-red-50 text-red-700';
+  };
+
+  const getRationaleScore = (buyerId: string, section: string) => {
+    const baseScore = buyers.find(b => b.id === buyerId)?.matchingScore || 75;
+    
+    switch(section) {
+      case 'offering': return Math.min(100, baseScore + 5);
+      case 'customers': return Math.max(30, baseScore - 10);
+      case 'transactions': return Math.min(100, baseScore + 2);
+      case 'financial': return Math.max(40, baseScore - 5);
+      case 'overall': return baseScore;
+      default: return baseScore;
+    }
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
@@ -582,24 +601,49 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                     <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
                                     <div className="space-y-4">
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'offering'))}`}>
+                                            {getRationaleScore(buyer.id, 'offering')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Offering</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.offering}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'customers'))}`}>
+                                            {getRationaleScore(buyer.id, 'customers')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Customers</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.customers}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Previous Transactions</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.previousTransactions}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'transactions'))}`}>
+                                            {getRationaleScore(buyer.id, 'transactions')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Previous Transactions</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.previousTransactions}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'financial'))}`}>
+                                            {getRationaleScore(buyer.id, 'financial')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Financial Strength</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.financialStrength}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'overall'))}`}>
+                                            {getRationaleScore(buyer.id, 'overall')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Overall Rationale</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.overall}</p>
                                       </div>
                                     </div>
                                   </div>
@@ -771,24 +815,49 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                     <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
                                     <div className="space-y-4">
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Offering</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.offering}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'offering'))}`}>
+                                            {getRationaleScore(buyer.id, 'offering')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Offering</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.offering}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Customers</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.customers}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'customers'))}`}>
+                                            {getRationaleScore(buyer.id, 'customers')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Customers</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.customers}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Previous Transactions</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.previousTransactions}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'transactions'))}`}>
+                                            {getRationaleScore(buyer.id, 'transactions')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Previous Transactions</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.previousTransactions}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Financial Strength</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.financialStrength}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'financial'))}`}>
+                                            {getRationaleScore(buyer.id, 'financial')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Financial Strength</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.financialStrength}</p>
                                       </div>
                                       <div>
-                                        <h4 className="text-sm font-semibold text-gray-700 mb-1">Overall Rationale</h4>
-                                        <p className="text-sm text-gray-600">{buyer.rationale.overall}</p>
+                                        <div className="flex items-center">
+                                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'overall'))}`}>
+                                            {getRationaleScore(buyer.id, 'overall')}%
+                                          </span>
+                                          <h4 className="text-sm font-semibold text-gray-700">Overall Rationale</h4>
+                                        </div>
+                                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.overall}</p>
                                       </div>
                                     </div>
                                   </div>
