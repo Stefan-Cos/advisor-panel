@@ -1,8 +1,16 @@
+
 import React, { useState } from 'react';
-import { Filter, SlidersHorizontal, Search } from 'lucide-react';
+import { Filter, SlidersHorizontal, Search, Check, ChevronsUpDown } from 'lucide-react';
 import StrategicBuyers from './StrategicBuyers';
 import PEFunds from './PEFunds';
 import { useToast } from "@/hooks/use-toast";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import { Checkbox } from "@/components/ui/checkbox";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
 interface BuyerListNewProps {
   listingId: string;
@@ -17,6 +25,40 @@ interface KeywordSearch {
   operator: BooleanOperator;
 }
 
+// Country options for filtering
+const COUNTRIES = [
+  "Afghanistan", "Albania", "Andorra", "Armenia", "Austria", "Azerbaijan", "Bangladesh",
+  "Belgium", "Bulgaria", "Canada", "China", "Denmark", "Estonia", "Finland", "France",
+  "Germany", "Greece", "Hungary", "Iceland", "India", "Ireland", "Italy", "Japan",
+  "Kazakhstan", "Lithuania", "Malta", "Netherlands", "Norway", "Poland", "Portugal",
+  "Romania", "Russia", "Spain", "Sweden", "Switzerland", "Turkey", "Ukraine", 
+  "United Kingdom", "United States"
+];
+
+// Employee count options
+const EMPLOYEE_RANGES = [
+  "Less than 500",
+  "500 - 1,000",
+  "1,000 - 5,000",
+  "More than 5,000"
+];
+
+// Revenue ranges
+const REVENUE_RANGES = [
+  "Less than $50M",
+  "$50M - $100M",
+  "$100M - $500M",
+  "More than $500M"
+];
+
+// Cash ranges
+const CASH_RANGES = [
+  "Less than $10M",
+  "$10M - $50M",
+  "$50M - $100M",
+  "More than $100M"
+];
+
 const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
   const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
@@ -24,10 +66,10 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
   const { toast } = useToast();
   
   // Filter states
-  const [hqFilter, setHqFilter] = useState<string>('');
-  const [employeesFilter, setEmployeesFilter] = useState<string>('');
-  const [revenueFilter, setRevenueFilter] = useState<string>('');
-  const [cashFilter, setCashFilter] = useState<string>('');
+  const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
+  const [selectedEmployeeRanges, setSelectedEmployeeRanges] = useState<string[]>([]);
+  const [selectedRevenueRanges, setSelectedRevenueRanges] = useState<string[]>([]);
+  const [selectedCashRanges, setSelectedCashRanges] = useState<string[]>([]);
   const [peVcBackedFilter, setPeVcBackedFilter] = useState<string>('');
   
   // Keyword search states for each category
@@ -156,72 +198,258 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              {/* HQ Multi-Select Filter */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   HQ
                 </label>
-                <select 
-                  className="input-field"
-                  value={hqFilter}
-                  onChange={(e) => setHqFilter(e.target.value)}
-                >
-                  <option value="">All Countries</option>
-                  <option value="USA">USA</option>
-                  <option value="UK">UK</option>
-                  <option value="Germany">Germany</option>
-                  <option value="Canada">Canada</option>
-                </select>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      role="combobox"
+                      className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      {selectedCountries.length > 0 
+                        ? `${selectedCountries.length} selected`
+                        : "All Countries"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px] p-0" align="start">
+                    <Command>
+                      <CommandInput placeholder="Filter or select below" />
+                      <CommandList className="max-h-[200px] overflow-y-auto">
+                        <CommandEmpty>No country found.</CommandEmpty>
+                        <CommandGroup>
+                          <CommandItem 
+                            onSelect={() => {
+                              if (selectedCountries.length === COUNTRIES.length) {
+                                setSelectedCountries([]);
+                              } else {
+                                setSelectedCountries([...COUNTRIES]);
+                              }
+                            }}
+                            className="flex items-center gap-2 hover:bg-accent"
+                          >
+                            <Checkbox 
+                              checked={selectedCountries.length === COUNTRIES.length} 
+                              className="border-gray-300"
+                            />
+                            <span>Select All</span>
+                          </CommandItem>
+                          {COUNTRIES.map((country) => (
+                            <CommandItem
+                              key={country}
+                              onSelect={() => {
+                                setSelectedCountries(
+                                  selectedCountries.includes(country)
+                                    ? selectedCountries.filter(c => c !== country)
+                                    : [...selectedCountries, country]
+                                );
+                              }}
+                              className="flex items-center gap-2 hover:bg-accent"
+                            >
+                              <Checkbox
+                                checked={selectedCountries.includes(country)}
+                                className="border-gray-300"
+                              />
+                              <span>{country}</span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
               
+              {/* Employees Multi-Select Filter */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Employees
                 </label>
-                <select 
-                  className="input-field"
-                  value={employeesFilter}
-                  onChange={(e) => setEmployeesFilter(e.target.value)}
-                >
-                  <option value="">Any</option>
-                  <option value="<500">Less than 500</option>
-                  <option value="500-1000">500 - 1,000</option>
-                  <option value="1000-5000">1,000 - 5,000</option>
-                  <option value=">5000">More than 5,000</option>
-                </select>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      role="combobox"
+                      className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      {selectedEmployeeRanges.length > 0 
+                        ? `${selectedEmployeeRanges.length} selected`
+                        : "Any"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px] p-0" align="start">
+                    <Command>
+                      <CommandList>
+                        <CommandGroup>
+                          <CommandItem 
+                            onSelect={() => {
+                              if (selectedEmployeeRanges.length === EMPLOYEE_RANGES.length) {
+                                setSelectedEmployeeRanges([]);
+                              } else {
+                                setSelectedEmployeeRanges([...EMPLOYEE_RANGES]);
+                              }
+                            }}
+                            className="flex items-center gap-2 hover:bg-accent"
+                          >
+                            <Checkbox 
+                              checked={selectedEmployeeRanges.length === EMPLOYEE_RANGES.length} 
+                              className="border-gray-300"
+                            />
+                            <span>Select All</span>
+                          </CommandItem>
+                          {EMPLOYEE_RANGES.map((range) => (
+                            <CommandItem
+                              key={range}
+                              onSelect={() => {
+                                setSelectedEmployeeRanges(
+                                  selectedEmployeeRanges.includes(range)
+                                    ? selectedEmployeeRanges.filter(r => r !== range)
+                                    : [...selectedEmployeeRanges, range]
+                                );
+                              }}
+                              className="flex items-center gap-2 hover:bg-accent"
+                            >
+                              <Checkbox
+                                checked={selectedEmployeeRanges.includes(range)}
+                                className="border-gray-300"
+                              />
+                              <span>{range}</span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
               
+              {/* Revenue Multi-Select Filter */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Revenue ($M)
                 </label>
-                <select 
-                  className="input-field"
-                  value={revenueFilter}
-                  onChange={(e) => setRevenueFilter(e.target.value)}
-                >
-                  <option value="">Any</option>
-                  <option value="<50">Less than $50M</option>
-                  <option value="50-100">$50M - $100M</option>
-                  <option value="100-500">$100M - $500M</option>
-                  <option value=">500">More than $500M</option>
-                </select>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      role="combobox"
+                      className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      {selectedRevenueRanges.length > 0 
+                        ? `${selectedRevenueRanges.length} selected`
+                        : "Any"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px] p-0" align="start">
+                    <Command>
+                      <CommandList>
+                        <CommandGroup>
+                          <CommandItem 
+                            onSelect={() => {
+                              if (selectedRevenueRanges.length === REVENUE_RANGES.length) {
+                                setSelectedRevenueRanges([]);
+                              } else {
+                                setSelectedRevenueRanges([...REVENUE_RANGES]);
+                              }
+                            }}
+                            className="flex items-center gap-2 hover:bg-accent"
+                          >
+                            <Checkbox 
+                              checked={selectedRevenueRanges.length === REVENUE_RANGES.length} 
+                              className="border-gray-300"
+                            />
+                            <span>Select All</span>
+                          </CommandItem>
+                          {REVENUE_RANGES.map((range) => (
+                            <CommandItem
+                              key={range}
+                              onSelect={() => {
+                                setSelectedRevenueRanges(
+                                  selectedRevenueRanges.includes(range)
+                                    ? selectedRevenueRanges.filter(r => r !== range)
+                                    : [...selectedRevenueRanges, range]
+                                );
+                              }}
+                              className="flex items-center gap-2 hover:bg-accent"
+                            >
+                              <Checkbox
+                                checked={selectedRevenueRanges.includes(range)}
+                                className="border-gray-300"
+                              />
+                              <span>{range}</span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
               
+              {/* Cash Multi-Select Filter */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Cash ($M)
                 </label>
-                <select 
-                  className="input-field"
-                  value={cashFilter}
-                  onChange={(e) => setCashFilter(e.target.value)}
-                >
-                  <option value="">Any</option>
-                  <option value="<10">Less than $10M</option>
-                  <option value="10-50">$10M - $50M</option>
-                  <option value="50-100">$50M - $100M</option>
-                  <option value=">100">More than $100M</option>
-                </select>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      role="combobox"
+                      className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                    >
+                      {selectedCashRanges.length > 0 
+                        ? `${selectedCashRanges.length} selected`
+                        : "Any"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px] p-0" align="start">
+                    <Command>
+                      <CommandList>
+                        <CommandGroup>
+                          <CommandItem 
+                            onSelect={() => {
+                              if (selectedCashRanges.length === CASH_RANGES.length) {
+                                setSelectedCashRanges([]);
+                              } else {
+                                setSelectedCashRanges([...CASH_RANGES]);
+                              }
+                            }}
+                            className="flex items-center gap-2 hover:bg-accent"
+                          >
+                            <Checkbox 
+                              checked={selectedCashRanges.length === CASH_RANGES.length} 
+                              className="border-gray-300"
+                            />
+                            <span>Select All</span>
+                          </CommandItem>
+                          {CASH_RANGES.map((range) => (
+                            <CommandItem
+                              key={range}
+                              onSelect={() => {
+                                setSelectedCashRanges(
+                                  selectedCashRanges.includes(range)
+                                    ? selectedCashRanges.filter(r => r !== range)
+                                    : [...selectedCashRanges, range]
+                                );
+                              }}
+                              className="flex items-center gap-2 hover:bg-accent"
+                            >
+                              <Checkbox
+                                checked={selectedCashRanges.includes(range)}
+                                className="border-gray-300"
+                              />
+                              <span>{range}</span>
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
               </div>
               
               <div>

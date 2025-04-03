@@ -33,7 +33,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
     <div className="animate-fade-in space-y-8 w-full relative">
       <Card>
         <CardContent className="p-6">
-          <div className="flex justify-between items-start mb-6">
+          <div className="flex justify-between items-start">
             <div>
               <h1 className="text-2xl font-bold text-blueknight-800">{projectTitle}</h1>
             </div>
@@ -42,8 +42,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </span>
           </div>
-          
-          {/* The BuyerPreferencesSection has been removed from here */}
         </CardContent>
       </Card>
       
