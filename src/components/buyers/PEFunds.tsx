@@ -52,7 +52,7 @@ const peBuyers = [
     description: 'Healthcare focused private equity',
     rationale: {
       sectors: {
-        text: 'Strong focus on healthcare technology, perfectly aligned with our client's offering.',
+        text: 'Strong focus on healthcare technology, perfectly aligned with our client\'s offering.',
         score: 94
       },
       previousTransactions: {
