@@ -82,7 +82,7 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
               <th scope="col" className="table-header text-white font-medium">Advisor Created</th>
               <th scope="col" className="table-header text-white font-medium text-center">Saved Buyers</th>
               <th scope="col" className="table-header text-white font-medium">Status</th>
-              <th scope="col" className="table-header text-white font-medium">Date Created</th>
+              <th scope="col" className="table-header text-white font-medium text-center">Date Created</th>
               <th scope="col" className="table-header text-white font-medium">Notification</th>
               <th scope="col" className="table-header text-white font-medium text-center">
                 Actions
@@ -101,7 +101,7 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
                     {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
                   </span>
                 </td>
-                <td className="table-cell">{formatDateString(listing.date)}</td>
+                <td className="table-cell text-center">{formatDateString(listing.date)}</td>
                 <td className="table-cell">
                   <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-gray-200 text-xs">
                     {listing.notifications}

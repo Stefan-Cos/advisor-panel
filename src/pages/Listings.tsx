@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Plus } from 'lucide-react';
@@ -110,26 +109,24 @@ const Listings = () => {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-blueknight-500">
-                      <TableHead className="text-white font-medium">ID</TableHead>
                       <TableHead className="text-white font-medium">Company Name</TableHead>
                       <TableHead className="text-white font-medium">Project Title</TableHead>
-                      <TableHead className="text-white font-medium">Date</TableHead>
+                      <TableHead className="text-white font-medium text-center">Date</TableHead>
                       <TableHead className="text-white font-medium text-center">Saved Buyers</TableHead>
                       <TableHead className="text-white font-medium">Advisor</TableHead>
-                      <TableHead className="text-white font-medium">Seller Form</TableHead>
+                      <TableHead className="text-white font-medium text-center">Seller Form</TableHead>
                       <TableHead className="text-white font-medium text-center">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {mockListings.map((listing) => (
                       <TableRow key={listing.id} className="hover:bg-gray-50">
-                        <TableCell className="font-medium">{listing.id}</TableCell>
                         <TableCell>{listing.companyName}</TableCell>
                         <TableCell>{listing.projectTitle}</TableCell>
-                        <TableCell>{new Date(listing.date).toLocaleDateString()}</TableCell>
+                        <TableCell className="text-center">{new Date(listing.date).toLocaleDateString()}</TableCell>
                         <TableCell className="text-center">{listing.savedBuyers}</TableCell>
                         <TableCell>{listing.advisorCreated}</TableCell>
-                        <TableCell>
+                        <TableCell className="text-center">
                           <Link 
                             to={`/add-listing/edit/${listing.id}`} 
                             className="text-blue-600 hover:text-blue-800 text-sm font-medium"
