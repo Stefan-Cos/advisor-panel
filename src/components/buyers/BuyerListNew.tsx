@@ -12,11 +12,10 @@ interface BuyerListNewProps {
 // Boolean operator type for keyword search
 type BooleanOperator = 'AND' | 'OR' | 'NOT';
 
-// Search criteria interface
+// Search criteria interface for each field type
 interface KeywordSearch {
   value: string;
   operator: BooleanOperator;
-  field: 'offering' | 'sectors' | 'customers' | '';
 }
 
 const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
@@ -32,9 +31,15 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
   const [cashFilter, setCashFilter] = useState<string>('');
   const [peVcBackedFilter, setPeVcBackedFilter] = useState<string>('');
   
-  // Keyword search states
-  const [keywordSearches, setKeywordSearches] = useState<KeywordSearch[]>([
-    { value: '', operator: 'AND', field: '' }
+  // Keyword search states for each category
+  const [offeringSearches, setOfferingSearches] = useState<KeywordSearch[]>([
+    { value: '', operator: 'AND' }
+  ]);
+  const [sectorSearches, setSectorSearches] = useState<KeywordSearch[]>([
+    { value: '', operator: 'AND' }
+  ]);
+  const [customerSearches, setCustomerSearches] = useState<KeywordSearch[]>([
+    { value: '', operator: 'AND' }
   ]);
   
   const handleAddToSaved = (buyerId: string) => {
@@ -59,26 +64,42 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
     setShowFilters(false);
   };
   
-  const handleKeywordChange = (index: number, field: keyof KeywordSearch, value: string) => {
-    const updatedSearches = [...keywordSearches];
+  // Handle keyword changes for each category
+  const handleKeywordChange = (
+    index: number, 
+    field: keyof KeywordSearch, 
+    value: string, 
+    setter: React.Dispatch<React.SetStateAction<KeywordSearch[]>>,
+    searches: KeywordSearch[]
+  ) => {
+    const updatedSearches = [...searches];
     updatedSearches[index] = {
       ...updatedSearches[index],
       [field]: value
     };
-    setKeywordSearches(updatedSearches);
+    setter(updatedSearches);
   };
   
-  const addKeywordSearch = () => {
-    setKeywordSearches([
-      ...keywordSearches,
-      { value: '', operator: 'AND', field: '' }
+  // Add keyword to specific category
+  const addKeywordSearch = (
+    setter: React.Dispatch<React.SetStateAction<KeywordSearch[]>>,
+    searches: KeywordSearch[]
+  ) => {
+    setter([
+      ...searches,
+      { value: '', operator: 'AND' }
     ]);
   };
   
-  const removeKeywordSearch = (index: number) => {
-    if (keywordSearches.length > 1) {
-      const updatedSearches = keywordSearches.filter((_, i) => i !== index);
-      setKeywordSearches(updatedSearches);
+  // Remove keyword from specific category
+  const removeKeywordSearch = (
+    index: number,
+    setter: React.Dispatch<React.SetStateAction<KeywordSearch[]>>,
+    searches: KeywordSearch[]
+  ) => {
+    if (searches.length > 1) {
+      const updatedSearches = searches.filter((_, i) => i !== index);
+      setter(updatedSearches);
     }
   };
 
@@ -239,63 +260,158 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
                 <h3 className="text-sm font-medium text-gray-700">Keyword Search</h3>
               </div>
               
-              <div className="space-y-3">
-                {keywordSearches.map((search, index) => (
-                  <div key={index} className="flex flex-wrap items-center gap-2">
-                    {index > 0 && (
-                      <div className="w-20">
-                        <select 
-                          className="w-full p-2 text-xs border border-gray-300 rounded-md"
-                          value={search.operator}
-                          onChange={(e) => handleKeywordChange(index, 'operator', e.target.value as BooleanOperator)}
-                        >
-                          <option value="AND">AND</option>
-                          <option value="OR">OR</option>
-                          <option value="NOT">NOT</option>
-                        </select>
+              {/* Offering Keywords */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Offering
+                </label>
+                <div className="space-y-3">
+                  {offeringSearches.map((search, index) => (
+                    <div key={`offering-${index}`} className="flex flex-wrap items-center gap-2">
+                      {index > 0 && (
+                        <div className="w-20">
+                          <select 
+                            className="w-full p-2 text-xs border border-gray-300 rounded-md"
+                            value={search.operator}
+                            onChange={(e) => handleKeywordChange(index, 'operator', e.target.value as BooleanOperator, setOfferingSearches, offeringSearches)}
+                          >
+                            <option value="AND">AND</option>
+                            <option value="OR">OR</option>
+                            <option value="NOT">NOT</option>
+                          </select>
+                        </div>
+                      )}
+                      
+                      <div className="flex-grow min-w-[200px]">
+                        <input 
+                          type="text" 
+                          placeholder="Enter offering keyword..."
+                          className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                          value={search.value}
+                          onChange={(e) => handleKeywordChange(index, 'value', e.target.value, setOfferingSearches, offeringSearches)}
+                        />
                       </div>
-                    )}
-                    
-                    <div className="flex-grow min-w-[200px]">
-                      <input 
-                        type="text" 
-                        placeholder="Enter keyword..."
-                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                        value={search.value}
-                        onChange={(e) => handleKeywordChange(index, 'value', e.target.value)}
-                      />
-                    </div>
-                    
-                    <div className="w-32">
-                      <select 
-                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
-                        value={search.field}
-                        onChange={(e) => handleKeywordChange(index, 'field', e.target.value as KeywordSearch['field'])}
+                      
+                      <button 
+                        onClick={() => removeKeywordSearch(index, setOfferingSearches, offeringSearches)}
+                        className="p-1.5 text-red-500 hover:text-red-700 rounded-md hover:bg-red-50"
+                        title="Remove"
                       >
-                        <option value="">All fields</option>
-                        <option value="offering">Offering</option>
-                        <option value="sectors">Sectors</option>
-                        <option value="customers">Customers</option>
-                      </select>
+                        ✕
+                      </button>
                     </div>
-                    
-                    <button 
-                      onClick={() => removeKeywordSearch(index)}
-                      className="p-1.5 text-red-500 hover:text-red-700 rounded-md hover:bg-red-50"
-                      title="Remove"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                
+                <button
+                  onClick={() => addKeywordSearch(setOfferingSearches, offeringSearches)}
+                  className="mt-2 px-3 py-1.5 text-xs font-medium text-blueknight-600 bg-blueknight-50 rounded-md hover:bg-blueknight-100"
+                >
+                  + Add offering keyword
+                </button>
               </div>
               
-              <button
-                onClick={addKeywordSearch}
-                className="mt-3 px-3 py-1.5 text-xs font-medium text-blueknight-600 bg-blueknight-50 rounded-md hover:bg-blueknight-100"
-              >
-                + Add keyword
-              </button>
+              {/* Sectors Keywords */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sectors
+                </label>
+                <div className="space-y-3">
+                  {sectorSearches.map((search, index) => (
+                    <div key={`sector-${index}`} className="flex flex-wrap items-center gap-2">
+                      {index > 0 && (
+                        <div className="w-20">
+                          <select 
+                            className="w-full p-2 text-xs border border-gray-300 rounded-md"
+                            value={search.operator}
+                            onChange={(e) => handleKeywordChange(index, 'operator', e.target.value as BooleanOperator, setSectorSearches, sectorSearches)}
+                          >
+                            <option value="AND">AND</option>
+                            <option value="OR">OR</option>
+                            <option value="NOT">NOT</option>
+                          </select>
+                        </div>
+                      )}
+                      
+                      <div className="flex-grow min-w-[200px]">
+                        <input 
+                          type="text" 
+                          placeholder="Enter sector keyword..."
+                          className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                          value={search.value}
+                          onChange={(e) => handleKeywordChange(index, 'value', e.target.value, setSectorSearches, sectorSearches)}
+                        />
+                      </div>
+                      
+                      <button 
+                        onClick={() => removeKeywordSearch(index, setSectorSearches, sectorSearches)}
+                        className="p-1.5 text-red-500 hover:text-red-700 rounded-md hover:bg-red-50"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                <button
+                  onClick={() => addKeywordSearch(setSectorSearches, sectorSearches)}
+                  className="mt-2 px-3 py-1.5 text-xs font-medium text-blueknight-600 bg-blueknight-50 rounded-md hover:bg-blueknight-100"
+                >
+                  + Add sector keyword
+                </button>
+              </div>
+              
+              {/* Customers Keywords */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Customers
+                </label>
+                <div className="space-y-3">
+                  {customerSearches.map((search, index) => (
+                    <div key={`customer-${index}`} className="flex flex-wrap items-center gap-2">
+                      {index > 0 && (
+                        <div className="w-20">
+                          <select 
+                            className="w-full p-2 text-xs border border-gray-300 rounded-md"
+                            value={search.operator}
+                            onChange={(e) => handleKeywordChange(index, 'operator', e.target.value as BooleanOperator, setCustomerSearches, customerSearches)}
+                          >
+                            <option value="AND">AND</option>
+                            <option value="OR">OR</option>
+                            <option value="NOT">NOT</option>
+                          </select>
+                        </div>
+                      )}
+                      
+                      <div className="flex-grow min-w-[200px]">
+                        <input 
+                          type="text" 
+                          placeholder="Enter customer keyword..."
+                          className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                          value={search.value}
+                          onChange={(e) => handleKeywordChange(index, 'value', e.target.value, setCustomerSearches, customerSearches)}
+                        />
+                      </div>
+                      
+                      <button 
+                        onClick={() => removeKeywordSearch(index, setCustomerSearches, customerSearches)}
+                        className="p-1.5 text-red-500 hover:text-red-700 rounded-md hover:bg-red-50"
+                        title="Remove"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                
+                <button
+                  onClick={() => addKeywordSearch(setCustomerSearches, customerSearches)}
+                  className="mt-2 px-3 py-1.5 text-xs font-medium text-blueknight-600 bg-blueknight-50 rounded-md hover:bg-blueknight-100"
+                >
+                  + Add customer keyword
+                </button>
+              </div>
             </div>
             
             <div className="mt-4 flex justify-end">
