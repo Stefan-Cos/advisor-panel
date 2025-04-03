@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Plus } from 'lucide-react';
+import { Plus, PencilLine } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import {
@@ -130,8 +130,9 @@ const Listings = () => {
                         <TableCell className="text-center">
                           <Link 
                             to={`/add-listing/edit/${listing.id}`} 
-                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                            className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center justify-center gap-1.5"
                           >
+                            <PencilLine className="h-4 w-4" />
                             Edit
                           </Link>
                         </TableCell>
