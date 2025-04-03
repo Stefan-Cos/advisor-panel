@@ -7,6 +7,7 @@ import Sidebar from '../components/layout/Sidebar';
 import TotalProjects from '../components/dashboard/TotalProjects';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
   // Mock data
@@ -64,12 +65,18 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-600 mb-6 flex-grow">
                   Connect your active projects with potential buyers through our targeted search algorithm and maximize your deals.
                 </p>
-                <div className="mt-auto">
+                <div className="mt-auto space-y-3">
                   <Link
-                    to="/listings?tab=active-projects"
-                    className="btn-primary flex items-center justify-center w-full"
+                    to="/add-listing"
+                    className="inline-flex items-center justify-center w-full rounded-md bg-blueknight-500 px-4 py-2 text-sm font-medium text-white hover:bg-blueknight-600 transition-colors"
                   >
                     <Plus className="mr-2 h-5 w-5" />
+                    Create Buyer Search
+                  </Link>
+                  <Link
+                    to="/listings?tab=active-projects"
+                    className="inline-flex items-center justify-center w-full rounded-md bg-blueknight-300 px-4 py-2 text-sm font-medium text-white hover:bg-blueknight-400 transition-colors"
+                  >
                     View Projects
                   </Link>
                 </div>
