@@ -24,15 +24,9 @@ const Navbar = () => {
         <h1 className="ml-8 text-lg font-medium">Welcome John Doe</h1>
       </div>
       
-      <div className="relative w-1/3 max-w-md">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-4 w-4 text-gray-400" />
-        </div>
-        <input
-          type="text"
-          placeholder="Search"
-          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-full bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blueknight-400 focus:border-transparent"
-        />
+      <div className="flex flex-col items-center text-center mx-4">
+        <h2 className="text-lg font-semibold text-blueknight-500">BlueKnight's Exclusive M&A Network</h2>
+        <p className="text-sm text-gray-600">M&A is about speed, access, and execution. We give you all three.</p>
       </div>
       
       <div className="flex items-center space-x-4">
