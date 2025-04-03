@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Plus, Check, Search } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,7 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 interface StrategicBuyersProps {
-  savedBuyers: string[];
+  savedBuyers?: string[];
   onAddToSaved: (id: string) => void;
 }
 
@@ -202,7 +201,7 @@ const strategicBuyers = [
   }
 ];
 
-const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers, onAddToSaved }) => {
+const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onAddToSaved }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchCompany, setSearchCompany] = useState<string>('');
   const [showSearchField, setShowSearchField] = useState<boolean>(false);
