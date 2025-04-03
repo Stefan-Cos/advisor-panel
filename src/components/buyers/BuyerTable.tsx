@@ -29,6 +29,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { format } from 'date-fns';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface BuyerTableProps {
   listingId: string;
@@ -280,6 +282,26 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   });
   const [tempKeyword, setTempKeyword] = useState('');
   const [activeField, setActiveField] = useState<keyof SearchCriteria | null>(null);
+  const [companyNameSearch, setCompanyNameSearch] = useState('');
+  
+  // Filter options
+  const [selectedMinimumScores, setSelectedMinimumScores] = useState<string[]>([]);
+  const [showMinimumScoreDropdown, setShowMinimumScoreDropdown] = useState(false);
+  const [minimumScoreSearch, setMinimumScoreSearch] = useState('');
+  
+  const minimumScoreOptions = [
+    { label: 'Any', value: '0' },
+    { label: '60%+', value: '60' },
+    { label: '70%+', value: '70' },
+    { label: '80%+', value: '80' },
+    { label: '90%+', value: '90' },
+    { label: '95%+', value: '95' },
+  ];
+  
+  const filteredMinimumScoreOptions = minimumScoreOptions.filter(option => 
+    option.label.toLowerCase().includes(minimumScoreSearch.toLowerCase())
+  );
+  
   const { toast } = useToast();
   
   const handleAddToSaved = (buyerId: string) => {
@@ -293,6 +315,11 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   };
   
   const buyers = activeTab === 'strategic' ? strategicBuyers : peBuyers;
+  
+  // Filter the buyers based on company name search
+  const filteredBuyers = buyers.filter(buyer => 
+    buyer.name.toLowerCase().includes(companyNameSearch.toLowerCase())
+  );
   
   const toggleFilters = () => {
     setShowFilters(!showFilters);
@@ -402,6 +429,17 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
       description: "Your keyword search has been applied",
     });
     setShowSearchForm(false);
+  };
+
+  // Function to handle minimum score selection
+  const handleMinimumScoreSelection = (value: string) => {
+    setSelectedMinimumScores(prev => {
+      if (prev.includes(value)) {
+        return prev.filter(item => item !== value);
+      } else {
+        return [...prev, value];
+      }
+    });
   };
 
   // Function to get match score badge style based on score value
@@ -717,12 +755,50 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Minimum Match Score
                 </label>
-                <select className="input-field">
-                  <option value="0">Any</option>
-                  <option value="70">70%+</option>
-                  <option value="80">80%+</option>
-                  <option value="90">90%+</option>
-                </select>
+                <Popover open={showMinimumScoreDropdown} onOpenChange={setShowMinimumScoreDropdown}>
+                  <PopoverTrigger asChild>
+                    <button
+                      className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 bg-white rounded-md text-sm"
+                      onClick={() => setShowMinimumScoreDropdown(!showMinimumScoreDropdown)}
+                    >
+                      <span className="text-left truncate">
+                        {selectedMinimumScores.length > 0
+                          ? `${selectedMinimumScores.length} selected`
+                          : 'Select options'}
+                      </span>
+                      <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0" align="start">
+                    <div className="p-2">
+                      <Input
+                        placeholder="Search..."
+                        value={minimumScoreSearch}
+                        onChange={(e) => setMinimumScoreSearch(e.target.value)}
+                        className="mb-2"
+                      />
+                      <ScrollArea className="h-[200px]">
+                        <div className="space-y-2 p-2">
+                          {filteredMinimumScoreOptions.map((option) => (
+                            <div key={option.value} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`score-${option.value}`}
+                                checked={selectedMinimumScores.includes(option.value)}
+                                onCheckedChange={() => handleMinimumScoreSelection(option.value)}
+                              />
+                              <label
+                                htmlFor={`score-${option.value}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             
@@ -751,57 +827,3 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                 Close
               </button>
             </div>
-            
-            <div className="space-y-6">
-              <div className="border-b border-gray-200 pb-4">
-                <h4 className="text-sm font-medium text-gray-800 mb-3">What are your preferred countries for potential buyers?</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm text-gray-600">United States</label>
-                    <RadioGroup defaultValue="high" className="flex space-x-2">
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="high" id="us-high" />
-                        <label htmlFor="us-high" className="text-xs">High</label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="medium" id="us-medium" />
-                        <label htmlFor="us-medium" className="text-xs">Medium</label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="low" id="us-low" />
-                        <label htmlFor="us-low" className="text-xs">Low</label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm text-gray-600">United Kingdom</label>
-                    <RadioGroup defaultValue="medium" className="flex space-x-2">
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="high" id="uk-high" />
-                        <label htmlFor="uk-high" className="text-xs">High</label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="medium" id="uk-medium" />
-                        <label htmlFor="uk-medium" className="text-xs">Medium</label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="low" id="uk-low" />
-                        <label htmlFor="uk-low" className="text-xs">Low</label>
-                      </div>
-                    </RadioGroup>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border-b border-gray-200 pb-4">
-                <h4 className="text-sm font-medium text-gray-800 mb-3">What industries should the buyer operate in?</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <label className="text-sm text-gray-600">Technology</label>
-                    <RadioGroup defaultValue="high" className="flex space-x-2">
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="high" id="tech-high" />
-                        <label htmlFor="tech-high" className="text-xs">High</label>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <RadioGroupItem value="medium" id="tech-medium

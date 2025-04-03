@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Check, Search } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
@@ -14,6 +15,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { Input } from "@/components/ui/input";
 
 interface StrategicBuyersProps {
   savedBuyers: string[];
@@ -202,6 +204,11 @@ const strategicBuyers = [
 
 const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers, onAddToSaved }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
+  const [searchCompany, setSearchCompany] = useState<string>('');
+  
+  const filteredBuyers = strategicBuyers.filter(buyer => 
+    buyer.name.toLowerCase().includes(searchCompany.toLowerCase())
+  );
   
   const toggleRationale = (buyerId: string) => {
     setExpandedRationales(prev => 
@@ -237,7 +244,21 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers, onAddToS
           <Table>
             <TableHeader>
               <TableRow className="bg-blueknight-500">
-                <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">Company Name</TableHead>
+                <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">
+                  <div className="flex flex-col space-y-2">
+                    <span>Company Name</span>
+                    <div className="relative">
+                      <Input
+                        type="text"
+                        placeholder="Search companies..."
+                        value={searchCompany}
+                        onChange={(e) => setSearchCompany(e.target.value)}
+                        className="h-8 px-3 py-1 text-black bg-white border-gray-300 text-xs rounded-md"
+                      />
+                      <Search className="h-3.5 w-3.5 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                    </div>
+                  </div>
+                </TableHead>
                 <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
                 <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
                 <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
@@ -249,7 +270,7 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers, onAddToS
               </TableRow>
             </TableHeader>
             <TableBody>
-              {strategicBuyers.map((buyer) => (
+              {filteredBuyers.map((buyer) => (
                 <React.Fragment key={buyer.id}>
                   <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
                     <TableCell 
