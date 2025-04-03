@@ -32,6 +32,7 @@ const mockBuyerMandates = [
     buyerType: 'Strategic',
     activelyLooking: 'Yes',
     criteriaCount: 5,
+    criteriaCreated: 'Jun-23',
     targetHQ: 'North America',
     targetRevenue: '$10M - $50M',
     targetEBITDA: '$2M - $8M',
@@ -46,6 +47,7 @@ const mockBuyerMandates = [
     buyerType: 'PE Fund',
     activelyLooking: 'Yes',
     criteriaCount: 3,
+    criteriaCreated: 'Aug-23',
     targetHQ: 'Europe',
     targetRevenue: '$25M - $100M',
     targetEBITDA: '$5M - $15M',
@@ -60,6 +62,7 @@ const mockBuyerMandates = [
     buyerType: 'Strategic',
     activelyLooking: 'No',
     criteriaCount: 2,
+    criteriaCreated: 'Nov-23',
     targetHQ: 'DACH Region',
     targetRevenue: '$15M - $75M',
     targetEBITDA: '$3M - $12M',
@@ -74,6 +77,7 @@ const mockBuyerMandates = [
     buyerType: 'PE Fund',
     activelyLooking: 'Yes',
     criteriaCount: 4,
+    criteriaCreated: 'Jan-24',
     targetHQ: 'North America',
     targetRevenue: '$5M - $30M',
     targetEBITDA: '$1M - $6M',
@@ -88,6 +92,7 @@ const mockBuyerMandates = [
     buyerType: 'Strategic',
     activelyLooking: 'Yes',
     criteriaCount: 3,
+    criteriaCreated: 'Feb-24',
     targetHQ: 'APAC',
     targetRevenue: '$20M - $80M',
     targetEBITDA: '$4M - $15M',
@@ -492,6 +497,7 @@ const BuyerMandates = () => {
                     <TableHead className="text-white font-medium">Buyer Type</TableHead>
                     <TableHead className="text-white font-medium">Actively Looking</TableHead>
                     <TableHead className="text-white font-medium">Criteria #</TableHead>
+                    <TableHead className="text-white font-medium">Criteria Created</TableHead>
                     <TableHead className="text-white font-medium">Target HQ</TableHead>
                     <TableHead className="text-white font-medium">Target Revenue</TableHead>
                     <TableHead className="text-white font-medium">Target EBITDA</TableHead>
@@ -515,7 +521,7 @@ const BuyerMandates = () => {
                             <AlertDialogHeader>
                               <AlertDialogTitle>Contact BlueKnight</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Do you want to contact BlueKnight for an intro of your client to this buyer?
+                                Have a client who might be a fit? Click below to request an introduction to the buyer through BlueKnight
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -532,6 +538,7 @@ const BuyerMandates = () => {
                       <TableCell>{mandate.buyerType}</TableCell>
                       <TableCell>{mandate.activelyLooking}</TableCell>
                       <TableCell>{mandate.criteriaCount}</TableCell>
+                      <TableCell>{mandate.criteriaCreated}</TableCell>
                       <TableCell>{mandate.targetHQ}</TableCell>
                       <TableCell>{mandate.targetRevenue}</TableCell>
                       <TableCell>{mandate.targetEBITDA}</TableCell>
