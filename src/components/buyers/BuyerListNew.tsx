@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, Search, Check, ChevronsUpDown } from 'lucide-react';
 import StrategicBuyers from './StrategicBuyers';
@@ -514,7 +515,7 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
                       PE/VC-Backed
                     </label>
                     <select 
-                      className="input-field"
+                      className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md"
                       value={peVcBackedFilter}
                       onChange={(e) => setPeVcBackedFilter(e.target.value)}
                     >
@@ -847,4 +848,175 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
                       <PopoverTrigger asChild>
                         <button
                           role="combobox"
-                          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background
+                          className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        >
+                          {selectedInvestmentRanges.length > 0 
+                            ? `${selectedInvestmentRanges.length} selected`
+                            : "Any"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[300px] p-0" align="start">
+                        <Command>
+                          <CommandList>
+                            <CommandGroup>
+                              <CommandItem 
+                                onSelect={() => {
+                                  if (selectedInvestmentRanges.length === INVESTMENT_RANGES.length) {
+                                    setSelectedInvestmentRanges([]);
+                                  } else {
+                                    setSelectedInvestmentRanges([...INVESTMENT_RANGES]);
+                                  }
+                                }}
+                                className="flex items-center gap-2 hover:bg-accent"
+                              >
+                                <Checkbox 
+                                  checked={selectedInvestmentRanges.length === INVESTMENT_RANGES.length} 
+                                  className="border-gray-300"
+                                />
+                                <span>Select All</span>
+                              </CommandItem>
+                              {INVESTMENT_RANGES.map((range) => (
+                                <CommandItem
+                                  key={range}
+                                  onSelect={() => {
+                                    setSelectedInvestmentRanges(
+                                      selectedInvestmentRanges.includes(range)
+                                        ? selectedInvestmentRanges.filter(r => r !== range)
+                                        : [...selectedInvestmentRanges, range]
+                                    );
+                                  }}
+                                  className="flex items-center gap-2 hover:bg-accent"
+                                >
+                                  <Checkbox
+                                    checked={selectedInvestmentRanges.includes(range)}
+                                    className="border-gray-300"
+                                  />
+                                  <span>{range}</span>
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  
+                  {/* Min/Max Revenue */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Revenue Range ($M)
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                        value={minRevenue}
+                        onChange={(e) => setMinRevenue(e.target.value)}
+                      />
+                      <span className="text-gray-500">-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                        value={maxRevenue}
+                        onChange={(e) => setMaxRevenue(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Min/Max EBITDA */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      EBITDA Range ($M)
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                        value={minEbitda}
+                        onChange={(e) => setMinEbitda(e.target.value)}
+                      />
+                      <span className="text-gray-500">-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                        value={maxEbitda}
+                        onChange={(e) => setMaxEbitda(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  
+                  {/* Min/Max Enterprise Value */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Enterprise Value Range ($M)
+                    </label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="number"
+                        placeholder="Min"
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                        value={minEnterpriseValue}
+                        onChange={(e) => setMinEnterpriseValue(e.target.value)}
+                      />
+                      <span className="text-gray-500">-</span>
+                      <input
+                        type="number"
+                        placeholder="Max"
+                        className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                        value={maxEnterpriseValue}
+                        onChange={(e) => setMaxEnterpriseValue(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Minimum Fit Score
+                    </label>
+                    <Select
+                      value={minimumPeFitScore}
+                      onValueChange={setMinimumPeFitScore}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Any" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {SCORE_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={handleFilterApply}
+                className="px-4 py-2 text-sm font-medium text-white bg-blueknight-500 rounded-md hover:bg-blueknight-600"
+              >
+                Apply Filters
+              </button>
+            </div>
+          </div>
+        )}
+        
+        {activeTab === 'strategic' ? (
+          <StrategicBuyers listingId={listingId} onSave={handleAddToSaved} />
+        ) : (
+          <PEFunds listingId={listingId} onSave={handleAddToSaved} />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default BuyerListNew;
