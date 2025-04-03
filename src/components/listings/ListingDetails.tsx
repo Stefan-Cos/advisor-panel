@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import BuyerList from '../buyers/BuyerList';
+import BuyerListNew from '../buyers/BuyerListNew';
 import SavedList from '../buyers/SavedList';
 import AIAssistantChat from '../ui/AIAssistantChat';
 import { Badge } from "@/components/ui/badge";
@@ -119,7 +119,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         </TabsList>
         
         <TabsContent value="buyer-list" className="mt-6 w-full">
-          <BuyerList listingId={id} />
+          <BuyerListNew listingId={id} />
         </TabsContent>
         
         <TabsContent value="saved-list" className="mt-6 w-full">
