@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BuyerListNew from '../buyers/BuyerListNew';
@@ -21,7 +20,6 @@ interface ListingDetailsProps {
   date: string;
 }
 
-// Sample preferences data - in a real app, this would be fetched from API
 const samplePreferences = {
   countries: [
     { name: 'United States', importance: 'high' as const },
@@ -85,7 +83,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
             </span>
           </div>
           
-          {/* Buyer Preferences Summary Section */}
           <div className="mb-6">
             <BuyerPreferencesSection 
               preferences={samplePreferences} 
@@ -93,7 +90,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
             />
           </div>
           
-          {/* Preferences Dialog - kept for future use if needed */}
           <Dialog open={preferencesOpen} onOpenChange={setPreferencesOpen}>
             <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
               <DialogHeader>
@@ -136,7 +132,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         </TabsContent>
       </Tabs>
       
-      {/* AI Assistant Chat component is positioned here */}
       <AIAssistantChat />
     </div>
   );
