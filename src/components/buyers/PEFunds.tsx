@@ -44,20 +44,16 @@ const peBuyers = [
     status: 'active' as const,
     investmentType: ['M&A', 'Growth equity'],
     geography: ['UK', 'Europe', 'US'],
-    investmentSize: '5M - 50M',
+    investmentSize: '$5M - 50M',
     revenue: '1.00 - 12.00',
     ebitda: '1.00 - 12.00',
     industryFocus: 'Industry Specific',
     industryPreferences: ['Healthcare', 'Technology'],
     description: 'Healthcare focused private equity',
     rationale: {
-      offering: {
-        text: 'Looking to expand their healthcare technology portfolio with companies like our client.',
+      sectors: {
+        text: 'Strong focus on healthcare technology, perfectly aligned with our client's offering.',
         score: 94
-      },
-      customers: {
-        text: 'Their portfolio companies serve similar customer segments, creating potential synergies.',
-        score: 96
       },
       previousTransactions: {
         text: 'Completed 5 healthcare technology acquisitions in the past 3 years, with a focus on software and digital health platforms.',
@@ -94,20 +90,16 @@ const peBuyers = [
     status: 'active' as const,
     investmentType: ['Growth equity', 'Minority acquisition'],
     geography: ['USA', 'Canada'],
-    investmentSize: '10M - 80M',
+    investmentSize: '$10M - 80M',
     revenue: '5.00 - 50.00',
     ebitda: '1.00 - 10.00',
     industryFocus: 'Industry Specific',
     industryPreferences: ['Healthcare', 'SaaS'],
     description: 'Medtech focused venture capital',
     rationale: {
-      offering: {
-        text: 'Actively seeking to invest in innovative medical technology solutions.',
+      sectors: {
+        text: 'Specializes in healthcare technology and digital health solutions.',
         score: 90
-      },
-      customers: {
-        text: 'Portfolio focused on solutions for hospital systems and clinics.',
-        score: 85
       },
       previousTransactions: {
         text: 'Made 3 investments in similar companies over the past 18 months, with typical deal sizes of $30-50M.',
@@ -144,20 +136,16 @@ const peBuyers = [
     status: 'inactive' as const,
     investmentType: ['Minority acquisition', 'LBO'],
     geography: ['Switzerland', 'Germany', 'France'],
-    investmentSize: '20M - 100M',
+    investmentSize: '$20M - 100M',
     revenue: '10.00 - 50.00',
     ebitda: '2.00 - 15.00',
     industryFocus: 'Industry Specific',
     industryPreferences: ['Biotech', 'Pharma'],
     description: 'Biotech focused private equity',
     rationale: {
-      offering: {
-        text: 'Looking to diversify their portfolio with technology that supports drug development.',
+      sectors: {
+        text: 'Focuses on biotech and pharmaceutical sectors with limited healthcare IT exposure.',
         score: 68
-      },
-      customers: {
-        text: 'Strong connections to European pharmaceutical companies that could be potential customers.',
-        score: 85
       },
       previousTransactions: {
         text: 'Limited M&A experience, with only one acquisition in the past three years.',
@@ -194,20 +182,16 @@ const peBuyers = [
     status: 'pending' as const,
     investmentType: ['M&A', 'Majority acquisition'],
     geography: ['Australia', 'Singapore', 'Japan'],
-    investmentSize: '15M - 75M',
+    investmentSize: '$15M - 75M',
     revenue: '8.00 - 40.00',
     ebitda: '1.50 - 12.00',
     industryFocus: 'Industry Specific',
     industryPreferences: ['HealthTech', 'MedTech'],
     description: 'APAC focused healthcare investor',
     rationale: {
-      offering: {
-        text: 'Interested in healthcare IT solutions that can be expanded into APAC markets.',
+      sectors: {
+        text: 'Focuses on medical devices and healthcare IT with strong APAC presence.',
         score: 78
-      },
-      customers: {
-        text: 'Strong network of healthcare providers across Australia, Singapore, and Japan.',
-        score: 88
       },
       previousTransactions: {
         text: 'Completed two healthcare IT acquisitions in the past two years.',
@@ -366,12 +350,12 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers, onAddToSaved }) => {
                               </div>
                               
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Size</h4>
-                                <p className="text-sm text-gray-600">${buyer.investmentSize}</p>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">EV Range</h4>
+                                <p className="text-sm text-gray-600">{buyer.investmentSize}</p>
                               </div>
                             </div>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-2">Revenue ($M)</h4>
                                 <p className="text-sm text-gray-600">{buyer.revenue}</p>
@@ -383,8 +367,13 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers, onAddToSaved }) => {
                               </div>
                               
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Focus</h4>
-                                <p className="text-sm text-gray-600">{buyer.industryFocus}</p>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">AUM ($M)</h4>
+                                <p className="text-sm text-gray-600">{buyer.aum.toFixed(1)}</p>
+                              </div>
+                              
+                              <div>
+                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Total Investments</h4>
+                                <p className="text-sm text-gray-600">{buyer.investments}</p>
                               </div>
                             </div>
                             
@@ -405,21 +394,12 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers, onAddToSaved }) => {
                             <div className="space-y-4">
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.offering.score)}`}>
-                                    {buyer.rationale.offering.score}%
+                                  <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.sectors.score)}`}>
+                                    {buyer.rationale.sectors.score}%
                                   </span>
-                                  <span>Offering</span>
+                                  <span>Sectors</span>
                                 </h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.offering.text}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.customers.score)}`}>
-                                    {buyer.rationale.customers.score}%
-                                  </span>
-                                  <span>Customers</span>
-                                </h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.customers.text}</p>
+                                <p className="text-sm text-gray-600">{buyer.rationale.sectors.text}</p>
                               </div>
                               <div>
                                 <h4 className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
