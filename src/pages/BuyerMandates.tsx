@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, Search, Mail } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
@@ -490,7 +491,7 @@ const BuyerMandates = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="bg-blueknight-500 text-white font-medium w-12"></TableHead>
+                    <TableHead className="bg-blueknight-500 text-white font-medium w-12">Request Intro</TableHead>
                     <TableHead className="bg-blueknight-500 text-white font-medium">Buyer ID</TableHead>
                     <TableHead className="bg-blueknight-500 text-white font-medium">Buyer HQ</TableHead>
                     <TableHead className="bg-blueknight-500 text-white font-medium">Buyer Type</TableHead>
