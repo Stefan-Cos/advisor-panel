@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X, Search } from 'lucide-react';
+import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X, Search, Download } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -8,6 +10,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
+  TableCheckboxHead,
+  TableCheckboxCell
 } from "@/components/ui/table";
 import {
   Collapsible,
@@ -28,8 +32,6 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { format } from 'date-fns';
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface BuyerTableProps {
@@ -445,6 +447,88 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
     return "bg-gray-50 text-gray-700";
   };
 
+  const [selectedBuyers, setSelectedBuyers] = useState<string[]>([]);
+  
+  const toggleBuyerSelection = (buyerId: string) => {
+    setSelectedBuyers(prev => 
+      prev.includes(buyerId) 
+        ? prev.filter(id => id !== buyerId) 
+        : [...prev, buyerId]
+    );
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedBuyers(filteredBuyers.map(buyer => buyer.id));
+    } else {
+      setSelectedBuyers([]);
+    }
+  };
+
+  const exportToCSV = () => {
+    // Get the selected buyers data
+    const selectedBuyersData = filteredBuyers.filter(buyer => 
+      selectedBuyers.includes(buyer.id)
+    );
+    
+    // Convert to CSV format
+    const headers = activeTab === 'strategic' 
+      ? ['Company Name', 'Type', 'Description', 'HQ', 'Employees', 'Revenue ($M)', 'Cash ($M)', 'Date', 'PE/VC Backed', 'Public', 'Match Score'] 
+      : ['Company Name', 'Type', 'Description', 'HQ', 'Employees', 'AUM ($M)', 'Investments', 'Match Score'];
+    
+    const csvRows = [headers];
+    
+    selectedBuyersData.forEach(buyer => {
+      let row;
+      
+      if (activeTab === 'strategic') {
+        row = [
+          buyer.name,
+          buyer.type,
+          buyer.description,
+          buyer.hq,
+          buyer.employees.toString(),
+          buyer.revenue.toString(),
+          buyer.cash.toString(),
+          formatReportDate(buyer.reportedDate),
+          buyer.isPEVCBacked ? 'Yes' : 'No',
+          buyer.isPublic ? 'Yes' : 'No',
+          buyer.matchingScore.toString()
+        ];
+      } else {
+        const peBuyer = buyer as typeof peBuyers[0];
+        row = [
+          buyer.name,
+          buyer.type,
+          buyer.description,
+          buyer.hq,
+          buyer.employees.toString(),
+          peBuyer.aum.toString(),
+          peBuyer.investments,
+          buyer.matchingScore.toString()
+        ];
+      }
+      
+      csvRows.push(row);
+    });
+    
+    // Convert to CSV string
+    const csvString = csvRows
+      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    
+    // Create a download link
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${activeTab}-buyers-export-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
@@ -473,6 +557,17 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
           </div>
           
           <div className="flex space-x-3">
+            {selectedBuyers.length > 0 && (
+              <Button 
+                variant="outline"
+                onClick={exportToCSV} 
+                className="flex items-center space-x-2 bg-blueknight-50 text-blueknight-600 hover:bg-blueknight-100"
+              >
+                <Download className="h-4 w-4" />
+                <span>Export {selectedBuyers.length} {selectedBuyers.length === 1 ? 'buyer' : 'buyers'}</span>
+              </Button>
+            )}
+            
             <button
               onClick={toggleSearchForm}
               className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
@@ -736,97 +831,4 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  PE/VC Backed
-                </label>
-                <select className="input-field">
-                  <option value="">Any</option>
-                  <option value="yes">Yes</option>
-                  <option value="no">No</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Minimum Match Score
-                </label>
-                <Popover open={showMinimumScoreDropdown} onOpenChange={setShowMinimumScoreDropdown}>
-                  <PopoverTrigger asChild>
-                    <button
-                      className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 bg-white rounded-md text-sm"
-                      onClick={() => setShowMinimumScoreDropdown(!showMinimumScoreDropdown)}
-                    >
-                      <span className="text-left truncate">
-                        {selectedMinimumScores.length > 0
-                          ? `${selectedMinimumScores.length} selected`
-                          : 'Select options'}
-                      </span>
-                      <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-[200px] p-0" align="start">
-                    <div className="p-2">
-                      <Input
-                        placeholder="Search..."
-                        value={minimumScoreSearch}
-                        onChange={(e) => setMinimumScoreSearch(e.target.value)}
-                        className="mb-2"
-                      />
-                      <ScrollArea className="h-[200px]">
-                        <div className="space-y-2 p-2">
-                          {filteredMinimumScoreOptions.map((option) => (
-                            <div key={option.value} className="flex items-center space-x-2">
-                              <Checkbox
-                                id={`score-${option.value}`}
-                                checked={selectedMinimumScores.includes(option.value)}
-                                onCheckedChange={() => handleMinimumScoreSelection(option.value)}
-                              />
-                              <label
-                                htmlFor={`score-${option.value}`}
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                              >
-                                {option.label}
-                              </label>
-                            </div>
-                          ))}
-                        </div>
-                      </ScrollArea>
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-            
-            <div className="mt-4 flex justify-end">
-              <button
-                onClick={handleFilterApply}
-                className="px-4 py-2 bg-blueknight-500 text-white rounded-md text-sm font-medium hover:bg-blueknight-600"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        )}
-        
-        {showKeywords && (
-          <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-medium text-gray-700 flex items-center">
-                <SlidersHorizontal className="h-4 w-4 mr-2" />
-                Buyer Keywords
-              </h3>
-              <button 
-                onClick={() => setShowKeywords(false)}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-export default BuyerTable;
+                <label className="block text

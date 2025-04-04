@@ -106,6 +106,33 @@ const TableCaption = React.forwardRef<
 ))
 TableCaption.displayName = "TableCaption"
 
+const TableCheckboxCell = React.forwardRef<
+  HTMLTableCellElement,
+  React.TdHTMLAttributes<HTMLTableCellElement>
+>(({ className, ...props }, ref) => (
+  <td
+    ref={ref}
+    className={cn("w-12 p-4 align-middle", className)}
+    {...props}
+  />
+))
+TableCheckboxCell.displayName = "TableCheckboxCell"
+
+const TableCheckboxHead = React.forwardRef<
+  HTMLTableCellElement,
+  React.ThHTMLAttributes<HTMLTableCellElement>
+>(({ className, ...props }, ref) => (
+  <th
+    ref={ref}
+    className={cn(
+      "w-12 h-12 px-4 text-left align-middle",
+      className
+    )}
+    {...props}
+  />
+))
+TableCheckboxHead.displayName = "TableCheckboxHead"
+
 export {
   Table,
   TableHeader,
@@ -115,4 +142,6 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  TableCheckboxCell,
+  TableCheckboxHead
 }
