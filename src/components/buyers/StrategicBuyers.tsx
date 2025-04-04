@@ -306,7 +306,7 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
                               open={expandedRationales.includes(buyer.id)}
                               onOpenChange={() => toggleRationale(buyer.id)}
                             >
-                              <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
+                              <CollapsibleTrigger className="flex items-center px-3 py-1.5 text-xs font-medium bg-blueknight-50 text-blueknight-600 rounded-md hover:bg-blueknight-100 border border-blueknight-100 shadow-sm transition-colors">
                                 Rationale
                                 {expandedRationales.includes(buyer.id) ? (
                                   <ChevronUp className="h-3 w-3 ml-1" />
