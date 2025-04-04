@@ -10,7 +10,10 @@ import {
   BarChart,
   LogOut,
   Building,
-  MessageCircle
+  MessageCircle,
+  List,
+  BookmarkCheck,
+  Users2
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
@@ -30,6 +33,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -37,11 +46,23 @@ const Sidebar = () => {
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   const [feedback, setFeedback] = React.useState("");
   
+  // Check if we're on a listing details page
+  const isListingDetailsPage = location.pathname.includes('/listings/') && /\/listings\/\d+/.test(location.pathname);
+  
+  // Extract listing ID from path if we're on a listing details page
+  const listingId = isListingDetailsPage ? location.pathname.split('/').pop() : null;
+  
   const navItems = [
     { path: '/dashboard', label: 'Overview', icon: <LayoutDashboard className="h-5 w-5" /> },
     { path: '/listings', label: 'Projects', icon: <ListFilter className="h-5 w-5" /> },
     { path: '/buyer-mandates', label: 'Active Buyer Mandates', icon: <Building className="h-5 w-5" /> },
     { path: '/messages', label: 'Messages', icon: <MessageSquare className="h-5 w-5" /> },
+  ];
+  
+  const projectSubItems = [
+    { path: '/listings/:id', label: 'Buyer List', icon: <List className="h-4 w-4" /> },
+    { path: '/listings/:id/saved', label: 'Saved List', icon: <BookmarkCheck className="h-4 w-4" /> },
+    { path: '/listings/:id/crm', label: 'CRM', icon: <Users2 className="h-4 w-4" /> },
   ];
   
   const handleMessagesClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -85,34 +106,97 @@ const Sidebar = () => {
       });
     }
   };
+  
+  const handleCRMClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    toast({
+      title: "CRM Features",
+      description: "CRM features coming soon",
+    });
+  };
 
   return (
     <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col animate-fade-in">
       <div className="flex-1 overflow-y-auto p-4">
         <div className="space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "nav-link group",
-                location.pathname === item.path 
-                  ? "bg-blueknight-500 text-white" 
-                  : "text-gray-600 hover:bg-gray-100"
-              )}
-              onClick={item.path === '/messages' ? handleMessagesClick : undefined}
-            >
-              {React.cloneElement(item.icon, {
-                className: cn(
-                  "h-5 w-5",
-                  location.pathname === item.path 
-                    ? "text-white" 
-                    : "text-gray-500 group-hover:text-gray-600"
-                )
-              })}
-              <span>{item.label}</span>
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            // Check if this is the Projects item and we're on a listing details page
+            const isProjectsItem = item.path === '/listings';
+            const isActive = isProjectsItem 
+              ? (location.pathname === '/listings' || isListingDetailsPage)
+              : location.pathname === item.path;
+              
+            return (
+              <React.Fragment key={item.path}>
+                <Link
+                  to={item.path}
+                  className={cn(
+                    "nav-link group",
+                    isActive 
+                      ? "bg-blueknight-500 text-white" 
+                      : "text-gray-600 hover:bg-gray-100"
+                  )}
+                  onClick={item.path === '/messages' ? handleMessagesClick : undefined}
+                >
+                  {React.cloneElement(item.icon, {
+                    className: cn(
+                      "h-5 w-5",
+                      isActive 
+                        ? "text-white" 
+                        : "text-gray-500 group-hover:text-gray-600"
+                    )
+                  })}
+                  <span>{item.label}</span>
+                </Link>
+                
+                {/* Add subsections for the specific listing */}
+                {isProjectsItem && isListingDetailsPage && (
+                  <div className="ml-5 space-y-1 mt-1">
+                    <Accordion type="single" collapsible defaultValue="listing-subsections">
+                      <AccordionItem value="listing-subsections" className="border-none">
+                        <AccordionTrigger className="py-1 text-gray-600 hover:bg-gray-100 hover:text-gray-900 rounded px-2">
+                          <span className="text-sm font-medium">Project Sections</span>
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-1">
+                          {projectSubItems.map((subItem, index) => {
+                            // Replace :id with the actual listing ID
+                            const path = subItem.path.replace(':id', listingId || '');
+                            // For the first tab, we want it to match the main listing page
+                            const actualPath = index === 0 ? `/listings/${listingId}` : path;
+                            const isSubActive = location.pathname === actualPath;
+                            
+                            return (
+                              <Link
+                                key={subItem.label}
+                                to={actualPath}
+                                onClick={subItem.label === 'CRM' ? handleCRMClick : undefined}
+                                className={cn(
+                                  "flex items-center py-1.5 px-2 rounded-md text-sm",
+                                  isSubActive
+                                    ? "bg-gray-200 text-gray-900"
+                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                                )}
+                              >
+                                {React.cloneElement(subItem.icon, {
+                                  className: cn(
+                                    "h-4 w-4 mr-2",
+                                    isSubActive
+                                      ? "text-gray-900"
+                                      : "text-gray-500"
+                                  )
+                                })}
+                                {subItem.label}
+                              </Link>
+                            );
+                          })}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
           
           <Collapsible
             open={isSettingsOpen}

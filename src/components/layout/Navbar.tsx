@@ -12,7 +12,7 @@ const Navbar = () => {
   const isListingDetailsPage = location.pathname.includes('/listings/') && /\/listings\/\d+/.test(location.pathname);
   
   // Extract listing ID from path if we're on a listing details page
-  const listingId = isListingDetailsPage ? location.pathname.split('/').pop() : null;
+  const listingId = isListingDetailsPage ? location.pathname.split('/')[2] : null;
   
   // Mock project title - in a real app, this would come from API or context
   const projectTitle = isListingDetailsPage ? "Enterprise IT Solutions Company" : "";
