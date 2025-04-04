@@ -6,6 +6,7 @@ import SavedList from '../buyers/SavedList';
 import AIAssistantChat from '../ui/AIAssistantChat';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { PieChart } from 'lucide-react';
 
 interface ListingDetailsProps {
   id: string;
@@ -21,6 +22,9 @@ interface ListingDetailsProps {
 const ListingDetails: React.FC<ListingDetailsProps> = ({
   id,
   projectTitle,
+  revenue,
+  industry,
+  country,
   status,
 }) => {
   const statusColors = {
@@ -29,18 +33,48 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
     pending: 'bg-yellow-50 text-yellow-700',
   };
 
+  // Analytics stats
+  const analyticsStats = [
+    { 
+      label: "Buyer Country Match", 
+      value: 13, 
+      icon: <PieChart className="h-4 w-4 text-blue-500" /> 
+    },
+    { 
+      label: "Revenue Range Match", 
+      value: 8, 
+      icon: <PieChart className="h-4 w-4 text-green-500" /> 
+    },
+    { 
+      label: "Industry Match", 
+      value: 21, 
+      icon: <PieChart className="h-4 w-4 text-purple-500" /> 
+    }
+  ];
+
   return (
     <div className="space-y-8 w-full relative">
       <Card>
         <CardContent className="p-6">
-          <div className="flex justify-between items-start">
-            <div>
+          <div className="flex flex-col">
+            <div className="flex justify-between items-start">
               <h1 className="text-2xl font-bold text-blueknight-800">{projectTitle}</h1>
+              
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
+                {status.charAt(0).toUpperCase() + status.slice(1)}
+              </span>
             </div>
             
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
-              {status.charAt(0).toUpperCase() + status.slice(1)}
-            </span>
+            <div className="flex space-x-6 mt-4">
+              {analyticsStats.map((stat, index) => (
+                <div key={index} className="flex items-center">
+                  {stat.icon}
+                  <span className="ml-1 text-sm text-gray-600">
+                    {stat.label}: <span className="font-semibold">{stat.value}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
         </CardContent>
       </Card>
