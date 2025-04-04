@@ -9,6 +9,7 @@ const ListingDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   
   // Mock data - in a real app, fetch this based on the ID
+  // This data should match what's expected in the Navbar for consistency
   const listingData = {
     id: id || '1',
     companyName: 'Enterprise IT Solutions',

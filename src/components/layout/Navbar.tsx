@@ -1,11 +1,65 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Search, User, Bell } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Search, User, Bell, PieChart } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
+
+interface AnalyticsStat {
+  label: string;
+  value: number;
+  icon: React.ReactNode;
+}
+
+const DealAnalytics: React.FC<{ projectTitle: string }> = ({ projectTitle }) => {
+  // Mock data for analytics stats
+  const stats: AnalyticsStat[] = [
+    { 
+      label: "Buyer Country Match", 
+      value: 13, 
+      icon: <PieChart className="h-4 w-4 text-blue-500" /> 
+    },
+    { 
+      label: "Revenue Range Match", 
+      value: 8, 
+      icon: <PieChart className="h-4 w-4 text-green-500" /> 
+    },
+    { 
+      label: "Industry Match", 
+      value: 21, 
+      icon: <PieChart className="h-4 w-4 text-purple-500" /> 
+    }
+  ];
+
+  return (
+    <div className="flex flex-col items-center text-center mx-4">
+      <h2 className="text-lg font-semibold text-blueknight-500">{projectTitle}</h2>
+      <div className="flex space-x-6 mt-1">
+        {stats.map((stat, index) => (
+          <div key={index} className="flex items-center">
+            {stat.icon}
+            <span className="ml-1 text-sm text-gray-600">
+              {stat.label}: <span className="font-semibold">{stat.value}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const Navbar = () => {
   const { toast } = useToast();
+  const location = useLocation();
+  
+  // Check if we're on a listing details page
+  const isListingDetailsPage = location.pathname.includes('/listings/') && /\/listings\/\d+/.test(location.pathname);
+  
+  // Extract listing ID from path if we're on a listing details page
+  const listingId = isListingDetailsPage ? location.pathname.split('/').pop() : null;
+  
+  // Mock project title data - in a real app, this would come from a context or API call
+  // We'll use the same mock data that's in ListingDetailsPage
+  const projectTitle = isListingDetailsPage ? "Enterprise IT Solutions Company" : "";
   
   const handleNotificationClick = () => {
     toast({
@@ -24,10 +78,14 @@ const Navbar = () => {
         <h1 className="ml-8 text-lg font-medium">Welcome John Doe</h1>
       </div>
       
-      <div className="flex flex-col items-center text-center mx-4">
-        <h2 className="text-lg font-semibold text-blueknight-500">BlueKnight's Exclusive M&A Network</h2>
-        <p className="text-sm text-gray-600">M&A is about speed, access, and execution. We give you all three.</p>
-      </div>
+      {isListingDetailsPage ? (
+        <DealAnalytics projectTitle={projectTitle} />
+      ) : (
+        <div className="flex flex-col items-center text-center mx-4">
+          <h2 className="text-lg font-semibold text-blueknight-500">BlueKnight's Exclusive M&A Network</h2>
+          <p className="text-sm text-gray-600">M&A is about speed, access, and execution. We give you all three.</p>
+        </div>
+      )}
       
       <div className="flex items-center space-x-4">
         <button 
