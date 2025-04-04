@@ -50,7 +50,7 @@ const Sidebar = () => {
   const isListingDetailsPage = location.pathname.includes('/listings/') && /\/listings\/\d+/.test(location.pathname);
   
   // Extract listing ID from path if we're on a listing details page
-  const listingId = isListingDetailsPage ? location.pathname.split('/').pop() : null;
+  const listingId = isListingDetailsPage ? location.pathname.split('/')[2] : null;
   
   const navItems = [
     { path: '/dashboard', label: 'Overview', icon: <LayoutDashboard className="h-5 w-5" /> },
@@ -60,9 +60,9 @@ const Sidebar = () => {
   ];
   
   const projectSubItems = [
-    { path: '/listings/:id', label: 'Buyer List', icon: <List className="h-4 w-4" /> },
-    { path: '/listings/:id/saved', label: 'Saved List', icon: <BookmarkCheck className="h-4 w-4" /> },
-    { path: '/listings/:id/crm', label: 'CRM', icon: <Users2 className="h-4 w-4" /> },
+    { path: `/listings/${listingId}`, label: 'Buyer List', icon: <List className="h-4 w-4" /> },
+    { path: `/listings/${listingId}/saved`, label: 'Saved List', icon: <BookmarkCheck className="h-4 w-4" /> },
+    { path: `/listings/${listingId}/crm`, label: 'CRM', icon: <Users2 className="h-4 w-4" /> },
   ];
   
   const handleMessagesClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -159,16 +159,24 @@ const Sidebar = () => {
                         </AccordionTrigger>
                         <AccordionContent className="space-y-1">
                           {projectSubItems.map((subItem, index) => {
-                            // Replace :id with the actual listing ID
-                            const path = subItem.path.replace(':id', listingId || '');
-                            // For the first tab, we want it to match the main listing page
-                            const actualPath = index === 0 ? `/listings/${listingId}` : path;
-                            const isSubActive = location.pathname === actualPath;
+                            // Check which sub-section is active
+                            let isSubActive = false;
+                            
+                            if (index === 0) {
+                              // Buyer List is active when path is exactly /listings/[id]
+                              isSubActive = location.pathname === `/listings/${listingId}`;
+                            } else if (index === 1) {
+                              // Saved List is active when path includes /saved
+                              isSubActive = location.pathname.includes(`/listings/${listingId}/saved`);
+                            } else if (index === 2) {
+                              // CRM is active when path includes /crm
+                              isSubActive = location.pathname.includes(`/listings/${listingId}/crm`);
+                            }
                             
                             return (
                               <Link
                                 key={subItem.label}
-                                to={actualPath}
+                                to={subItem.path}
                                 onClick={subItem.label === 'CRM' ? handleCRMClick : undefined}
                                 className={cn(
                                   "flex items-center py-1.5 px-2 rounded-md text-sm",
