@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Download, Check, Search } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Check, Search } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Table,
@@ -8,11 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableCheckboxCell,
-  TableCheckboxHead
 } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import {
   Collapsible,
   CollapsibleContent,
@@ -211,7 +208,6 @@ const strategicBuyers = [
 const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onAddToSaved }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchCompany, setSearchCompany] = useState<string>('');
-  const [selectedBuyers, setSelectedBuyers] = useState<string[]>([]);
   
   const filteredBuyers = strategicBuyers.filter(buyer => 
     buyer.name.toLowerCase().includes(searchCompany.toLowerCase())
@@ -244,75 +240,10 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
     return 'text-red-600';
   };
 
-  const toggleBuyerSelection = (buyerId: string) => {
-    setSelectedBuyers(prev => 
-      prev.includes(buyerId) 
-        ? prev.filter(id => id !== buyerId) 
-        : [...prev, buyerId]
-    );
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedBuyers(filteredBuyers.map(buyer => buyer.id));
-    } else {
-      setSelectedBuyers([]);
-    }
-  };
-
-  const exportToCSV = () => {
-    const selectedBuyersData = filteredBuyers.filter(buyer => 
-      selectedBuyers.includes(buyer.id)
-    );
-    
-    const headers = [
-      'Company Name', 
-      'HQ', 
-      'Employees', 
-      'Description', 
-      'Offering', 
-      'Sector', 
-      'Customers', 
-      'M&A Track Record', 
-      'Match Score'
-    ];
-    
-    const csvRows = [headers];
-    
-    selectedBuyersData.forEach(buyer => {
-      const row = [
-        buyer.name,
-        buyer.location,
-        buyer.employees.toString(),
-        buyer.description,
-        buyer.offering,
-        buyer.sector,
-        buyer.customers,
-        buyer.maTrackRecord,
-        buyer.matchingScore.toString()
-      ];
-      csvRows.push(row);
-    });
-    
-    const csvString = csvRows
-      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `strategic-buyers-export-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <div className="relative overflow-hidden">
-      <div className="mb-4 flex justify-between items-center">
-        <Command className="rounded-lg border shadow-md w-64">
+      <div className="mb-4">
+        <Command className="rounded-lg border shadow-md">
           <CommandInput 
             placeholder="Search by company name..." 
             value={searchCompany}
@@ -320,17 +251,6 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
             className="h-11"
           />
         </Command>
-        
-        {selectedBuyers.length > 0 && (
-          <Button 
-            variant="outline" 
-            onClick={exportToCSV} 
-            className="flex items-center space-x-2 bg-blueknight-50 text-blueknight-600 hover:bg-blueknight-100"
-          >
-            <Download className="h-4 w-4" />
-            <span>Export {selectedBuyers.length} {selectedBuyers.length === 1 ? 'buyer' : 'buyers'}</span>
-          </Button>
-        )}
       </div>
     
       <ScrollArea className="h-[600px] w-full" orientation="both">
@@ -338,14 +258,7 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
           <Table>
             <TableHeader>
               <TableRow className="bg-blueknight-500">
-                <TableCheckboxHead className="sticky left-0 z-20 bg-blueknight-500">
-                  <Checkbox
-                    checked={selectedBuyers.length === filteredBuyers.length && filteredBuyers.length > 0}
-                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
-                    className="text-white data-[state=checked]:bg-white data-[state=checked]:text-blueknight-500"
-                  />
-                </TableCheckboxHead>
-                <TableHead className="text-white font-medium w-[280px] sticky left-12 z-20 bg-blueknight-500">
+                <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">
                   Company Name
                 </TableHead>
                 <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
@@ -362,17 +275,9 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
               {filteredBuyers.map((buyer) => (
                 <React.Fragment key={buyer.id}>
                   <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-                    <TableCheckboxCell 
-                      className={`sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
-                    >
-                      <Checkbox
-                        checked={selectedBuyers.includes(buyer.id)}
-                        onCheckedChange={() => toggleBuyerSelection(buyer.id)}
-                      />
-                    </TableCheckboxCell>
                     <TableCell 
-                      className={`font-medium sticky left-12 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
-                      style={{position: 'sticky', left: '48px'}}
+                      className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
+                      style={{position: 'sticky', left: 0}}
                     >
                       <div className="flex items-center">
                         <button
@@ -388,7 +293,7 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
                           {savedBuyers.includes(buyer.id) ? (
                             <Check className="h-3.5 w-3.5" />
                           ) : (
-                            <Check className="h-3.5 w-3.5" />
+                            <Plus className="h-3.5 w-3.5" />
                           )}
                         </button>
                         

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X, Search, Download } from 'lucide-react';
+import { Filter, ChevronDown, ChevronUp, SlidersHorizontal, Bot, X, Search } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -10,8 +8,6 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableCheckboxHead,
-  TableCheckboxCell
 } from "@/components/ui/table";
 import {
   Collapsible,
@@ -32,6 +28,8 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { format } from 'date-fns';
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface BuyerTableProps {
@@ -447,84 +445,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
     return "bg-gray-50 text-gray-700";
   };
 
-  const [selectedBuyers, setSelectedBuyers] = useState<string[]>([]);
-  
-  const toggleBuyerSelection = (buyerId: string) => {
-    setSelectedBuyers(prev => 
-      prev.includes(buyerId) 
-        ? prev.filter(id => id !== buyerId) 
-        : [...prev, buyerId]
-    );
-  };
-
-  const handleSelectAll = (checked: boolean) => {
-    if (checked) {
-      setSelectedBuyers(filteredBuyers.map(buyer => buyer.id));
-    } else {
-      setSelectedBuyers([]);
-    }
-  };
-
-  const exportToCSV = () => {
-    const selectedBuyersData = filteredBuyers.filter(buyer => 
-      selectedBuyers.includes(buyer.id)
-    );
-    
-    const headers = activeTab === 'strategic' 
-      ? ['Company Name', 'Type', 'Description', 'HQ', 'Employees', 'Revenue ($M)', 'Cash ($M)', 'Date', 'PE/VC Backed', 'Public', 'Match Score'] 
-      : ['Company Name', 'Type', 'Description', 'HQ', 'Employees', 'AUM ($M)', 'Investments', 'Match Score'];
-    
-    const csvRows = [headers];
-    
-    selectedBuyersData.forEach(buyer => {
-      let row;
-      
-      if (activeTab === 'strategic') {
-        row = [
-          buyer.name,
-          buyer.type,
-          buyer.description,
-          buyer.hq,
-          buyer.employees.toString(),
-          buyer.revenue.toString(),
-          buyer.cash.toString(),
-          formatReportDate(buyer.reportedDate),
-          buyer.isPEVCBacked ? 'Yes' : 'No',
-          buyer.isPublic ? 'Yes' : 'No',
-          buyer.matchingScore.toString()
-        ];
-      } else {
-        const peBuyer = buyer as typeof peBuyers[0];
-        row = [
-          buyer.name,
-          buyer.type,
-          buyer.description,
-          buyer.hq,
-          buyer.employees.toString(),
-          peBuyer.aum.toString(),
-          peBuyer.investments,
-          buyer.matchingScore.toString()
-        ];
-      }
-      
-      csvRows.push(row);
-    });
-    
-    const csvString = csvRows
-      .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    
-    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `${activeTab}-buyers-export-${new Date().toISOString().split('T')[0]}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   return (
     <div className="animate-fade-in">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
@@ -553,17 +473,6 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
           </div>
           
           <div className="flex space-x-3">
-            {selectedBuyers.length > 0 && (
-              <Button 
-                variant="outline"
-                onClick={exportToCSV} 
-                className="flex items-center space-x-2 bg-blueknight-50 text-blueknight-600 hover:bg-blueknight-100"
-              >
-                <Download className="h-4 w-4" />
-                <span>Export {selectedBuyers.length} {selectedBuyers.length === 1 ? 'buyer' : 'buyers'}</span>
-              </Button>
-            )}
-            
             <button
               onClick={toggleSearchForm}
               className={`flex items-center space-x-2 px-3 py-2 text-sm font-medium ${
@@ -828,33 +737,70 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Minimum Score
+                  PE/VC Backed
                 </label>
                 <select className="input-field">
-                  <option value="0">Any</option>
-                  <option value="60">60+</option>
-                  <option value="70">70+</option>
-                  <option value="80">80+</option>
-                  <option value="90">90+</option>
+                  <option value="">Any</option>
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
                 </select>
               </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Public/Private
+                  Minimum Match Score
                 </label>
-                <select className="input-field">
-                  <option value="all">All</option>
-                  <option value="public">Public Only</option>
-                  <option value="private">Private Only</option>
-                </select>
+                <Popover open={showMinimumScoreDropdown} onOpenChange={setShowMinimumScoreDropdown}>
+                  <PopoverTrigger asChild>
+                    <button
+                      className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 bg-white rounded-md text-sm"
+                      onClick={() => setShowMinimumScoreDropdown(!showMinimumScoreDropdown)}
+                    >
+                      <span className="text-left truncate">
+                        {selectedMinimumScores.length > 0
+                          ? `${selectedMinimumScores.length} selected`
+                          : 'Select options'}
+                      </span>
+                      <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0" align="start">
+                    <div className="p-2">
+                      <Input
+                        placeholder="Search..."
+                        value={minimumScoreSearch}
+                        onChange={(e) => setMinimumScoreSearch(e.target.value)}
+                        className="mb-2"
+                      />
+                      <ScrollArea className="h-[200px]">
+                        <div className="space-y-2 p-2">
+                          {filteredMinimumScoreOptions.map((option) => (
+                            <div key={option.value} className="flex items-center space-x-2">
+                              <Checkbox
+                                id={`score-${option.value}`}
+                                checked={selectedMinimumScores.includes(option.value)}
+                                onCheckedChange={() => handleMinimumScoreSelection(option.value)}
+                              />
+                              <label
+                                htmlFor={`score-${option.value}`}
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             
             <div className="mt-4 flex justify-end">
               <button
                 onClick={handleFilterApply}
-                className="px-4 py-2 bg-blueknight-500 text-white rounded-md hover:bg-blueknight-600"
+                className="px-4 py-2 bg-blueknight-500 text-white rounded-md text-sm font-medium hover:bg-blueknight-600"
               >
                 Apply Filters
               </button>
@@ -867,7 +813,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-sm font-medium text-gray-700 flex items-center">
                 <SlidersHorizontal className="h-4 w-4 mr-2" />
-                Keywords
+                Buyer Keywords
               </h3>
               <button 
                 onClick={() => setShowKeywords(false)}
@@ -876,249 +822,8 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
                 Close
               </button>
             </div>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Industry Keywords
-                  </label>
-                  <textarea 
-                    className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400"
-                    placeholder="Enter keywords separated by commas..."
-                  ></textarea>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product/Service Keywords
-                  </label>
-                  <textarea 
-                    className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400"
-                    placeholder="Enter keywords separated by commas..."
-                  ></textarea>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Customer Type Keywords
-                  </label>
-                  <textarea 
-                    className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400"
-                    placeholder="Enter keywords separated by commas..."
-                  ></textarea>
-                </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Technology Keywords
-                  </label>
-                  <textarea 
-                    className="w-full h-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blueknight-400"
-                    placeholder="Enter keywords separated by commas..."
-                  ></textarea>
-                </div>
-              </div>
-              
-              <div className="flex justify-end">
-                <button
-                  onClick={handleKeywordsApply}
-                  className="px-4 py-2 bg-blueknight-500 text-white rounded-md hover:bg-blueknight-600"
-                >
-                  Apply Keywords
-                </button>
-              </div>
-            </div>
           </div>
         )}
-        
-        <div className="mb-4">
-          <div className="flex items-center space-x-2 mb-4">
-            <Input
-              placeholder="Search by company name..."
-              value={companyNameSearch}
-              onChange={(e) => setCompanyNameSearch(e.target.value)}
-              className="max-w-xs"
-            />
-          </div>
-        </div>
-        
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableCheckboxHead>
-                  <Checkbox 
-                    checked={selectedBuyers.length > 0 && selectedBuyers.length === filteredBuyers.length}
-                    onCheckedChange={handleSelectAll}
-                  />
-                </TableCheckboxHead>
-                <TableHead className="w-[250px]">Company</TableHead>
-                <TableHead>HQ</TableHead>
-                {activeTab === 'strategic' ? (
-                  <>
-                    <TableHead>Revenue ($M)</TableHead>
-                    <TableHead>Cash ($M)</TableHead>
-                    <TableHead>Public</TableHead>
-                  </>
-                ) : (
-                  <>
-                    <TableHead>AUM ($M)</TableHead>
-                    <TableHead>Investments</TableHead>
-                  </>
-                )}
-                <TableHead>Score</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredBuyers.map((buyer) => (
-                <TableRow key={buyer.id}>
-                  <TableCheckboxCell>
-                    <Checkbox 
-                      checked={selectedBuyers.includes(buyer.id)}
-                      onCheckedChange={() => toggleBuyerSelection(buyer.id)}
-                    />
-                  </TableCheckboxCell>
-                  <TableCell>
-                    <div className="font-medium text-gray-900">{buyer.name}</div>
-                    <div className="text-sm text-gray-500">{buyer.description}</div>
-                  </TableCell>
-                  <TableCell>{buyer.hq}</TableCell>
-                  {activeTab === 'strategic' ? (
-                    <>
-                      <TableCell>${buyer.revenue}M</TableCell>
-                      <TableCell>${buyer.cash}M</TableCell>
-                      <TableCell>{buyer.isPublic ? 'Yes' : 'No'}</TableCell>
-                    </>
-                  ) : (
-                    <>
-                      <TableCell>${(buyer as any).aum}M</TableCell>
-                      <TableCell>{(buyer as any).investments}</TableCell>
-                    </>
-                  )}
-                  <TableCell>
-                    <div className={`px-2 py-1 rounded-full text-xs w-fit font-medium ${getScoreBadgeStyle(buyer.matchingScore)}`}>
-                      {buyer.matchingScore}%
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-x-2 flex items-center">
-                      <Collapsible className="w-full">
-                        <CollapsibleTrigger asChild>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => toggleRationale(buyer.id)}
-                            className="text-xs bg-gray-50 border-gray-200"
-                          >
-                            Rationale
-                            {expandedRationales.includes(buyer.id) ? (
-                              <ChevronUp className="h-3 w-3 ml-1" />
-                            ) : (
-                              <ChevronDown className="h-3 w-3 ml-1" />
-                            )}
-                          </Button>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-2">
-                          <div className="text-sm bg-gray-50 p-3 rounded-md border border-gray-100 space-y-2">
-                            <p className="font-medium">Acquisition Rationale:</p>
-                            <Accordion type="single" collapsible className="w-full">
-                              <AccordionItem value="offering">
-                                <AccordionTrigger className="text-xs font-medium">
-                                  <div className="flex items-center">
-                                    <span>Offering</span>
-                                    {buyer.rationale.scores && (
-                                      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${getScoreBadgeStyle(buyer.rationale.scores.offering)}`}>
-                                        {buyer.rationale.scores.offering}%
-                                      </span>
-                                    )}
-                                  </div>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                  <p className="text-xs text-gray-700">{buyer.rationale.offering}</p>
-                                </AccordionContent>
-                              </AccordionItem>
-                              <AccordionItem value="customers">
-                                <AccordionTrigger className="text-xs font-medium">
-                                  <div className="flex items-center">
-                                    <span>Customers</span>
-                                    {buyer.rationale.scores && (
-                                      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${getScoreBadgeStyle(buyer.rationale.scores.customers)}`}>
-                                        {buyer.rationale.scores.customers}%
-                                      </span>
-                                    )}
-                                  </div>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                  <p className="text-xs text-gray-700">{buyer.rationale.customers}</p>
-                                </AccordionContent>
-                              </AccordionItem>
-                              <AccordionItem value="previousTransactions">
-                                <AccordionTrigger className="text-xs font-medium">
-                                  <div className="flex items-center">
-                                    <span>Previous Transactions</span>
-                                    {buyer.rationale.scores && (
-                                      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${getScoreBadgeStyle(buyer.rationale.scores.previousTransactions)}`}>
-                                        {buyer.rationale.scores.previousTransactions}%
-                                      </span>
-                                    )}
-                                  </div>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                  <p className="text-xs text-gray-700">{buyer.rationale.previousTransactions}</p>
-                                </AccordionContent>
-                              </AccordionItem>
-                              <AccordionItem value="financialStrength">
-                                <AccordionTrigger className="text-xs font-medium">
-                                  <div className="flex items-center">
-                                    <span>Financial Strength</span>
-                                    {buyer.rationale.scores && (
-                                      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${getScoreBadgeStyle(buyer.rationale.scores.financialStrength)}`}>
-                                        {buyer.rationale.scores.financialStrength}%
-                                      </span>
-                                    )}
-                                  </div>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                  <p className="text-xs text-gray-700">{buyer.rationale.financialStrength}</p>
-                                </AccordionContent>
-                              </AccordionItem>
-                              <AccordionItem value="overall">
-                                <AccordionTrigger className="text-xs font-medium">
-                                  <div className="flex items-center">
-                                    <span>Overall</span>
-                                    {buyer.rationale.scores && (
-                                      <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${getScoreBadgeStyle(buyer.rationale.scores.overall)}`}>
-                                        {buyer.rationale.scores.overall}%
-                                      </span>
-                                    )}
-                                  </div>
-                                </AccordionTrigger>
-                                <AccordionContent>
-                                  <p className="text-xs text-gray-700">{buyer.rationale.overall}</p>
-                                </AccordionContent>
-                              </AccordionItem>
-                            </Accordion>
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleAddToSaved(buyer.id)}
-                        className="text-xs bg-gray-50 border-gray-200"
-                      >
-                        Save
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
       </div>
     </div>
   );
