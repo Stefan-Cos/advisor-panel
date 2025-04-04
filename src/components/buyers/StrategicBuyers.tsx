@@ -278,12 +278,29 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
                       className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
                       style={{position: 'sticky', left: 0}}
                     >
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <button
+                          onClick={() => onAddToSaved(buyer.id)}
+                          disabled={savedBuyers.includes(buyer.id)}
+                          className={`flex items-center justify-center p-1 rounded-full mr-3 self-center ${
+                            savedBuyers.includes(buyer.id)
+                              ? 'bg-green-100 text-green-600 cursor-not-allowed'
+                              : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
+                          }`}
+                          title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
+                        >
+                          {savedBuyers.includes(buyer.id) ? (
+                            <Check className="h-3.5 w-3.5" />
+                          ) : (
+                            <Plus className="h-3.5 w-3.5" />
+                          )}
+                        </button>
+                        
                         <div>
                           <div className="flex items-center gap-2">
                             <span>{buyer.name}</span>
                           </div>
-                          <div className="flex items-center mt-1 gap-2">
+                          <div className="flex items-center mt-1">
                             <Collapsible 
                               open={expandedRationales.includes(buyer.id)}
                               onOpenChange={() => toggleRationale(buyer.id)}
@@ -297,23 +314,6 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
                                 )}
                               </CollapsibleTrigger>
                             </Collapsible>
-                            
-                            <button
-                              onClick={() => onAddToSaved(buyer.id)}
-                              disabled={savedBuyers.includes(buyer.id)}
-                              className={`flex items-center justify-center p-1 rounded-full ${
-                                savedBuyers.includes(buyer.id)
-                                  ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                                  : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
-                              }`}
-                              title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-                            >
-                              {savedBuyers.includes(buyer.id) ? (
-                                <Check className="h-3.5 w-3.5" />
-                              ) : (
-                                <Plus className="h-3.5 w-3.5" />
-                              )}
-                            </button>
                           </div>
                         </div>
                       </div>

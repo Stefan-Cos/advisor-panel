@@ -266,39 +266,42 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers = [], onAddToSaved }) => 
                     <TableCell 
                       className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
                     >
-                      <div>
-                        <div>{buyer.name}</div>
-                        <div className="flex items-center mt-1 gap-2">
-                          <Collapsible 
-                            open={expandedRationales.includes(buyer.id)}
-                            onOpenChange={() => toggleRationale(buyer.id)}
-                          >
-                            <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                              Rationale
-                              {expandedRationales.includes(buyer.id) ? (
-                                <ChevronUp className="h-3 w-3 ml-1" />
-                              ) : (
-                                <ChevronDown className="h-3 w-3 ml-1" />
-                              )}
-                            </CollapsibleTrigger>
-                          </Collapsible>
-                          
-                          <button
-                            onClick={() => onAddToSaved(buyer.id)}
-                            disabled={savedBuyers.includes(buyer.id)}
-                            className={`flex items-center justify-center p-1 rounded-full ${
-                              savedBuyers.includes(buyer.id)
-                                ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                                : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
-                            }`}
-                            title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-                          >
-                            {savedBuyers.includes(buyer.id) ? (
-                              <Check className="h-3.5 w-3.5" />
-                            ) : (
-                              <Plus className="h-3.5 w-3.5" />
-                            )}
-                          </button>
+                      <div className="flex items-center">
+                        {/* Plus/Check button moved to the left */}
+                        <button
+                          onClick={() => onAddToSaved(buyer.id)}
+                          disabled={savedBuyers.includes(buyer.id)}
+                          className={`flex items-center justify-center p-1 rounded-full mr-3 self-center ${
+                            savedBuyers.includes(buyer.id)
+                              ? 'bg-green-100 text-green-600 cursor-not-allowed'
+                              : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
+                          }`}
+                          title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
+                        >
+                          {savedBuyers.includes(buyer.id) ? (
+                            <Check className="h-3.5 w-3.5" />
+                          ) : (
+                            <Plus className="h-3.5 w-3.5" />
+                          )}
+                        </button>
+                        
+                        <div>
+                          <div>{buyer.name}</div>
+                          <div className="flex items-center mt-1">
+                            <Collapsible 
+                              open={expandedRationales.includes(buyer.id)}
+                              onOpenChange={() => toggleRationale(buyer.id)}
+                            >
+                              <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
+                                Rationale
+                                {expandedRationales.includes(buyer.id) ? (
+                                  <ChevronUp className="h-3 w-3 ml-1" />
+                                ) : (
+                                  <ChevronDown className="h-3 w-3 ml-1" />
+                                )}
+                              </CollapsibleTrigger>
+                            </Collapsible>
+                          </div>
                         </div>
                       </div>
                     </TableCell>
