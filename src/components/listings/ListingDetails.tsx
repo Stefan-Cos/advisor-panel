@@ -58,8 +58,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         <CardContent className="p-6">
           <div className="flex flex-col">
             <div className="flex justify-between items-start mb-6">
-              <h1 className="text-3xl font-bold text-blueknight-800">{projectTitle}</h1>
-              
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
                 {status.charAt(0).toUpperCase() + status.slice(1)}
               </span>

@@ -14,6 +14,9 @@ const Navbar = () => {
   // Extract listing ID from path if we're on a listing details page
   const listingId = isListingDetailsPage ? location.pathname.split('/').pop() : null;
   
+  // Mock project title - in a real app, this would come from API or context
+  const projectTitle = isListingDetailsPage ? "Enterprise IT Solutions Company" : "";
+  
   const handleNotificationClick = () => {
     toast({
       title: "Notifications",
@@ -31,8 +34,14 @@ const Navbar = () => {
         <h1 className="ml-8 text-xl font-medium">Welcome John Doe</h1>
       </div>
       
-      {/* Removed company name/deal analytics section */}
-      <div className="flex-1"></div>
+      {isListingDetailsPage && (
+        <div className="flex-1 flex justify-center">
+          <h2 className="text-lg font-semibold text-blueknight-600">{projectTitle}</h2>
+        </div>
+      )}
+      {!isListingDetailsPage && (
+        <div className="flex-1"></div>
+      )}
       
       <div className="flex items-center space-x-4">
         <button 
