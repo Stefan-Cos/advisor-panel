@@ -100,16 +100,8 @@ const Listings = () => {
         <Sidebar />
         
         <main className="flex-1 p-6">
-          <div className="mb-8 flex justify-between items-center">
+          <div className="mb-8">
             <h1 className="text-2xl font-bold text-blueknight-800">All Projects ({mockListings.length})</h1>
-            
-            <Link
-              to="/add-listing"
-              className="btn-primary flex items-center bg-blueknight-500 hover:bg-blueknight-600 text-white px-4 py-2 rounded-md transition-colors"
-            >
-              <Plus className="mr-2 h-5 w-5" />
-              Add Project
-            </Link>
           </div>
           
           <Tabs defaultValue="active-projects" className="w-full">
@@ -135,6 +127,16 @@ const Listings = () => {
             </TabsList>
             
             <TabsContent value="active-projects">
+              <div className="flex justify-end mb-4">
+                <Link
+                  to="/add-listing"
+                  className="btn-primary flex items-center bg-blueknight-500 hover:bg-blueknight-600 text-white px-4 py-2 rounded-md transition-colors"
+                >
+                  <Plus className="mr-2 h-5 w-5" />
+                  Add Project
+                </Link>
+              </div>
+              
               <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
                 <Table>
                   <TableHeader>
