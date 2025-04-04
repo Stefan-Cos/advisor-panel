@@ -1,4 +1,5 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, PencilLine } from 'lucide-react';
 import Navbar from '../components/layout/Navbar';
@@ -14,6 +15,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 // Mock data
 const mockListings = [
@@ -70,6 +80,18 @@ const mockListings = [
 ];
 
 const Listings = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+  
+  // Calculate total pages
+  const totalPages = Math.ceil(mockListings.length / itemsPerPage);
+  
+  // Get current page items
+  const currentItems = mockListings.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
@@ -78,8 +100,16 @@ const Listings = () => {
         <Sidebar />
         
         <main className="flex-1 p-6">
-          <div className="mb-8">
+          <div className="mb-8 flex justify-between items-center">
             <h1 className="text-2xl font-bold text-blueknight-800">All Projects ({mockListings.length})</h1>
+            
+            <Link
+              to="/add-listing"
+              className="btn-primary flex items-center bg-blueknight-500 hover:bg-blueknight-600 text-white px-4 py-2 rounded-md transition-colors"
+            >
+              <Plus className="mr-2 h-5 w-5" />
+              Add Project
+            </Link>
           </div>
           
           <Tabs defaultValue="active-projects" className="w-full">
@@ -119,7 +149,7 @@ const Listings = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockListings.map((listing) => (
+                    {currentItems.map((listing) => (
                       <TableRow key={listing.id} className="hover:bg-gray-50">
                         <TableCell>{listing.companyName}</TableCell>
                         <TableCell>{listing.projectTitle}</TableCell>
@@ -147,16 +177,38 @@ const Listings = () => {
                     ))}
                   </TableBody>
                 </Table>
-              </div>
-              
-              <div className="mt-6 flex justify-center">
-                <Link
-                  to="/add-listing"
-                  className="btn-primary flex items-center"
-                >
-                  <Plus className="mr-2 h-5 w-5" />
-                  Add Project
-                </Link>
+                
+                {/* Pagination */}
+                <div className="p-4 border-t border-gray-200">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                          className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                      
+                      {Array.from({ length: totalPages }).map((_, i) => (
+                        <PaginationItem key={i}>
+                          <PaginationLink 
+                            isActive={currentPage === i + 1}
+                            onClick={() => setCurrentPage(i + 1)}
+                          >
+                            {i + 1}
+                          </PaginationLink>
+                        </PaginationItem>
+                      ))}
+                      
+                      <PaginationItem>
+                        <PaginationNext 
+                          onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                          className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
               </div>
             </TabsContent>
             
