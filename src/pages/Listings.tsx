@@ -127,7 +127,7 @@ const Listings = () => {
             </TabsList>
             
             <TabsContent value="active-projects">
-              <div className="flex justify-end mb-4">
+              <div className="flex justify-start mb-4">
                 <Link
                   to="/add-listing"
                   className="btn-primary flex items-center bg-blueknight-500 hover:bg-blueknight-600 text-white px-4 py-2 rounded-md transition-colors"
