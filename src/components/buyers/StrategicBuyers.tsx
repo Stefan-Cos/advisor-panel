@@ -1,24 +1,10 @@
-
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Check, Search } from 'lucide-react';
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-  Command,
-  CommandInput
-} from "@/components/ui/command";
+import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import BuyerSearch from './components/BuyerSearch';
+import BuyerTableHeader from './components/BuyerTableHeader';
+import BuyerTableRow from './components/BuyerTableRow';
+import BuyerRationalePanel from './components/BuyerRationalePanel';
 
 interface StrategicBuyersProps {
   savedBuyers?: string[];
@@ -233,252 +219,34 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
         return 'bg-gray-50 text-gray-700';
     }
   };
-  
-  const getMatchScoreColor = (score: number) => {
-    if (score >= 85) return 'text-green-600';
-    if (score >= 70) return 'text-yellow-600';
-    return 'text-red-600';
-  };
 
   return (
     <div className="relative overflow-hidden">
-      <div className="mb-4">
-        <Command className="rounded-lg border shadow-md">
-          <CommandInput 
-            placeholder="Search by company name..." 
-            value={searchCompany}
-            onValueChange={setSearchCompany}
-            className="h-11"
-          />
-        </Command>
-      </div>
+      <BuyerSearch 
+        searchValue={searchCompany}
+        onSearchChange={setSearchCompany}
+      />
     
       <ScrollArea className="h-[600px] w-full" orientation="both">
         <div className="min-w-max">
           <Table>
-            <TableHeader>
-              <TableRow className="bg-blueknight-500">
-                <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">
-                  Company Name
-                </TableHead>
-                <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
-                <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
-                <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                <TableHead className="text-white font-medium w-[250px]">Offering</TableHead>
-                <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
-                <TableHead className="text-white font-medium w-[180px]">Customer Types</TableHead>
-                <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
-                <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-              </TableRow>
-            </TableHeader>
+            <BuyerTableHeader />
             <TableBody>
               {filteredBuyers.map((buyer) => (
                 <React.Fragment key={buyer.id}>
-                  <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-                    <TableCell 
-                      className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
-                      style={{position: 'sticky', left: 0}}
-                    >
-                      <div className="flex items-center">
-                        <button
-                          onClick={() => onAddToSaved(buyer.id)}
-                          disabled={savedBuyers.includes(buyer.id)}
-                          className={`flex items-center justify-center p-1 rounded-full mr-3 self-center ${
-                            savedBuyers.includes(buyer.id)
-                              ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                              : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
-                          }`}
-                          title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-                        >
-                          {savedBuyers.includes(buyer.id) ? (
-                            <Check className="h-3.5 w-3.5" />
-                          ) : (
-                            <Plus className="h-3.5 w-3.5" />
-                          )}
-                        </button>
-                        
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span>{buyer.name}</span>
-                          </div>
-                          <div className="flex items-center mt-1">
-                            <Collapsible 
-                              open={expandedRationales.includes(buyer.id)}
-                              onOpenChange={() => toggleRationale(buyer.id)}
-                            >
-                              <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                                Rationale
-                                {expandedRationales.includes(buyer.id) ? (
-                                  <ChevronUp className="h-3 w-3 ml-1" />
-                                ) : (
-                                  <ChevronDown className="h-3 w-3 ml-1" />
-                                )}
-                              </CollapsibleTrigger>
-                            </Collapsible>
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{buyer.location}</TableCell>
-                    <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-                    <TableCell>{buyer.description}</TableCell>
-                    <TableCell>{buyer.offering}</TableCell>
-                    <TableCell>{buyer.sector}</TableCell>
-                    <TableCell>{buyer.customers}</TableCell>
-                    <TableCell>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
-                        {buyer.maTrackRecord}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
-                          <div
-                            className="bg-blueknight-500 h-2 rounded-full"
-                            style={{ width: `${buyer.matchingScore}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                  <BuyerTableRow 
+                    buyer={buyer}
+                    savedBuyers={savedBuyers}
+                    onAddToSaved={onAddToSaved}
+                    isExpanded={expandedRationales.includes(buyer.id)}
+                    toggleRationale={toggleRationale}
+                    getMATrackRecordColor={getMATrackRecordColor}
+                  />
                   
                   {expandedRationales.includes(buyer.id) && (
                     <TableRow className="bg-green-50">
                       <TableCell colSpan={9} className="p-0">
-                        <div className="p-4">
-                          <div className="mb-6 bg-white p-4 rounded-md border border-gray-200 shadow-sm">
-                            <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Buyer Information</h3>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
-                                <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
-                              </div>
-                            
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {buyer.primaryIndustries?.map((industry, i) => (
-                                    <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                                      {industry}
-                                    </span>
-                                  )) || "Not provided"}
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {buyer.keywords?.map((keyword, i) => (
-                                    <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                      {keyword}
-                                    </span>
-                                  )) || "Not provided"}
-                                </div>
-                              </div>
-                            
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
-                                <p className="text-sm text-gray-600">
-                                  {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
-                                </p>
-                              </div>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
-                              <div>
-                                <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
-                                <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-xs text-gray-500 mb-1">Website</h4>
-                                <p className="text-sm font-medium text-blue-500 hover:underline cursor-pointer">Visit</p>
-                              </div>
-                              <div>
-                                <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
-                                <p className="text-sm font-medium">{buyer.location}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
-                                <p className="text-sm font-medium">{buyer.employees.toLocaleString()}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
-                                <p className="text-sm font-medium">$125.5</p>
-                              </div>
-                              <div>
-                                <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
-                                <p className="text-sm font-medium">$45.2</p>
-                              </div>
-                              <div>
-                                <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
-                                <p className="text-sm font-medium">Mar 24</p>
-                              </div>
-                              <div>
-                                <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
-                                <p className="text-sm font-medium">No</p>
-                              </div>
-                              <div>
-                                <h4 className="text-xs text-gray-500 mb-1">Public</h4>
-                                <p className="text-sm font-medium">Yes</p>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="bg-blue-50 p-4 rounded-md border border-blue-100 shadow-sm">
-                            <h3 className="text-sm font-semibold text-blue-800 mb-3 border-b border-blue-100 pb-2">Acquisition Rationale</h3>
-                            <div className="space-y-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.offering.score)} mr-2`}>
-                                    {buyer.rationale.offering.score}%
-                                  </span>
-                                  <span>Offering</span>
-                                </h4>
-                                <p className="text-sm text-gray-700">{buyer.rationale.offering.text}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.customers.score)} mr-2`}>
-                                    {buyer.rationale.customers.score}%
-                                  </span>
-                                  <span>Customers</span>
-                                </h4>
-                                <p className="text-sm text-gray-700">{buyer.rationale.customers.text}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.previousTransactions.score)} mr-2`}>
-                                    {buyer.rationale.previousTransactions.score}%
-                                  </span>
-                                  <span>Previous Transactions</span>
-                                </h4>
-                                <p className="text-sm text-gray-700">{buyer.rationale.previousTransactions.text}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.financialStrength.score)} mr-2`}>
-                                    {buyer.rationale.financialStrength.score}%
-                                  </span>
-                                  <span>Financial Strength</span>
-                                </h4>
-                                <p className="text-sm text-gray-700">{buyer.rationale.financialStrength.text}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.overall.score)} mr-2`}>
-                                    {buyer.rationale.overall.score}%
-                                  </span>
-                                  <span>Overall Rationale</span>
-                                </h4>
-                                <p className="text-sm text-gray-700">{buyer.rationale.overall.text}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        <BuyerRationalePanel buyer={buyer} />
                       </TableCell>
                     </TableRow>
                   )}
