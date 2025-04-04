@@ -38,17 +38,17 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
     { 
       label: "Buyer Country Match", 
       value: 13, 
-      icon: <PieChart className="h-4 w-4 text-blue-500" /> 
+      icon: <PieChart className="h-5 w-5 text-blue-500" /> 
     },
     { 
       label: "Revenue Range Match", 
       value: 8, 
-      icon: <PieChart className="h-4 w-4 text-green-500" /> 
+      icon: <PieChart className="h-5 w-5 text-green-500" /> 
     },
     { 
       label: "Industry Match", 
       value: 21, 
-      icon: <PieChart className="h-4 w-4 text-purple-500" /> 
+      icon: <PieChart className="h-5 w-5 text-purple-500" /> 
     }
   ];
 
@@ -57,21 +57,20 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col">
-            <div className="flex justify-between items-start">
-              <h1 className="text-2xl font-bold text-blueknight-800">{projectTitle}</h1>
+            <div className="flex justify-between items-start mb-6">
+              <h1 className="text-3xl font-bold text-blueknight-800">{projectTitle}</h1>
               
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
                 {status.charAt(0).toUpperCase() + status.slice(1)}
               </span>
             </div>
             
-            <div className="flex space-x-6 mt-4">
+            <div className="grid grid-cols-3 gap-6">
               {analyticsStats.map((stat, index) => (
-                <div key={index} className="flex items-center">
-                  {stat.icon}
-                  <span className="ml-1 text-sm text-gray-600">
-                    {stat.label}: <span className="font-semibold">{stat.value}</span>
-                  </span>
+                <div key={index} className="flex flex-col items-center bg-gray-50 p-4 rounded-lg">
+                  <div className="mb-2">{stat.icon}</div>
+                  <span className="text-sm font-medium text-gray-700 mb-1">{stat.label}</span>
+                  <span className="text-xl font-bold text-blueknight-600">{stat.value}</span>
                 </div>
               ))}
             </div>

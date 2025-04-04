@@ -1,22 +1,8 @@
 
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, User, Bell, PieChart } from 'lucide-react';
+import { Search, User, Bell } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-
-interface AnalyticsStat {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-}
-
-const DealAnalytics: React.FC<{ projectTitle: string }> = ({ projectTitle }) => {
-  return (
-    <div className="flex flex-col items-center text-center mx-4">
-      <h2 className="text-lg font-semibold text-blueknight-500">{projectTitle}</h2>
-    </div>
-  );
-};
 
 const Navbar = () => {
   const { toast } = useToast();
@@ -27,10 +13,6 @@ const Navbar = () => {
   
   // Extract listing ID from path if we're on a listing details page
   const listingId = isListingDetailsPage ? location.pathname.split('/').pop() : null;
-  
-  // Mock project title data - in a real app, this would come from a context or API call
-  // We'll use the same mock data that's in ListingDetailsPage
-  const projectTitle = isListingDetailsPage ? "Enterprise IT Solutions Company" : "";
   
   const handleNotificationClick = () => {
     toast({
@@ -46,17 +28,11 @@ const Navbar = () => {
           <div className="w-10 h-10 bg-blueknight-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-3">B</div>
           <span className="text-xl font-semibold text-blueknight-500">BlueKnight</span>
         </Link>
-        <h1 className="ml-8 text-lg font-medium">Welcome John Doe</h1>
+        <h1 className="ml-8 text-xl font-medium">Welcome John Doe</h1>
       </div>
       
-      {isListingDetailsPage ? (
-        <DealAnalytics projectTitle={projectTitle} />
-      ) : (
-        <div className="flex flex-col items-center text-center mx-4">
-          <h2 className="text-lg font-semibold text-blueknight-500">BlueKnight's Exclusive M&A Network</h2>
-          <p className="text-sm text-gray-600">M&A is about speed, access, and execution. We give you all three.</p>
-        </div>
-      )}
+      {/* Removed company name/deal analytics section */}
+      <div className="flex-1"></div>
       
       <div className="flex items-center space-x-4">
         <button 
