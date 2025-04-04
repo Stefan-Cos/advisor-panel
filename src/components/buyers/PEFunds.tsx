@@ -326,7 +326,7 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers = [], onAddToSaved }) => 
                     <TableRow className="bg-green-50">
                       <TableCell colSpan={6} className="p-0">
                         <div className="p-4">
-                          <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
+                          <div className="mb-6 bg-white p-4 rounded-md border border-gray-200 shadow-sm">
                             <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Fund Information</h3>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -412,44 +412,44 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers = [], onAddToSaved }) => 
                             </div>
                           </div>
                           
-                          <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-                            <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
+                          <div className="bg-blue-50 p-4 rounded-md border border-blue-100 shadow-sm">
+                            <h3 className="text-sm font-semibold text-blue-800 mb-3 border-b border-blue-100 pb-2">Acquisition Rationale</h3>
                             <div className="space-y-4">
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
                                   <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.sectors.score)}`}>
                                     {buyer.rationale.sectors.score}%
                                   </span>
                                   <span>Sectors</span>
                                 </h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.sectors.text}</p>
+                                <p className="text-sm text-gray-700">{buyer.rationale.sectors.text}</p>
                               </div>
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
                                   <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.previousTransactions.score)}`}>
                                     {buyer.rationale.previousTransactions.score}%
                                   </span>
                                   <span>Previous Transactions</span>
                                 </h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.previousTransactions.text}</p>
+                                <p className="text-sm text-gray-700">{buyer.rationale.previousTransactions.text}</p>
                               </div>
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
                                   <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.financialStrength.score)}`}>
                                     {buyer.rationale.financialStrength.score}%
                                   </span>
                                   <span>Financial Strength</span>
                                 </h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.financialStrength.text}</p>
+                                <p className="text-sm text-gray-700">{buyer.rationale.financialStrength.text}</p>
                               </div>
                               <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
                                   <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.overall.score)}`}>
                                     {buyer.rationale.overall.score}%
                                   </span>
                                   <span>Overall Rationale</span>
                                 </h4>
-                                <p className="text-sm text-gray-600">{buyer.rationale.overall.text}</p>
+                                <p className="text-sm text-gray-700">{buyer.rationale.overall.text}</p>
                               </div>
                             </div>
                           </div>
