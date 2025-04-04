@@ -1,8 +1,11 @@
 
 import React from 'react';
-import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useToast } from "@/hooks/use-toast";
+import BuyerTypeBadge from './components/BuyerTypeBadge';
+import LocationBadge from './components/LocationBadge';
+import FitPercentageBar from './components/FitPercentageBar';
+import BuyerDetail from './components/BuyerDetail';
+import SaveButton from './components/SaveButton';
 
 interface BuyerCardProps {
   id: string;
@@ -29,18 +32,6 @@ const BuyerCard: React.FC<BuyerCardProps> = ({
   addedToSaved = false,
   onAddToSaved,
 }) => {
-  const { toast } = useToast();
-  
-  const handleAddToSaved = () => {
-    if (onAddToSaved) {
-      onAddToSaved(id);
-      toast({
-        title: "Buyer Saved",
-        description: `${name} has been added to your saved list.`,
-      });
-    }
-  };
-
   return (
     <div className={cn(
       "premium-card animate-scale-in overflow-hidden",
@@ -50,52 +41,29 @@ const BuyerCard: React.FC<BuyerCardProps> = ({
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-lg text-blueknight-800">{name}</h3>
           <div className="flex items-center space-x-2">
-            {!addedToSaved && (
-              <button
-                onClick={handleAddToSaved}
-                className="h-8 w-8 flex items-center justify-center rounded-full bg-blueknight-50 text-blueknight-500 hover:bg-blueknight-100 transition-colors"
-              >
-                <Plus className="h-5 w-5" />
-                <span className="sr-only">Add to saved list</span>
-              </button>
-            )}
-            {addedToSaved && (
-              <span className="text-xs font-medium bg-green-50 text-green-700 px-2 py-1 rounded-full">
-                Saved
-              </span>
-            )}
+            <SaveButton
+              id={id}
+              name={name}
+              addedToSaved={addedToSaved}
+              onAddToSaved={onAddToSaved}
+            />
           </div>
         </div>
         
         <div className="mt-2 flex items-center justify-between">
           <div className="flex space-x-2">
-            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-              {type === 'strategic' ? 'Strategic Buyer' : 'PE-Backed'}
-            </span>
-            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-              {location}
-            </span>
+            <BuyerTypeBadge type={type} />
+            <LocationBadge location={location} />
           </div>
           
-          <div className="relative h-2 w-16 bg-gray-200 rounded overflow-hidden">
-            <div 
-              className="absolute top-0 left-0 h-full bg-blueknight-500" 
-              style={{ width: `${fitPercentage}%` }}
-            />
-          </div>
+          <FitPercentageBar percentage={fitPercentage} />
         </div>
       </div>
       
       <div className="p-4 text-sm space-y-2">
-        <div>
-          <span className="font-medium text-gray-600">Sectors:</span> {sector}
-        </div>
-        <div>
-          <span className="font-medium text-gray-600">Offering:</span> {offering}
-        </div>
-        <div>
-          <span className="font-medium text-gray-600">Customers:</span> {customers}
-        </div>
+        <BuyerDetail label="Sectors" value={sector} />
+        <BuyerDetail label="Offering" value={offering} />
+        <BuyerDetail label="Customers" value={customers} />
       </div>
       
       <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
