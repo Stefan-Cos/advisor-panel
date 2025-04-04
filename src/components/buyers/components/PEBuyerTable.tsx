@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Check, ChevronDown, ChevronUp, Plus } from 'lucide-react';
-import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Collapsible,
@@ -115,6 +115,4 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
   );
 };
 
-// Fix TypeScript error by importing TableHead from ui/table
-import { TableHead } from "@/components/ui/table";
 export default PEBuyerTable;
