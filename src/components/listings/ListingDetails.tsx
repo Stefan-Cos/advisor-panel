@@ -55,18 +55,12 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   return (
     <div className="space-y-8 w-full relative">
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="py-4 px-6">
           <div className="flex flex-col">
-            <div className="flex justify-between items-start mb-6">
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[status]}`}>
-                {status.charAt(0).toUpperCase() + status.slice(1)}
-              </span>
-            </div>
-            
             <div className="grid grid-cols-3 gap-6">
               {analyticsStats.map((stat, index) => (
-                <div key={index} className="flex flex-col items-center bg-gray-50 p-4 rounded-lg">
-                  <div className="mb-2">{stat.icon}</div>
+                <div key={index} className="flex flex-col items-center bg-gray-50 p-3 rounded-lg">
+                  <div className="mb-1">{stat.icon}</div>
                   <span className="text-sm font-medium text-gray-700 mb-1">{stat.label}</span>
                   <span className="text-xl font-bold text-blueknight-600">{stat.value}</span>
                 </div>

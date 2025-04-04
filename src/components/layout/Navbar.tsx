@@ -36,7 +36,7 @@ const Navbar = () => {
       
       {isListingDetailsPage && (
         <div className="flex-1 flex justify-center">
-          <h2 className="text-lg font-semibold text-blueknight-600">{projectTitle}</h2>
+          <h2 className="text-xl font-semibold text-blueknight-600">{projectTitle}</h2>
         </div>
       )}
       {!isListingDetailsPage && (
