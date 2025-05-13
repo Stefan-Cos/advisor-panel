@@ -16,7 +16,6 @@ interface FilterSidebarProps {
 
 const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFilterChange }) => {
   const { toast } = useToast();
-  // Set all categories to be expanded by default
   const [expandedCategories, setExpandedCategories] = useState<string[]>([
     'Keywords', 'Headquarters', 'Operating location', 'Size'
   ]);
@@ -100,7 +99,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = ({ onFilterChange }) => {
   };
 
   return (
-    <div className="w-64 h-full bg-white border-r border-gray-200 p-4 overflow-auto shadow-md">
+    <div className="w-64 h-full bg-white border-r border-gray-200 p-4 overflow-auto">
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-gray-800 mb-4">Filters</h2>
         

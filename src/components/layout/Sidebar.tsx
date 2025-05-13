@@ -1,21 +1,11 @@
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import SidebarNavItems from './sidebar/SidebarNavItems';
 import SidebarSettings from './sidebar/SidebarSettings';
 import FeedbackDialog from './sidebar/FeedbackDialog';
 import LogoutButton from './sidebar/LogoutButton';
-import { useSidebarVisibility } from '@/hooks/useSidebarVisibility';
 
 const Sidebar = () => {
-  const { sidebarVisible } = useSidebarVisibility();
-  const location = useLocation();
-  
-  // Don't render the sidebar at all if it should be hidden
-  if (!sidebarVisible) {
-    return null;
-  }
-  
   return (
     <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col animate-fade-in shadow-sm">
       <div className="flex-1 overflow-y-auto p-4">

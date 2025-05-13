@@ -5,8 +5,6 @@ import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import BuyerList from '../components/buyers/BuyerList';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
 import BuyerPreferencesSection from '../components/listings/BuyerPreferencesSection';
 import ListingDetails from '../components/listings/ListingDetails';
 
@@ -18,10 +16,6 @@ const ListingDetailsPage = () => {
   if (!id) {
     return <div>Listing ID not found</div>;
   }
-  
-  const handleCreateBuyerSearch = () => {
-    navigate(`/listings/${id}/buyer-search`);
-  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -31,21 +25,13 @@ const ListingDetailsPage = () => {
         <Sidebar />
         <main className="flex-1">
           <div className="p-6">
-            <div className="mb-4 flex justify-between items-center">
+            <div className="mb-4">
               <Link 
                 to="/listings"
                 className="text-blueknight-600 hover:text-blueknight-800 text-sm flex items-center"
               >
                 ← Back to Projects
               </Link>
-              
-              <Button 
-                onClick={handleCreateBuyerSearch}
-                className="bg-blueknight-500 hover:bg-blueknight-600 text-white"
-              >
-                <Search className="h-4 w-4 mr-2" />
-                Create Buyer Search
-              </Button>
             </div>
             
             <div className="mb-6">
