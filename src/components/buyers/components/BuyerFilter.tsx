@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X, Filter, ChevronDown } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
@@ -31,7 +32,7 @@ const BuyerFilter: React.FC<BuyerFilterProps> = ({
 
   const handleApplyFilters = () => {
     toast("Filters Applied", {
-      description: "Your filters have been applied to the buyer list.",
+      description: "Your filters have been applied to the buyer list."
     });
     onFilterApply();
   };

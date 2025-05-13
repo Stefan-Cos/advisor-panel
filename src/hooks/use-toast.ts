@@ -1,26 +1,14 @@
 
-import { toast as sonnerToast, type Toast as SonnerToast } from "sonner";
+import { toast as sonnerToast } from "sonner";
 
-export type ToastProps = {
-  title?: string;
+type ToastProps = {
   description?: React.ReactNode;
-  [key: string]: any;
+  duration?: number;
+  action?: React.ReactNode;
 };
 
-export function toast(props: ToastProps | string) {
-  if (typeof props === 'string') {
-    return sonnerToast(props);
-  }
-  
-  const { title, description, ...rest } = props;
-  return sonnerToast(title || '', {
-    description,
-    ...rest
-  });
-}
+export const toast = (title: string, props?: ToastProps) => {
+  return sonnerToast(title, props);
+};
 
-export function useToast() {
-  return {
-    toast
-  };
-}
+export { useToast } from "sonner";
