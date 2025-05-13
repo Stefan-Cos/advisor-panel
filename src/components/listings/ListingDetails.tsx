@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
@@ -419,10 +418,9 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           </Sheet>
         </div>
 
-        {/* Filter Options Header */}
+        {/* Filter Options Header - Updated to have a simple clean style without circles */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
-            <Filter className="h-4 w-4 mr-2 text-gray-600" />
             <h3 className="text-sm font-medium">Filter Options</h3>
           </div>
           <button 
@@ -536,7 +534,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         {showFilters && (
           <div>
             <div className="flex items-center mb-2">
-              <Search className="h-3.5 w-3.5 mr-2 text-gray-600" />
               <h4 className="text-xs font-medium">Keyword Search</h4>
             </div>
             
