@@ -5,14 +5,13 @@ import SidebarNavItems from './sidebar/SidebarNavItems';
 import SidebarSettings from './sidebar/SidebarSettings';
 import FeedbackDialog from './sidebar/FeedbackDialog';
 import LogoutButton from './sidebar/LogoutButton';
+import { useBuyerSearchWorkspace } from '@/hooks/useBuyerSearchWorkspace';
 
 const Sidebar = () => {
-  const location = useLocation();
+  const { isWorkspaceMode } = useBuyerSearchWorkspace();
   
   // Hide sidebar when in the buyer search workspace
-  const isInBuyerSearchWorkspace = location.pathname.includes('/buyer-search');
-  
-  if (isInBuyerSearchWorkspace) {
+  if (isWorkspaceMode) {
     return null; // Don't render the sidebar when in buyer search workspace
   }
   

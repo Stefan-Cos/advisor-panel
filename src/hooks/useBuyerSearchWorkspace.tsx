@@ -8,14 +8,11 @@ export function useBuyerSearchWorkspace() {
   
   // Check if we're in the buyer search workspace
   useEffect(() => {
-    // We would check for a specific route or query parameter that indicates 
-    // we're in the buyer search workspace
     const isBuyerSearchPath = location.pathname.includes('/buyer-search');
     setIsWorkspaceMode(isBuyerSearchPath);
   }, [location.pathname]);
   
   return {
-    isWorkspaceMode,
-    setIsWorkspaceMode
+    isWorkspaceMode
   };
 }
