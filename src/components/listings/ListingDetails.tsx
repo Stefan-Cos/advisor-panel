@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -29,6 +29,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
 }) => {
   const location = useLocation();
   const path = location.pathname;
+  const [activeList, setActiveList] = useState<'buyer' | 'blueKnight'>('buyer');
   
   // Analytics stats
   const analyticsStats = [
@@ -82,7 +83,38 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           </p>
         </div>
       ) : (
-        <BuyerListNew listingId={id} />
+        <div>
+          {/* Tab buttons for switching between lists */}
+          <div className="flex border-b mb-6">
+            <button
+              className={`px-4 py-2 text-sm font-medium ${
+                activeList === 'buyer' 
+                  ? 'border-b-2 border-blueknight-500 text-blueknight-700' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              onClick={() => setActiveList('buyer')}
+            >
+              Buyer List
+            </button>
+            <button
+              className={`px-4 py-2 text-sm font-medium ${
+                activeList === 'blueKnight' 
+                  ? 'border-b-2 border-blueknight-500 text-blueknight-700' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+              onClick={() => setActiveList('blueKnight')}
+            >
+              BlueKnight List
+            </button>
+          </div>
+          
+          {/* Display the appropriate content based on the active tab */}
+          {activeList === 'buyer' ? (
+            <BuyerListNew listingId={id} />
+          ) : (
+            <BuyerListNew listingId={id} />  {/* For now, using the same component for both tabs */}
+          )}
+        </div>
       )}
       
       <AIAssistantChat />
