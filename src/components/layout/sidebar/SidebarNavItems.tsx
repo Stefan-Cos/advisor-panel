@@ -71,7 +71,7 @@ const SidebarNavItems = () => {
               <span>{item.label}</span>
             </Link>
             
-            {/* Always show Project Subsections after Projects nav item when on a listings page */}
+            {/* Show Project Subsections after Projects nav item when on a listings page */}
             {index === 1 && (
               <ProjectSubItems listingId={listingId} />
             )}
