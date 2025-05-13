@@ -1,9 +1,8 @@
 
-import { toast as sonnerToast, type ToastT } from "sonner"
+import { toast as sonnerToast } from "sonner"
 
-export type ToasterToast = ToastT
+// Re-export the sonner toast directly
+export const toast = sonnerToast;
 
-const toast = sonnerToast;
-
-export { toast }
-export const useToast = () => ({ toast })
+// For backwards compatibility and to match our hook pattern
+export const useToast = () => ({ toast: sonnerToast });

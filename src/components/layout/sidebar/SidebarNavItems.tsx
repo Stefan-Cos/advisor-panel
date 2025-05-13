@@ -10,7 +10,7 @@ import {
   PanelLeftOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import { useSidebarState } from '@/hooks/useSidebarState';
 import ProjectSubItems from './ProjectSubItems';
 
@@ -22,7 +22,6 @@ type NavItem = {
 
 const SidebarNavItems = () => {
   const location = useLocation();
-  const { toast } = useToast();
   const { isListingDetailsPage, listingId } = useSidebarState();
   
   const navItems: NavItem[] = [
@@ -35,8 +34,7 @@ const SidebarNavItems = () => {
   const handleMessagesClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (location.pathname !== '/messages') {
       e.preventDefault();
-      toast({
-        title: "Messages",
+      toast("Messages", {
         description: "Messaging features coming soon",
       });
     }

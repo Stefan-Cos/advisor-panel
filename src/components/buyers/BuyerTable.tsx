@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Filter, Search, SlidersHorizontal, Bot } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import {
   Table,
   TableBody,
@@ -35,13 +34,10 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   });
   const [companyNameSearch, setCompanyNameSearch] = useState('');
   
-  const { toast } = useToast();
-  
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
       setSavedBuyers([...savedBuyers, buyerId]);
-      toast({
-        title: "Buyer Saved",
+      toast("Buyer Saved", {
         description: "Buyer has been added to your saved list",
       });
     }

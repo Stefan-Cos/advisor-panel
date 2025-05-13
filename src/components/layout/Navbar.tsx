@@ -2,10 +2,9 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, User, Bell } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 const Navbar = () => {
-  const { toast } = useToast();
   const location = useLocation();
   
   // Check if we're on a listing details page
@@ -18,8 +17,7 @@ const Navbar = () => {
   const projectTitle = isListingDetailsPage ? "Enterprise IT Solutions Company" : "";
   
   const handleNotificationClick = () => {
-    toast({
-      title: "Notifications",
+    toast("Notifications", {
       description: "Notification features coming soon",
     });
   };

@@ -3,7 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { List, BookmarkCheck, Users2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 type ProjectSubItemProps = {
   listingId: string | null;
@@ -11,7 +11,6 @@ type ProjectSubItemProps = {
 
 const ProjectSubItems = ({ listingId }: ProjectSubItemProps) => {
   const location = useLocation();
-  const { toast } = useToast();
 
   const projectSubItems = [
     { path: `/listings/${listingId}`, label: 'BlueKnight List', icon: <List className="h-4 w-4" /> },
@@ -22,8 +21,7 @@ const ProjectSubItems = ({ listingId }: ProjectSubItemProps) => {
 
   const handleCRMClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    toast({
-      title: "CRM Features",
+    toast("CRM Features", {
       description: "CRM features coming soon",
     });
   };

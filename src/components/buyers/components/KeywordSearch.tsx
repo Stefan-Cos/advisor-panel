@@ -1,10 +1,9 @@
-
-import React, { useState } from 'react';
-import { Search, X } from 'lucide-react';
+import React from 'react';
+import { Search, X, Plus } from 'lucide-react';
+import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { SearchCriteria } from '../types/BuyerTypes';
+import { SearchCriteria } from "../types/BuyerTypes";
+import Tag from '@/components/ui/Tag';
 
 interface KeywordSearchProps {
   searchCriteria: SearchCriteria;
@@ -19,54 +18,51 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({
   onSearchApply,
   onClose
 }) => {
-  const [tempKeyword, setTempKeyword] = useState('');
-  const [activeField, setActiveField] = useState<keyof SearchCriteria | null>(null);
-  
-  const { toast } = useToast();
+  const [newKeyword, setNewKeyword] = React.useState("");
+  const [selectedCategory, setSelectedCategory] = React.useState<keyof SearchCriteria>("companyName");
 
-  const handleAddKeyword = (field: keyof SearchCriteria) => {
-    if (tempKeyword.trim()) {
+  const handleAddKeyword = () => {
+    if (newKeyword.trim()) {
       setSearchCriteria(prev => ({
         ...prev,
-        [field]: {
-          ...prev[field],
-          keywords: [...prev[field].keywords, tempKeyword.trim()]
+        [selectedCategory]: {
+          ...prev[selectedCategory],
+          keywords: [...prev[selectedCategory].keywords, newKeyword.trim()]
         }
       }));
-      setTempKeyword('');
+      setNewKeyword("");
     }
   };
 
-  const handleRemoveKeyword = (field: keyof SearchCriteria, keyword: string) => {
+  const handleRemoveKeyword = (category: keyof SearchCriteria, keyword: string) => {
     setSearchCriteria(prev => ({
       ...prev,
-      [field]: {
-        ...prev[field],
-        keywords: prev[field].keywords.filter(k => k !== keyword)
+      [category]: {
+        ...prev[category],
+        keywords: prev[category].keywords.filter(k => k !== keyword)
       }
     }));
   };
 
-  const handleOperatorChange = (field: keyof SearchCriteria, operator: 'AND' | 'OR' | 'NOT') => {
+  const handleOperatorChange = (category: keyof SearchCriteria, operator: 'AND' | 'OR') => {
     setSearchCriteria(prev => ({
       ...prev,
-      [field]: {
-        ...prev[field],
+      [category]: {
+        ...prev[category],
         operator
       }
     }));
   };
 
-  const handleApply = () => {
-    onSearchApply();
-    toast({
-      title: "Search Applied",
-      description: "Your keyword search has been applied",
+  const handleApplySearch = () => {
+    toast("Search Applied", {
+      description: "Your keyword search has been applied to the buyer list.",
     });
+    onSearchApply();
   };
 
   return (
-    <div className="p-4 border border-gray-200 rounded-md bg-gray-50">
+    <div className="mb-6 p-4 border border-gray-200 rounded-md bg-gray-50">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-medium text-gray-700 flex items-center">
           <Search className="h-4 w-4 mr-2" />
@@ -108,22 +104,22 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({
             <div className="flex space-x-2">
               <Input
                 placeholder={`Add ${field} keyword...`}
-                value={activeField === field ? tempKeyword : ''}
+                value={selectedCategory === field ? newKeyword : ''}
                 onChange={(e) => {
-                  setActiveField(field);
-                  setTempKeyword(e.target.value);
+                  setSelectedCategory(field);
+                  setNewKeyword(e.target.value);
                 }}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
-                    handleAddKeyword(field);
+                    handleAddKeyword();
                   }
                 }}
                 className="text-sm"
               />
               <Button 
                 size="sm" 
-                onClick={() => handleAddKeyword(field)}
+                onClick={() => handleAddKeyword()}
                 className="text-xs"
               >
                 Add
@@ -166,7 +162,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({
         ))}
         
         <div className="flex justify-end">
-          <Button onClick={handleApply} className="text-sm">
+          <Button onClick={handleApplySearch} className="text-sm">
             Apply Search
           </Button>
         </div>

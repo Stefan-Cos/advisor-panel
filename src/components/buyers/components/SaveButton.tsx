@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Plus } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 interface SaveButtonProps {
   id: string;
@@ -16,13 +16,11 @@ const SaveButton: React.FC<SaveButtonProps> = ({
   addedToSaved,
   onAddToSaved
 }) => {
-  const { toast } = useToast();
   
   const handleAddToSaved = () => {
     if (onAddToSaved) {
       onAddToSaved(id);
-      toast({
-        title: "Buyer Saved",
+      toast("Buyer Saved", {
         description: `${name} has been added to your saved list.`,
       });
     }

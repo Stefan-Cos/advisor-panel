@@ -1,22 +1,19 @@
 
 import React from 'react';
 import { Bot, X } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 interface AIAssistantProps {
   onClose: () => void;
 }
 
 const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
-  const { toast } = useToast();
-
   const handleAIAssistantQuery = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const input = form.elements.namedItem('aiQuery') as HTMLInputElement;
     if (input.value.trim()) {
-      toast({
-        title: "AI Assistant",
+      toast("AI Assistant", {
         description: "Your query has been sent to the AI Assistant",
       });
       input.value = '';

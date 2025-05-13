@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 const revenueRanges = [
   { label: '$0 - $1M', value: '0-1M' },
@@ -48,7 +47,6 @@ const ListingForm = () => {
   });
   
   const navigate = useNavigate();
-  const { toast } = useToast();
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -60,8 +58,7 @@ const ListingForm = () => {
     
     // Validate form
     if (Object.values(formData).some(value => value === '')) {
-      toast({
-        title: "Validation Error",
+      toast("Validation Error", {
         description: "Please fill in all required fields",
         variant: "destructive",
       });
@@ -69,8 +66,7 @@ const ListingForm = () => {
     }
     
     // Proceed to next step
-    toast({
-      title: "Form Submitted",
+    toast("Form Submitted", {
       description: "Proceeding to buyer preferences",
     });
     

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Settings, Users, BarChart } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import {
   Collapsible,
   CollapsibleContent,
@@ -10,12 +10,10 @@ import {
 } from "@/components/ui/collapsible";
 
 const SidebarSettings = () => {
-  const { toast } = useToast();
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   
   const handleSettingsItemClick = (settingType: string) => {
-    toast({
-      title: `${settingType} Settings`,
+    toast(`${settingType} Settings`, {
       description: `${settingType} settings features coming soon`,
     });
   };

@@ -1,14 +1,11 @@
 
 import React from 'react';
 import { LogOut } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 const LogoutButton = () => {
-  const { toast } = useToast();
-
   const handleLogout = () => {
-    toast({
-      title: "Logged Out",
+    toast("Logged Out", {
       description: "You have been successfully logged out",
     });
     // Redirect to login in a real app

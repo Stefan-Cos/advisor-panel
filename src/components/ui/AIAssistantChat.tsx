@@ -8,7 +8,7 @@ import {
   Bot 
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 type Message = {
   id: string;
@@ -28,8 +28,6 @@ const AIAssistantChat: React.FC = () => {
       timestamp: new Date()
     }
   ]);
-  
-  const { toast } = useToast();
   
   const toggleChat = () => {
     setIsOpen(!isOpen);
@@ -62,8 +60,7 @@ const AIAssistantChat: React.FC = () => {
       
       setMessages(prev => [...prev, aiResponse]);
       
-      toast({
-        title: "AI Assistant",
+      toast("AI Assistant", {
         description: "New message from your AI Assistant",
       });
     }, 1000);
