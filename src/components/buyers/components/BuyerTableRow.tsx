@@ -29,9 +29,9 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
 
   return (
     <>
-      <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
+      <TableRow className={`hover:bg-gray-50 text-xs ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
         <TableCell 
-          className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
+          className={`font-medium text-xs sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
           style={{position: 'sticky', left: 0}}
         >
           <div className="flex items-center">
@@ -68,33 +68,33 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
             </div>
           </div>
         </TableCell>
-        <TableCell>{buyer.location || buyer.hq}</TableCell>
-        <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-        <TableCell>{buyer.description}</TableCell>
-        <TableCell>{buyer.offering || ''}</TableCell>
-        <TableCell>{buyer.sector || (buyer.sectors ? buyer.sectors.join(', ') : '')}</TableCell>
-        <TableCell>{buyer.customers || ''}</TableCell>
-        <TableCell>
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord || 'N/A')}`}>
+        <TableCell className="text-xs">{buyer.location || buyer.hq}</TableCell>
+        <TableCell className="text-xs">{buyer.employees.toLocaleString()}</TableCell>
+        <TableCell className="text-xs">{buyer.description}</TableCell>
+        <TableCell className="text-xs">{buyer.offering || ''}</TableCell>
+        <TableCell className="text-xs">{buyer.sector || (buyer.sectors ? buyer.sectors.join(', ') : '')}</TableCell>
+        <TableCell className="text-xs">{buyer.customers || ''}</TableCell>
+        <TableCell className="text-xs">
+          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord || 'N/A')}`}>
             {buyer.maTrackRecord || 'N/A'}
           </span>
         </TableCell>
-        <TableCell>
+        <TableCell className="text-xs">
           <div className="flex items-center">
-            <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
+            <div className="w-8 bg-gray-200 rounded-full h-1.5 mr-2">
               <div
-                className="bg-blueknight-500 h-2 rounded-full"
+                className="bg-blueknight-500 h-1.5 rounded-full"
                 style={{ width: `${buyer.matchingScore}%` }}
               />
             </div>
-            <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
+            <span className="text-xs font-medium text-blueknight-500">{buyer.matchingScore}%</span>
           </div>
         </TableCell>
       </TableRow>
 
-      {/* Side Panel for Buyer Rationale - Updated to be larger */}
+      {/* Side Panel for Buyer Rationale - Updated to be wider */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent className="w-[400px] sm:w-[600px] md:w-[750px] lg:max-w-[900px] overflow-hidden">
+        <SheetContent className="w-[500px] sm:w-[650px] md:w-[800px] lg:max-w-[1000px] overflow-hidden">
           <SheetHeader>
             <SheetTitle className="flex items-center text-lg font-semibold">
               {buyer.name} - Match Analysis
