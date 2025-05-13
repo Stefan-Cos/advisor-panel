@@ -8,9 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BuyerListNew from '../buyers/BuyerListNew';
 import SavedList from '../buyers/SavedList';
-import AIAssistantChat from '../ui/AIAssistantChat';
-import BuyerFilter from '../buyers/components/BuyerFilter';
 import { cn } from '@/lib/utils';
+import { useToast } from "@/hooks/use-toast";
 
 interface ListingDetailsProps {
   id: string;
@@ -34,7 +33,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   const location = useLocation();
   const path = location.pathname;
   const [showFilters, setShowFilters] = useState(true);
-  const [activeKeywordSection, setActiveKeywordSection] = useState<string | null>(null);
   
   // Analytics stats
   const analyticsStats = [
@@ -55,21 +53,71 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
     }
   ];
 
+  // Keyword search state
+  const [offeringKeywords, setOfferingKeywords] = useState<{value: string, operator: string}[]>([{value: '', operator: 'AND'}]);
+  const [sectorKeywords, setSectorKeywords] = useState<{value: string, operator: string}[]>([{value: '', operator: 'AND'}]);
+  const [customerKeywords, setCustomerKeywords] = useState<{value: string, operator: string}[]>([{value: '', operator: 'AND'}]);
+  
+  const { toast } = useToast();
+
   // Determine which content to show based on the URL path
   const showAIBuyerBuilder = path.includes('/ai-buyer');
   const showSavedList = path.includes('/saved');
   const showCRM = path.includes('/crm');
 
-  const handleFilterApply = () => {
-    // This function will be passed to the filter component
+  // Handle keyword input change
+  const handleKeywordChange = (
+    index: number,
+    category: 'offering' | 'sector' | 'customer',
+    field: 'value' | 'operator',
+    value: string
+  ) => {
+    if (category === 'offering') {
+      const newKeywords = [...offeringKeywords];
+      newKeywords[index] = { ...newKeywords[index], [field]: value };
+      setOfferingKeywords(newKeywords);
+    } else if (category === 'sector') {
+      const newKeywords = [...sectorKeywords];
+      newKeywords[index] = { ...newKeywords[index], [field]: value };
+      setSectorKeywords(newKeywords);
+    } else {
+      const newKeywords = [...customerKeywords];
+      newKeywords[index] = { ...newKeywords[index], [field]: value };
+      setCustomerKeywords(newKeywords);
+    }
   };
 
-  const toggleKeywordSection = (section: string) => {
-    if (activeKeywordSection === section) {
-      setActiveKeywordSection(null);
+  // Add new keyword
+  const addKeyword = (category: 'offering' | 'sector' | 'customer') => {
+    if (category === 'offering') {
+      setOfferingKeywords([...offeringKeywords, {value: '', operator: 'AND'}]);
+    } else if (category === 'sector') {
+      setSectorKeywords([...sectorKeywords, {value: '', operator: 'AND'}]);
     } else {
-      setActiveKeywordSection(section);
+      setCustomerKeywords([...customerKeywords, {value: '', operator: 'AND'}]);
     }
+  };
+
+  // Remove keyword
+  const removeKeyword = (category: 'offering' | 'sector' | 'customer', index: number) => {
+    if (category === 'offering') {
+      const newKeywords = offeringKeywords.filter((_, i) => i !== index);
+      setOfferingKeywords(newKeywords.length ? newKeywords : [{value: '', operator: 'AND'}]);
+    } else if (category === 'sector') {
+      const newKeywords = sectorKeywords.filter((_, i) => i !== index);
+      setSectorKeywords(newKeywords.length ? newKeywords : [{value: '', operator: 'AND'}]);
+    } else {
+      const newKeywords = customerKeywords.filter((_, i) => i !== index);
+      setCustomerKeywords(newKeywords.length ? newKeywords : [{value: '', operator: 'AND'}]);
+    }
+  };
+
+  // Apply filters
+  const applyFilters = () => {
+    toast({
+      title: "Filters Applied",
+      description: "Your search filters have been applied successfully."
+    });
   };
 
   // Horizontal filters for AI Buyer Builder
@@ -196,90 +244,129 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
               <h4 className="text-xs font-medium">Keyword Search</h4>
             </div>
             
-            {/* Horizontal keyword sections */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Horizontal keyword search sections */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Offering Keywords */}
               <div className="mb-2">
-                <button
-                  onClick={() => toggleKeywordSection('offering')}
-                  className="flex items-center justify-between w-full text-xs font-medium text-gray-700 bg-gray-50 p-2 rounded"
-                >
-                  <span>Offering</span>
-                  <ChevronDown className={cn("h-3.5 w-3.5 text-gray-500 transition-transform", activeKeywordSection === 'offering' && "transform rotate-180")} />
-                </button>
-                {activeKeywordSection === 'offering' && (
-                  <div className="mt-2 p-2 border border-gray-200 rounded-md bg-white">
-                    <div className="flex items-center mb-2">
+                <h5 className="text-xs font-medium text-gray-700 mb-2">Offering</h5>
+                <div className="space-y-2">
+                  {offeringKeywords.map((keyword, index) => (
+                    <div key={`offering-${index}`} className="flex items-center space-x-2">
+                      {index > 0 && (
+                        <select 
+                          className="h-8 pl-2 pr-8 text-xs border border-gray-300 rounded-md bg-white w-20"
+                          value={keyword.operator}
+                          onChange={(e) => handleKeywordChange(index, 'offering', 'operator', e.target.value)}
+                        >
+                          <option value="AND">AND</option>
+                          <option value="OR">OR</option>
+                          <option value="NOT">NOT</option>
+                        </select>
+                      )}
                       <input
                         type="text"
+                        className="h-8 pl-2 pr-2 text-xs border border-gray-300 rounded-md flex-grow"
                         placeholder="Enter offering keyword..."
-                        className="flex-1 text-xs p-1.5 border border-gray-300 rounded-md"
+                        value={keyword.value}
+                        onChange={(e) => handleKeywordChange(index, 'offering', 'value', e.target.value)}
                       />
-                      <button className="ml-1 p-1 text-gray-400 hover:text-gray-600">
+                      <button 
+                        onClick={() => removeKeyword('offering', index)}
+                        className="p-1 text-gray-400 hover:text-gray-600"
+                      >
                         <X className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                    <button className="text-xs text-blueknight-600 font-medium hover:text-blueknight-700">
-                      + Add offering keyword
-                    </button>
-                  </div>
-                )}
+                  ))}
+                  <button 
+                    className="text-xs text-blueknight-600 font-medium hover:text-blueknight-700"
+                    onClick={() => addKeyword('offering')}
+                  >
+                    + Add offering keyword
+                  </button>
+                </div>
               </div>
               
               {/* Sectors Keywords */}
               <div className="mb-2">
-                <button
-                  onClick={() => toggleKeywordSection('sectors')}
-                  className="flex items-center justify-between w-full text-xs font-medium text-gray-700 bg-gray-50 p-2 rounded"
-                >
-                  <span>Sectors</span>
-                  <ChevronDown className={cn("h-3.5 w-3.5 text-gray-500 transition-transform", activeKeywordSection === 'sectors' && "transform rotate-180")} />
-                </button>
-                {activeKeywordSection === 'sectors' && (
-                  <div className="mt-2 p-2 border border-gray-200 rounded-md bg-white">
-                    <div className="flex items-center mb-2">
+                <h5 className="text-xs font-medium text-gray-700 mb-2">Sectors</h5>
+                <div className="space-y-2">
+                  {sectorKeywords.map((keyword, index) => (
+                    <div key={`sector-${index}`} className="flex items-center space-x-2">
+                      {index > 0 && (
+                        <select 
+                          className="h-8 pl-2 pr-8 text-xs border border-gray-300 rounded-md bg-white w-20"
+                          value={keyword.operator}
+                          onChange={(e) => handleKeywordChange(index, 'sector', 'operator', e.target.value)}
+                        >
+                          <option value="AND">AND</option>
+                          <option value="OR">OR</option>
+                          <option value="NOT">NOT</option>
+                        </select>
+                      )}
                       <input
                         type="text"
+                        className="h-8 pl-2 pr-2 text-xs border border-gray-300 rounded-md flex-grow"
                         placeholder="Enter sector keyword..."
-                        className="flex-1 text-xs p-1.5 border border-gray-300 rounded-md"
+                        value={keyword.value}
+                        onChange={(e) => handleKeywordChange(index, 'sector', 'value', e.target.value)}
                       />
-                      <button className="ml-1 p-1 text-gray-400 hover:text-gray-600">
+                      <button 
+                        onClick={() => removeKeyword('sector', index)}
+                        className="p-1 text-gray-400 hover:text-gray-600"
+                      >
                         <X className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                    <button className="text-xs text-blueknight-600 font-medium hover:text-blueknight-700">
-                      + Add sector keyword
-                    </button>
-                  </div>
-                )}
+                  ))}
+                  <button 
+                    className="text-xs text-blueknight-600 font-medium hover:text-blueknight-700"
+                    onClick={() => addKeyword('sector')}
+                  >
+                    + Add sector keyword
+                  </button>
+                </div>
               </div>
               
               {/* Customers Keywords */}
               <div className="mb-2">
-                <button
-                  onClick={() => toggleKeywordSection('customers')}
-                  className="flex items-center justify-between w-full text-xs font-medium text-gray-700 bg-gray-50 p-2 rounded"
-                >
-                  <span>Customers</span>
-                  <ChevronDown className={cn("h-3.5 w-3.5 text-gray-500 transition-transform", activeKeywordSection === 'customers' && "transform rotate-180")} />
-                </button>
-                {activeKeywordSection === 'customers' && (
-                  <div className="mt-2 p-2 border border-gray-200 rounded-md bg-white">
-                    <div className="flex items-center mb-2">
+                <h5 className="text-xs font-medium text-gray-700 mb-2">Customers</h5>
+                <div className="space-y-2">
+                  {customerKeywords.map((keyword, index) => (
+                    <div key={`customer-${index}`} className="flex items-center space-x-2">
+                      {index > 0 && (
+                        <select 
+                          className="h-8 pl-2 pr-8 text-xs border border-gray-300 rounded-md bg-white w-20"
+                          value={keyword.operator}
+                          onChange={(e) => handleKeywordChange(index, 'customer', 'operator', e.target.value)}
+                        >
+                          <option value="AND">AND</option>
+                          <option value="OR">OR</option>
+                          <option value="NOT">NOT</option>
+                        </select>
+                      )}
                       <input
                         type="text"
+                        className="h-8 pl-2 pr-2 text-xs border border-gray-300 rounded-md flex-grow"
                         placeholder="Enter customer keyword..."
-                        className="flex-1 text-xs p-1.5 border border-gray-300 rounded-md"
+                        value={keyword.value}
+                        onChange={(e) => handleKeywordChange(index, 'customer', 'value', e.target.value)}
                       />
-                      <button className="ml-1 p-1 text-gray-400 hover:text-gray-600">
+                      <button 
+                        onClick={() => removeKeyword('customer', index)}
+                        className="p-1 text-gray-400 hover:text-gray-600"
+                      >
                         <X className="h-3.5 w-3.5" />
                       </button>
                     </div>
-                    <button className="text-xs text-blueknight-600 font-medium hover:text-blueknight-700">
-                      + Add customer keyword
-                    </button>
-                  </div>
-                )}
+                  ))}
+                  <button 
+                    className="text-xs text-blueknight-600 font-medium hover:text-blueknight-700"
+                    onClick={() => addKeyword('customer')}
+                  >
+                    + Add customer keyword
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -288,6 +375,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         <div className="flex justify-end mt-3">
           <button 
             className="px-3 py-1.5 text-xs font-medium bg-blueknight-500 text-white rounded-md hover:bg-blueknight-600"
+            onClick={applyFilters}
           >
             Apply Filters
           </button>
@@ -343,8 +431,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           <BuyerListNew listingId={id} />
         </div>
       )}
-      
-      <AIAssistantChat />
     </div>
   );
 };
