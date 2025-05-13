@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronDown, ChevronUp, Trash, History } from 'lucide-react';
@@ -715,3 +716,99 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                           className="bg-blueknight-500 h-2 rounded-full" 
                           style={{ width: `${getRationaleScore(buyer.id, 'transactions')}%` }}
                         ></div>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.previousTransactions}</p>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium">Financial Strength</span>
+                        <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'financial'))}`}>
+                          {getRationaleScore(buyer.id, 'financial')}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blueknight-500 h-2 rounded-full" 
+                          style={{ width: `${getRationaleScore(buyer.id, 'financial')}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.financialStrength}</p>
+                    </div>
+
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium">Overall Assessment</span>
+                        <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'overall'))}`}>
+                          {getRationaleScore(buyer.id, 'overall')}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blueknight-500 h-2 rounded-full" 
+                          style={{ width: `${getRationaleScore(buyer.id, 'overall')}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.overall}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ))}
+
+      {/* Side Panel for M&A Track Record */}
+      {buyers.map(buyer => (
+        <Sheet key={`ma-record-${buyer.id}`} open={maRecordSheetOpen === buyer.id} onOpenChange={() => setMARecordSheetOpen(null)}>
+          <SheetContent className="w-[500px] sm:w-[700px] md:w-[900px] overflow-hidden">
+            <SheetHeader>
+              <SheetTitle className="flex items-center text-lg font-semibold">
+                {buyer.name} - M&A Track Record
+              </SheetTitle>
+              <SheetDescription>
+                Historical merger and acquisition activity for this buyer.
+              </SheetDescription>
+            </SheetHeader>
+            <ScrollArea className="h-[calc(100vh-140px)] pr-4 mt-6">
+              <div className="space-y-6">
+                <div className="bg-white rounded-lg border border-gray-200">
+                  <div className="p-4 border-b border-gray-200 bg-gray-50">
+                    <h3 className="text-base font-medium text-gray-800">Recent Transactions</h3>
+                  </div>
+                  
+                  {getMockTransactions(buyer.maTrackRecord).map(transaction => (
+                    <div key={transaction.id} className="p-4 border-b border-gray-100 hover:bg-gray-50">
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-medium text-gray-900">{transaction.name}</h4>
+                        <span className="text-sm text-gray-500">{transaction.date}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        <span className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-md">
+                          {transaction.type}
+                        </span>
+                        <span className="px-2 py-1 text-xs bg-green-50 text-green-700 rounded-md">
+                          {transaction.amount}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">{transaction.description}</p>
+                    </div>
+                  ))}
+
+                  {getMockTransactions(buyer.maTrackRecord).length === 0 && (
+                    <div className="p-4 text-center text-gray-500">
+                      No transaction history available.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </ScrollArea>
+          </SheetContent>
+        </Sheet>
+      ))}
+    </div>
+  );
+};
+
+export default SavedList;
