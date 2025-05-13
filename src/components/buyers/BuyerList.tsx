@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import BuyerTabs from './components/BuyerTabs';
 import BuyerFilter from './components/BuyerFilter';
 import BuyerSearch from './components/BuyerSearch';
@@ -22,13 +22,11 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
-  const { toast } = useToast();
   
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
       setSavedBuyers([...savedBuyers, buyerId]);
-      toast({
-        title: "Buyer Saved",
+      toast("Buyer Saved", {
         description: "The buyer has been added to your saved list",
       });
     }
@@ -41,8 +39,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   };
   
   const handleFilterApply = () => {
-    toast({
-      title: "Filters Applied",
+    toast("Filters Applied", {
       description: "Your search filters have been applied",
     });
     setShowFilters(false);

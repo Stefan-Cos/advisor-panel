@@ -5,5 +5,5 @@ export type ToasterToast = ToastT
 
 const toast = sonnerToast;
 
-export { toast, type ToasterToast as Toast }
+export { toast }
 export const useToast = () => ({ toast })
