@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { PieChart } from 'lucide-react';
 import BuyerListNew from '../buyers/BuyerListNew';
 import SavedList from '../buyers/SavedList';
@@ -14,6 +15,7 @@ interface ListingDetailsProps {
 
 const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   
   // Determine which content to show based on the URL path
   const showSavedList = location.pathname.includes('/saved');
@@ -38,23 +40,36 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
     }
   ];
 
+  const handleCreateBuyerSearch = () => {
+    navigate(`/buyer-search/${listingId}`);
+  };
+
   return (
     <div className="space-y-8 w-full relative">
-      <Card>
-        <CardContent className="py-4 px-6">
-          <div className="flex flex-col">
-            <div className="grid grid-cols-3 gap-6">
-              {analyticsStats.map((stat, index) => (
-                <div key={index} className="flex flex-col items-center bg-gray-50 p-3 rounded-lg">
-                  <div className="mb-1">{stat.icon}</div>
-                  <span className="text-sm font-medium text-gray-700 mb-1">{stat.label}</span>
-                  <span className="text-xl font-bold text-blueknight-600">{stat.value}</span>
-                </div>
-              ))}
+      <div className="flex justify-between items-center">
+        <Card className="flex-1">
+          <CardContent className="py-4 px-6">
+            <div className="flex flex-col">
+              <div className="grid grid-cols-3 gap-6">
+                {analyticsStats.map((stat, index) => (
+                  <div key={index} className="flex flex-col items-center bg-gray-50 p-3 rounded-lg">
+                    <div className="mb-1">{stat.icon}</div>
+                    <span className="text-sm font-medium text-gray-700 mb-1">{stat.label}</span>
+                    <span className="text-xl font-bold text-blueknight-600">{stat.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+        
+        <Button
+          className="ml-4 bg-blueknight-600 hover:bg-blueknight-700"
+          onClick={handleCreateBuyerSearch}
+        >
+          Create Buyer Search
+        </Button>
+      </div>
       
       {/* Show content based on the current route */}
       {showSavedList ? (

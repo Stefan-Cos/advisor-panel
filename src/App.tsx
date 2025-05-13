@@ -11,6 +11,7 @@ import BuyerPreferences from "./pages/BuyerPreferences";
 import Listings from "./pages/Listings";
 import ListingDetails from "./pages/ListingDetails";
 import BuyerMandates from "./pages/BuyerMandates";
+import BuyerSearch from "./pages/BuyerSearch";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/listings/:id" element={<ListingDetails />} />
           <Route path="/listings/:id/saved" element={<ListingDetails />} />
           <Route path="/listings/:id/crm" element={<ListingDetails />} />
+          <Route path="/buyer-search/:id" element={<BuyerSearch />} />
           <Route path="/buyer-mandates" element={<BuyerMandates />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
