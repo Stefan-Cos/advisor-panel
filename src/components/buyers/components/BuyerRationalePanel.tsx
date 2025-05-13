@@ -1,38 +1,9 @@
 
 import React from 'react';
+import { Buyer } from '../types/BuyerTypes';
 
 interface BuyerRationalePanelProps {
-  buyer: {
-    longDescription?: string;
-    primaryIndustries?: string[];
-    keywords?: string[];
-    targetCustomerTypes?: string[];
-    parentCompany?: string;
-    location: string;
-    employees: number;
-    rationale: {
-      offering: {
-        text: string;
-        score: number;
-      };
-      customers: {
-        text: string;
-        score: number;
-      };
-      previousTransactions: {
-        text: string;
-        score: number;
-      };
-      financialStrength: {
-        text: string;
-        score: number;
-      };
-      overall: {
-        text: string;
-        score: number;
-      };
-    };
-  };
+  buyer: Buyer;
 }
 
 const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
@@ -96,7 +67,7 @@ const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
           </div>
           <div>
             <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
-            <p className="text-sm font-medium">{buyer.location}</p>
+            <p className="text-sm font-medium">{buyer.location || buyer.hq}</p>
           </div>
           <div>
             <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
@@ -104,23 +75,23 @@ const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
           </div>
           <div>
             <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
-            <p className="text-sm font-medium">$125.5</p>
+            <p className="text-sm font-medium">${(buyer.revenue / 1000000).toFixed(1)}</p>
           </div>
           <div>
             <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
-            <p className="text-sm font-medium">$45.2</p>
+            <p className="text-sm font-medium">${(buyer.cash / 1000000).toFixed(1)}</p>
           </div>
           <div>
             <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
-            <p className="text-sm font-medium">Mar 24</p>
+            <p className="text-sm font-medium">{buyer.reportedDate ? new Date(buyer.reportedDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }) : 'N/A'}</p>
           </div>
           <div>
             <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
-            <p className="text-sm font-medium">No</p>
+            <p className="text-sm font-medium">{buyer.isPEVCBacked ? 'Yes' : 'No'}</p>
           </div>
           <div>
             <h4 className="text-xs text-gray-500 mb-1">Public</h4>
-            <p className="text-sm font-medium">Yes</p>
+            <p className="text-sm font-medium">{buyer.isPublic ? 'Yes' : 'No'}</p>
           </div>
         </div>
       </div>
@@ -130,48 +101,48 @@ const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
         <div className="space-y-4">
           <div>
             <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.offering.score)} mr-2`}>
-                {buyer.rationale.offering.score}%
+              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.scores?.offering || 0)} mr-2`}>
+                {buyer.rationale.scores?.offering || 0}%
               </span>
               <span>Offering</span>
             </h4>
-            <p className="text-sm text-gray-700">{buyer.rationale.offering.text}</p>
+            <p className="text-sm text-gray-700">{buyer.rationale.offering}</p>
           </div>
           <div>
             <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.customers.score)} mr-2`}>
-                {buyer.rationale.customers.score}%
+              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.scores?.customers || 0)} mr-2`}>
+                {buyer.rationale.scores?.customers || 0}%
               </span>
               <span>Customers</span>
             </h4>
-            <p className="text-sm text-gray-700">{buyer.rationale.customers.text}</p>
+            <p className="text-sm text-gray-700">{buyer.rationale.customers}</p>
           </div>
           <div>
             <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.previousTransactions.score)} mr-2`}>
-                {buyer.rationale.previousTransactions.score}%
+              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.scores?.previousTransactions || 0)} mr-2`}>
+                {buyer.rationale.scores?.previousTransactions || 0}%
               </span>
               <span>Previous Transactions</span>
             </h4>
-            <p className="text-sm text-gray-700">{buyer.rationale.previousTransactions.text}</p>
+            <p className="text-sm text-gray-700">{buyer.rationale.previousTransactions}</p>
           </div>
           <div>
             <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.financialStrength.score)} mr-2`}>
-                {buyer.rationale.financialStrength.score}%
+              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.scores?.financialStrength || 0)} mr-2`}>
+                {buyer.rationale.scores?.financialStrength || 0}%
               </span>
               <span>Financial Strength</span>
             </h4>
-            <p className="text-sm text-gray-700">{buyer.rationale.financialStrength.text}</p>
+            <p className="text-sm text-gray-700">{buyer.rationale.financialStrength}</p>
           </div>
           <div>
             <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.overall.score)} mr-2`}>
-                {buyer.rationale.overall.score}%
+              <span className={`text-sm font-medium ${getMatchScoreColor(buyer.rationale.scores?.overall || 0)} mr-2`}>
+                {buyer.rationale.scores?.overall || 0}%
               </span>
               <span>Overall Rationale</span>
             </h4>
-            <p className="text-sm text-gray-700">{buyer.rationale.overall.text}</p>
+            <p className="text-sm text-gray-700">{buyer.rationale.overall}</p>
           </div>
         </div>
       </div>
