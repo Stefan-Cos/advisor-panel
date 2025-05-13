@@ -9,6 +9,7 @@ export function useBuyerSearchWorkspace() {
   // Check if we're in the buyer search workspace
   useEffect(() => {
     // Path should be exactly /buyer-search/[id] format to be considered in workspace mode
+    // This ensures the sidebar shows when in the projects section
     const isBuyerSearchPath = /^\/buyer-search\/\w+$/.test(location.pathname);
     setIsWorkspaceMode(isBuyerSearchPath);
   }, [location.pathname]);
