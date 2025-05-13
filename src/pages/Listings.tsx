@@ -1,10 +1,10 @@
 
 import React from 'react';
 import Navbar from '../components/layout/Navbar';
-import Sidebar from '../components/layout/Sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActiveProjectsTab from '../components/listings/ActiveProjectsTab';
 import ComingSoonTab from '../components/listings/ComingSoonTab';
+import FilterSidebar from '../components/buyers/components/FilterSidebar';
 
 // Mock data
 const mockListings = [
@@ -61,12 +61,17 @@ const mockListings = [
 ];
 
 const Listings = () => {
+  const handleFilterChange = (filters: any) => {
+    console.log("Filters updated:", filters);
+    // In a real app, this would update the listings based on filters
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
       
       <div className="flex flex-1">
-        <Sidebar />
+        <FilterSidebar onFilterChange={handleFilterChange} />
         
         <main className="flex-1 p-6">
           <div className="mb-8">
