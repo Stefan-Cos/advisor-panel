@@ -24,14 +24,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const { toast } = useToast();
-  
-  // Mock metrics for the modular dashboard
-  const metrics = [
-    { name: "Buyer Country Match", value: 65, count: 13 },
-    { name: "Revenue Range Match", value: 42, count: 8 },
-    { name: "Industry Match", value: 87, count: 21 }
-  ];
-  
+
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
       setSavedBuyers([...savedBuyers, buyerId]);
@@ -71,7 +64,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
           A modular B2B M&A matching dashboard for M&A advisors
         </h2>
         
-        <ModularScoreDashboard metrics={metrics} />
+        <ModularScoreDashboard />
         
         <div className="flex items-center justify-between mb-6">
           <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
