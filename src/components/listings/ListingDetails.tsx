@@ -38,7 +38,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
 }) => {
   const location = useLocation();
   const path = location.pathname;
-  const [showFilters, setShowFilters] = useState(true);
+  const [showFilters, setShowFilters] = useState(false);
 
   // Keyword search state with tags
   const [offeringKeywords, setOfferingKeywords] = useState<string[]>([]);
