@@ -1,5 +1,6 @@
+
 import * as React from "react"
-import { sonnerToast, type ToasterToast } from "sonner"
+import { toast as sonnerToast, type Toast as SonnerToast } from "sonner"
 
 const TOAST_LIMIT = 5
 const TOAST_REMOVE_DELAY = 1000000
@@ -12,6 +13,13 @@ type ToastProps = {
   action?: ToastActionElement;
   variant?: "default" | "destructive";
 };
+
+// Define our own ToasterToast type using the sonner Toast type
+interface ToasterToast extends ToastProps {
+  id: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
 
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
