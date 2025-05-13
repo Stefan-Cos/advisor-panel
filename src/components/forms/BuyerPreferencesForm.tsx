@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, X, ChevronDown } from 'lucide-react';
@@ -254,8 +253,7 @@ const BuyerPreferencesForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    toast({
-      title: "Preferences Updated",
+    toast("Preferences Updated", {
       description: "Your buyer preferences have been applied",
     });
     

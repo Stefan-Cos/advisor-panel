@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -61,9 +60,8 @@ const BuyerPreferencesEditor: React.FC<BuyerPreferencesEditorProps> = ({ initial
   const toggleEditPreferences = () => {
     if (isEditingPreferences) {
       // Save changes
-      toast({
-        title: "Preferences Updated",
-        description: "Your buyer preferences have been saved",
+      toast("Preferences Updated", {
+        description: "Your buyer preferences have been applied",
       });
     }
     setIsEditingPreferences(!isEditingPreferences);

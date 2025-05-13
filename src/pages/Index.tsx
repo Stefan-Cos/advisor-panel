@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
@@ -10,8 +9,7 @@ const Index = () => {
   useEffect(() => {
     // Simulate authentication check and redirect to dashboard
     const redirectToDashboard = () => {
-      toast({
-        title: "Welcome to BlueKnight",
+      toast("Welcome to BlueKnight", {
         description: "You have been automatically logged in",
       });
       

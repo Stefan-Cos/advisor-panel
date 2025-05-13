@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, Search, Check, ChevronsUpDown } from 'lucide-react';
 import StrategicBuyers from './StrategicBuyers';
@@ -141,10 +140,7 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
       setSavedBuyers([...savedBuyers, buyerId]);
-      toast({
-        title: "Buyer Saved",
-        description: "The buyer has been added to your saved list",
-      });
+      toast("Saved", { description: "Buyer added to saved list" });
     }
   };
   
@@ -153,10 +149,7 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
   };
   
   const handleFilterApply = () => {
-    toast({
-      title: "Filters Applied",
-      description: "Your search filters have been applied",
-    });
+    toast("Applied", { description: "Your search filters have been applied" });
     setShowFilters(false);
   };
   
