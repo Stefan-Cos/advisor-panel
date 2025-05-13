@@ -53,7 +53,7 @@ const SidebarNavItems = () => {
             <Link
               to={item.path}
               className={cn(
-                "flex items-center space-x-2 py-2 px-3 rounded-md font-medium nav-link group",
+                "nav-link group",
                 isActive 
                   ? "bg-blueknight-500 text-white" 
                   : "text-gray-600 hover:bg-gray-100"
@@ -71,8 +71,8 @@ const SidebarNavItems = () => {
               <span>{item.label}</span>
             </Link>
             
-            {/* Show Project Subsections after Projects nav item when on a listings page */}
-            {index === 1 && (
+            {/* Add Project Subsections immediately after Projects nav item */}
+            {index === 1 && isListingDetailsPage && (
               <ProjectSubItems listingId={listingId} />
             )}
           </React.Fragment>

@@ -9,15 +9,26 @@ import SavedList from '../buyers/SavedList';
 import AIAssistantChat from '../ui/AIAssistantChat';
 
 interface ListingDetailsProps {
-  listingId: string;
+  id: string;
+  companyName: string;
+  projectTitle: string;
+  revenue: string;
+  industry: string;
+  country: string;
+  status: 'active' | 'inactive' | 'pending';
+  date: string;
 }
 
-const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
+const ListingDetails: React.FC<ListingDetailsProps> = ({
+  id,
+  projectTitle,
+  revenue,
+  industry,
+  country,
+  status,
+}) => {
   const location = useLocation();
-  
-  // Determine which content to show based on the URL path
-  const showSavedList = location.pathname.includes('/saved');
-  const showCRM = location.pathname.includes('/crm');
+  const path = location.pathname;
   
   // Analytics stats
   const analyticsStats = [
@@ -38,29 +49,31 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
     }
   ];
 
+  // Determine which content to show based on the URL path
+  const showSavedList = path.includes('/saved');
+  const showCRM = path.includes('/crm');
+
   return (
     <div className="space-y-8 w-full relative">
-      <div className="flex justify-between items-center">
-        <Card className="flex-1">
-          <CardContent className="py-4 px-6">
-            <div className="flex flex-col">
-              <div className="grid grid-cols-3 gap-6">
-                {analyticsStats.map((stat, index) => (
-                  <div key={index} className="flex flex-col items-center bg-gray-50 p-3 rounded-lg">
-                    <div className="mb-1">{stat.icon}</div>
-                    <span className="text-sm font-medium text-gray-700 mb-1">{stat.label}</span>
-                    <span className="text-xl font-bold text-blueknight-600">{stat.value}</span>
-                  </div>
-                ))}
-              </div>
+      <Card>
+        <CardContent className="py-4 px-6">
+          <div className="flex flex-col">
+            <div className="grid grid-cols-3 gap-6">
+              {analyticsStats.map((stat, index) => (
+                <div key={index} className="flex flex-col items-center bg-gray-50 p-3 rounded-lg">
+                  <div className="mb-1">{stat.icon}</div>
+                  <span className="text-sm font-medium text-gray-700 mb-1">{stat.label}</span>
+                  <span className="text-xl font-bold text-blueknight-600">{stat.value}</span>
+                </div>
+              ))}
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
       
       {/* Show content based on the current route */}
       {showSavedList ? (
-        <SavedList listingId={listingId} />
+        <SavedList listingId={id} />
       ) : showCRM ? (
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-12 text-center">
           <h3 className="text-xl font-medium text-gray-700">CRM Features Coming Soon</h3>
@@ -69,7 +82,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
           </p>
         </div>
       ) : (
-        <BuyerListNew listingId={listingId} />
+        <BuyerListNew listingId={id} />
       )}
       
       <AIAssistantChat />

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Plus, PencilLine } from 'lucide-react';
 import {
   Table,
@@ -37,7 +37,6 @@ interface ActiveProjectsTabProps {
 const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  const navigate = useNavigate();
   
   // Calculate total pages
   const totalPages = Math.ceil(listings.length / itemsPerPage);
@@ -47,10 +46,6 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
-  const handleCreateBuyerSearch = (listingId: string) => {
-    navigate(`/buyer-search/${listingId}`);
-  };
 
   return (
     <>
@@ -95,12 +90,12 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
                   </Link>
                 </TableCell>
                 <TableCell className="text-center">
-                  <button
-                    onClick={() => handleCreateBuyerSearch(listing.id)}
-                    className="px-3 py-1.5 bg-blueknight-500 hover:bg-blueknight-600 text-white rounded-md text-sm font-medium transition-colors"
+                  <Link
+                    to={`/listings/${listing.id}`}
+                    className="px-3 py-1.5 bg-blueknight-500 hover:bg-blueknight-600 text-white rounded-md text-sm font-medium transition-colors inline-block"
                   >
                     Create Buyer Search
-                  </button>
+                  </Link>
                 </TableCell>
               </TableRow>
             ))}

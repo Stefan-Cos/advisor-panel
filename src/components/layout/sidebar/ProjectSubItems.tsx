@@ -13,9 +13,6 @@ const ProjectSubItems = ({ listingId }: ProjectSubItemProps) => {
   const location = useLocation();
   const { toast } = useToast();
 
-  // Don't render if we don't have a listingId
-  if (!listingId) return null;
-
   const projectSubItems = [
     { path: `/listings/${listingId}`, label: 'Buyer List', icon: <List className="h-4 w-4" /> },
     { path: `/listings/${listingId}/saved`, label: 'Saved List', icon: <BookmarkCheck className="h-4 w-4" /> },
@@ -23,10 +20,6 @@ const ProjectSubItems = ({ listingId }: ProjectSubItemProps) => {
   ];
 
   const handleCRMClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (location.pathname.includes(`/listings/${listingId}/crm`)) {
-      return; // Allow navigation if already on the CRM page
-    }
-    
     e.preventDefault();
     toast({
       title: "CRM Features",

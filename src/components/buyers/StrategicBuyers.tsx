@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
+import BuyerSearch from './components/BuyerSearch';
 import BuyerTableHeader from './components/BuyerTableHeader';
 import BuyerTableRow from './components/BuyerTableRow';
 import BuyerRationalePanel from './components/BuyerRationalePanel';
@@ -220,7 +221,12 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
   };
 
   return (
-    <div className="relative overflow-hidden">    
+    <div className="relative overflow-hidden">
+      <BuyerSearch 
+        searchValue={searchCompany}
+        onSearchChange={setSearchCompany}
+      />
+    
       <ScrollArea className="h-[600px] w-full" orientation="both">
         <div className="min-w-max">
           <Table>

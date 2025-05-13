@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Filter, ChevronDown, X } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -16,8 +17,6 @@ interface BuyerFilterProps {
   onClose: () => void;
 }
 
-// This component is being replaced by FilterSidebar, but we're keeping it for now
-// with minimal changes to ensure backward compatibility
 const BuyerFilter: React.FC<BuyerFilterProps> = ({ 
   onFilterApply, 
   onClose 
@@ -72,6 +71,117 @@ const BuyerFilter: React.FC<BuyerFilterProps> = ({
         >
           Close
         </button>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            HQ
+          </label>
+          <select className="input-field">
+            <option value="">All Countries</option>
+            <option value="USA">USA</option>
+            <option value="UK">UK</option>
+            <option value="Germany">Germany</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Minimum Revenue ($M)
+          </label>
+          <select className="input-field">
+            <option value="0">Any</option>
+            <option value="50">$50M+</option>
+            <option value="100">$100M+</option>
+            <option value="250">$250M+</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Minimum Cash ($M)
+          </label>
+          <select className="input-field">
+            <option value="0">Any</option>
+            <option value="10">$10M+</option>
+            <option value="25">$25M+</option>
+            <option value="50">$50M+</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Minimum Employees
+          </label>
+          <select className="input-field">
+            <option value="0">Any</option>
+            <option value="100">100+</option>
+            <option value="500">500+</option>
+            <option value="1000">1000+</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            PE/VC Backed
+          </label>
+          <select className="input-field">
+            <option value="">Any</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Minimum Match Score
+          </label>
+          <Popover open={showMinimumScoreDropdown} onOpenChange={setShowMinimumScoreDropdown}>
+            <PopoverTrigger asChild>
+              <button
+                className="w-full flex items-center justify-between px-3 py-2 border border-gray-300 bg-white rounded-md text-sm"
+                onClick={() => setShowMinimumScoreDropdown(!showMinimumScoreDropdown)}
+              >
+                <span className="text-left truncate">
+                  {selectedMinimumScores.length > 0
+                    ? `${selectedMinimumScores.length} selected`
+                    : 'Select options'}
+                </span>
+                <ChevronDown className="ml-2 h-4 w-4 opacity-50" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0" align="start">
+              <div className="p-2">
+                <Input
+                  placeholder="Search..."
+                  value={minimumScoreSearch}
+                  onChange={(e) => setMinimumScoreSearch(e.target.value)}
+                  className="mb-2"
+                />
+                <ScrollArea className="h-[200px]">
+                  <div className="space-y-2 p-2">
+                    {filteredMinimumScoreOptions.map((option) => (
+                      <div key={option.value} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={`score-${option.value}`}
+                          checked={selectedMinimumScores.includes(option.value)}
+                          onCheckedChange={() => handleMinimumScoreSelection(option.value)}
+                        />
+                        <label
+                          htmlFor={`score-${option.value}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          {option.label}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
       
       <div className="mt-4 flex justify-end">

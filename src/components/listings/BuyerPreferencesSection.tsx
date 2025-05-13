@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
@@ -9,8 +9,7 @@ interface Preference {
 }
 
 interface BuyerPreferencesSectionProps {
-  listingId?: string;
-  preferences?: {
+  preferences: {
     countries: Preference[];
     industries: Preference[];
     endUserSectors: Preference[];
@@ -28,41 +27,8 @@ interface BuyerPreferencesSectionProps {
 
 const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ 
   preferences,
-  listingId,
   onEditPreferences 
 }) => {
-  // Mock data for when actual preferences aren't provided
-  const [mockPreferences] = useState({
-    countries: [
-      { name: 'United States', importance: 'high' as const },
-      { name: 'United Kingdom', importance: 'medium' as const },
-      { name: 'Germany', importance: 'low' as const }
-    ],
-    industries: [
-      { name: 'Technology', importance: 'high' as const },
-      { name: 'Healthcare', importance: 'medium' as const }
-    ],
-    endUserSectors: [
-      { name: 'Enterprise', importance: 'high' as const },
-      { name: 'Government', importance: 'low' as const }
-    ],
-    keywords: [
-      { name: 'SaaS', importance: 'high' as const },
-      { name: 'B2B', importance: 'medium' as const },
-      { name: 'AI', importance: 'medium' as const }
-    ],
-    acquisitionReason: 'Strategic expansion into new markets',
-    shareholderPreference: {
-      privateEquity: true,
-      peBacked: true,
-      strategicTrade: false,
-      noPreference: false
-    }
-  });
-
-  // Use preferences if provided, otherwise use mock data
-  const preferencesData = preferences || mockPreferences;
-
   const importanceColors = {
     high: 'bg-red-50 text-red-700 border-red-200',
     medium: 'bg-yellow-50 text-yellow-700 border-yellow-200',
@@ -71,10 +37,10 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({
 
   const getActiveShareholderPreferences = () => {
     const active = [];
-    if (preferencesData.shareholderPreference.privateEquity) active.push('Private Equity');
-    if (preferencesData.shareholderPreference.peBacked) active.push('PE-Backed');
-    if (preferencesData.shareholderPreference.strategicTrade) active.push('Strategic Trade');
-    if (preferencesData.shareholderPreference.noPreference) active.push('No Preference');
+    if (preferences.shareholderPreference.privateEquity) active.push('Private Equity');
+    if (preferences.shareholderPreference.peBacked) active.push('PE-Backed');
+    if (preferences.shareholderPreference.strategicTrade) active.push('Strategic Trade');
+    if (preferences.shareholderPreference.noPreference) active.push('No Preference');
     return active;
   };
 
@@ -97,12 +63,12 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-2">Country of Buyer</h4>
           <div className="flex flex-col space-y-2">
-            {preferencesData.countries.map((country) => (
+            {preferences.countries.map((country) => (
               <Badge key={country.name} variant="outline" className={`${importanceColors[country.importance]}`}>
                 {country.name}
               </Badge>
             ))}
-            {preferencesData.countries.length === 0 && (
+            {preferences.countries.length === 0 && (
               <span className="text-sm text-gray-500">None specified</span>
             )}
           </div>
@@ -112,12 +78,12 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-2">Industries of Buyers</h4>
           <div className="flex flex-col space-y-2">
-            {preferencesData.industries.map((industry) => (
+            {preferences.industries.map((industry) => (
               <Badge key={industry.name} variant="outline" className={`${importanceColors[industry.importance]}`}>
                 {industry.name}
               </Badge>
             ))}
-            {preferencesData.industries.length === 0 && (
+            {preferences.industries.length === 0 && (
               <span className="text-sm text-gray-500">None specified</span>
             )}
           </div>
@@ -127,12 +93,12 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-2">Customer Sectors</h4>
           <div className="flex flex-col space-y-2">
-            {preferencesData.endUserSectors.map((sector) => (
+            {preferences.endUserSectors.map((sector) => (
               <Badge key={sector.name} variant="outline" className={`${importanceColors[sector.importance]}`}>
                 {sector.name}
               </Badge>
             ))}
-            {preferencesData.endUserSectors.length === 0 && (
+            {preferences.endUserSectors.length === 0 && (
               <span className="text-sm text-gray-500">None specified</span>
             )}
           </div>
@@ -142,12 +108,12 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({
         <div>
           <h4 className="text-sm font-medium text-gray-600 mb-2">Buyer Keywords</h4>
           <div className="flex flex-col space-y-2">
-            {preferencesData.keywords.map((keyword) => (
+            {preferences.keywords.map((keyword) => (
               <Badge key={keyword.name} variant="outline" className={`${importanceColors[keyword.importance]}`}>
                 {keyword.name}
               </Badge>
             ))}
-            {preferencesData.keywords.length === 0 && (
+            {preferences.keywords.length === 0 && (
               <span className="text-sm text-gray-500">None specified</span>
             )}
           </div>

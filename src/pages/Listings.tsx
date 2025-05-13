@@ -1,6 +1,7 @@
 
 import React from 'react';
 import Navbar from '../components/layout/Navbar';
+import Sidebar from '../components/layout/Sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActiveProjectsTab from '../components/listings/ActiveProjectsTab';
 import ComingSoonTab from '../components/listings/ComingSoonTab';
@@ -65,6 +66,8 @@ const Listings = () => {
       <Navbar />
       
       <div className="flex flex-1">
+        <Sidebar />
+        
         <main className="flex-1 p-6">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-blueknight-800">All Projects ({mockListings.length})</h1>

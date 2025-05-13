@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import BuyerTabs from './components/BuyerTabs';
+import BuyerFilter from './components/BuyerFilter';
 import BuyerSearch from './components/BuyerSearch';
 import BuyerActionBar from './components/BuyerActionBar';
 import StrategicBuyerTable from './components/StrategicBuyerTable';
 import PEBuyerTable from './components/PEBuyerTable';
-import FilterSidebar from './components/FilterSidebar';
 import { getMATrackRecordColor } from './utils/buyerUtils';
 
 // Mock data imports
@@ -19,6 +19,7 @@ interface BuyerListProps {
 const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const { toast } = useToast();
@@ -35,13 +36,16 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   
   const buyers = activeTab === 'strategic' ? strategicBuyers : peBuyers;
   
-  const handleFilterChange = (filters: any) => {
-    console.log("Filters applied:", filters);
-    // In a real implementation, filter buyers based on the selected filters
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+  
+  const handleFilterApply = () => {
     toast({
       title: "Filters Applied",
       description: "Your search filters have been applied",
     });
+    setShowFilters(false);
   };
 
   const toggleRationale = (buyerId: string) => {
@@ -53,14 +57,20 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   };
 
   return (
-    <div className="flex h-full animate-fade-in">
-      <FilterSidebar onFilterChange={handleFilterChange} />
-      
-      <div className="flex-1 bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+    <div className="animate-fade-in">
+      <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          <BuyerActionBar onSearchChange={setSearchValue} />
+          <BuyerActionBar toggleFilters={toggleFilters} />
         </div>
+        
+        <div className="mb-4">
+          <BuyerSearch searchValue={searchValue} onSearchChange={setSearchValue} />
+        </div>
+        
+        {showFilters && (
+          <BuyerFilter onFilterApply={handleFilterApply} onClose={() => setShowFilters(false)} />
+        )}
         
         {activeTab === 'strategic' ? (
           <StrategicBuyerTable 
