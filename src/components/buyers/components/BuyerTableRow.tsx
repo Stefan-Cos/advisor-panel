@@ -1,8 +1,11 @@
 
 import React from 'react';
-import { Check, Plus } from 'lucide-react';
+import { Check, Plus, ChevronRight } from 'lucide-react';
 import { TableCell, TableRow } from "@/components/ui/table";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import BuyerRationale from './BuyerRationale';
+import BuyerRationalePanel from './BuyerRationalePanel';
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Buyer } from '../types/BuyerTypes';
 
 interface BuyerTableRowProps {
@@ -22,67 +25,90 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
   toggleRationale,
   getMATrackRecordColor
 }) => {
+  const [sheetOpen, setSheetOpen] = React.useState(false);
+
   return (
-    <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-      <TableCell 
-        className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
-        style={{position: 'sticky', left: 0}}
-      >
-        <div className="flex items-center">
-          <button
-            onClick={() => onAddToSaved(buyer.id)}
-            disabled={savedBuyers.includes(buyer.id)}
-            className={`flex items-center justify-center p-1 rounded-full mr-3 self-center ${
-              savedBuyers.includes(buyer.id)
-                ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
-            }`}
-            title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-          >
-            {savedBuyers.includes(buyer.id) ? (
-              <Check className="h-3.5 w-3.5" />
-            ) : (
-              <Plus className="h-3.5 w-3.5" />
-            )}
-          </button>
-          
-          <div>
-            <div className="flex items-center gap-2">
-              <span>{buyer.name}</span>
+    <>
+      <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
+        <TableCell 
+          className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
+          style={{position: 'sticky', left: 0}}
+        >
+          <div className="flex items-center">
+            <button
+              onClick={() => onAddToSaved(buyer.id)}
+              disabled={savedBuyers.includes(buyer.id)}
+              className={`flex items-center justify-center p-1 rounded-full mr-3 self-center ${
+                savedBuyers.includes(buyer.id)
+                  ? 'bg-green-100 text-green-600 cursor-not-allowed'
+                  : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
+              }`}
+              title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
+            >
+              {savedBuyers.includes(buyer.id) ? (
+                <Check className="h-3.5 w-3.5" />
+              ) : (
+                <Plus className="h-3.5 w-3.5" />
+              )}
+            </button>
+            
+            <div>
+              <div className="flex items-center gap-2">
+                <span>{buyer.name}</span>
+              </div>
+              <div className="flex items-center mt-1">
+                <button 
+                  onClick={() => setSheetOpen(true)} 
+                  className="inline-flex items-center text-xs text-blueknight-600 hover:underline"
+                >
+                  View rationale
+                  <ChevronRight className="h-3 w-3 ml-0.5" />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center mt-1">
-              <BuyerRationale
-                buyer={buyer}
-                expandedRationales={isExpanded ? [buyer.id] : []} 
-                toggleRationale={toggleRationale}
+          </div>
+        </TableCell>
+        <TableCell>{buyer.location || buyer.hq}</TableCell>
+        <TableCell>{buyer.employees.toLocaleString()}</TableCell>
+        <TableCell>{buyer.description}</TableCell>
+        <TableCell>{buyer.offering || ''}</TableCell>
+        <TableCell>{buyer.sector || (buyer.sectors ? buyer.sectors.join(', ') : '')}</TableCell>
+        <TableCell>{buyer.customers || ''}</TableCell>
+        <TableCell>
+          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord || 'N/A')}`}>
+            {buyer.maTrackRecord || 'N/A'}
+          </span>
+        </TableCell>
+        <TableCell>
+          <div className="flex items-center">
+            <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
+              <div
+                className="bg-blueknight-500 h-2 rounded-full"
+                style={{ width: `${buyer.matchingScore}%` }}
               />
             </div>
+            <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
           </div>
-        </div>
-      </TableCell>
-      <TableCell>{buyer.location || buyer.hq}</TableCell>
-      <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-      <TableCell>{buyer.description}</TableCell>
-      <TableCell>{buyer.offering || ''}</TableCell>
-      <TableCell>{buyer.sector || (buyer.sectors ? buyer.sectors.join(', ') : '')}</TableCell>
-      <TableCell>{buyer.customers || ''}</TableCell>
-      <TableCell>
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord || 'N/A')}`}>
-          {buyer.maTrackRecord || 'N/A'}
-        </span>
-      </TableCell>
-      <TableCell>
-        <div className="flex items-center">
-          <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
-            <div
-              className="bg-blueknight-500 h-2 rounded-full"
-              style={{ width: `${buyer.matchingScore}%` }}
-            />
-          </div>
-          <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-        </div>
-      </TableCell>
-    </TableRow>
+        </TableCell>
+      </TableRow>
+
+      {/* Side Panel for Buyer Rationale */}
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent className="w-[320px] sm:w-[500px] overflow-hidden">
+          <SheetHeader>
+            <SheetTitle className="flex items-center text-lg font-semibold">
+              {buyer.name} - Match Analysis
+            </SheetTitle>
+            <SheetDescription>
+              Detailed analysis of why this buyer may be a good match for your company.
+            </SheetDescription>
+          </SheetHeader>
+          <ScrollArea className="h-[calc(100vh-140px)] pr-4 mt-6">
+            <BuyerRationalePanel buyer={buyer} />
+          </ScrollArea>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 };
 
