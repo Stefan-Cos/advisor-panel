@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown, ChevronUp, Trash, History } from 'lucide-react';
@@ -725,7 +726,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                           </div>
                           <div>
                             <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
-                            <p className="text-sm font-medium">{buyer.location || buyer.hq}</p>
+                            <p className="text-sm font-medium">{buyer.location}</p>
                           </div>
                           <div>
                             <h4 className="text-xs text-gray-500 mb-1">Employees</h4>

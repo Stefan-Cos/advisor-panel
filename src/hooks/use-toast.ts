@@ -1,5 +1,5 @@
 
-import { toast as sonnerToast, type Toast } from "sonner";
+import { toast as sonnerToast } from "sonner";
 
 export type ToastProps = Omit<Parameters<typeof sonnerToast>[1], "title" | "description"> & {
   title?: string;
