@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/collapsible";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { getMATrackRecordColor } from '../buyers/utils/buyerUtils';
 
 interface SavedListProps {
   listingId: string;
@@ -326,23 +327,11 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
     }
   };
 
-  const getMATrackRecordColor = (record: string) => {
-    switch(record) {
-      case 'High':
-        return 'bg-green-50 text-green-700';
-      case 'Medium':
-        return 'bg-yellow-50 text-yellow-700';
-      case 'Low':
-        return 'bg-red-50 text-red-700';
-      default:
-        return 'bg-gray-50 text-gray-700';
-    }
-  };
-
-  const getScoreColor = (score: number) => {
-    if (score >= 80) return 'bg-green-50 text-green-700';
-    if (score >= 60) return 'bg-yellow-50 text-yellow-700';
-    return 'bg-red-50 text-red-700';
+  const getScoreBadgeStyle = (score: number) => {
+    if (score >= 90) return "bg-green-50 text-green-700";
+    if (score >= 75) return "bg-blue-50 text-blue-700";
+    if (score >= 60) return "bg-yellow-50 text-yellow-700";
+    return "bg-gray-50 text-gray-700";
   };
 
   const getRationaleScore = (buyerId: string, section: string) => {
@@ -500,10 +489,9 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                 <div className="flex items-center mt-1 gap-2">
                                   <button
                                     onClick={() => openRationaleSheet(buyer.id)}
-                                    className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100"
+                                    className="text-xs font-medium text-blueknight-600 hover:text-blueknight-800 underline"
                                   >
-                                    Rationale
-                                    <ChevronDown className="h-3 w-3 ml-1" />
+                                    View Rationale
                                   </button>
                                   
                                   <button
@@ -541,7 +529,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                             <TableCell className="text-xs">
                               <button 
                                 onClick={() => openMARecordSheet(buyer.id)}
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)} cursor-pointer hover:opacity-90`}
+                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)} cursor-pointer hover:opacity-90`}
                                 title="Click to view M&A history"
                               >
                                 {buyer.maTrackRecord}
@@ -598,10 +586,9 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                                 <div className="flex items-center mt-1 gap-2">
                                   <button
                                     onClick={() => openRationaleSheet(buyer.id)}
-                                    className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100"
+                                    className="text-xs font-medium text-blueknight-600 hover:text-blueknight-800 underline"
                                   >
-                                    Rationale
-                                    <ChevronDown className="h-3 w-3 ml-1" />
+                                    View Rationale
                                   </button>
                                   
                                   <button
@@ -679,285 +666,52 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
             </SheetHeader>
             <ScrollArea className="h-[calc(100vh-140px)] pr-4 mt-6">
               <div className="space-y-6">
-                <div className="mb-6 bg-white p-4 rounded-md border border-gray-200">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">
-                    {buyer.type === 'strategic' ? 'Buyer Information' : 'Fund Information'}
-                  </h3>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
-                      <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
-                    </div>
-                  
-                    <div>
-                      <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {buyer.primaryIndustries?.map((industry, i) => (
-                          <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                            {industry}
-                          </span>
-                        )) || "Not provided"}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {buyer.type === 'strategic' ? (
-                    <>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {buyer.keywords?.map((keyword, i) => (
-                              <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                {keyword}
-                              </span>
-                            )) || "Not provided"}
-                          </div>
-                        </div>
-                      
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
-                          <p className="text-sm text-gray-600">
-                            {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 mt-4">
-                        <div>
-                          <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
-                          <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-xs text-gray-500 mb-1">Website</h4>
-                          <p className="text-sm font-medium text-blue-500 hover:underline cursor-pointer">Visit</p>
-                        </div>
-                        <div>
-                          <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
-                          <p className="text-sm font-medium">{buyer.location}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
-                          <p className="text-sm font-medium">{buyer.employees.toLocaleString()}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
-                          <p className="text-sm font-medium">${buyer.revenue}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
-                          <p className="text-sm font-medium">${buyer.cash}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
-                          <p className="text-sm font-medium">{formatReportDate(buyer.reportedDate)}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
-                          <p className="text-sm font-medium">{buyer.isPEVCBacked ? "Yes" : "No"}</p>
-                        </div>
-                        <div>
-                          <h4 className="text-xs text-gray-500 mb-1">Public</h4>
-                          <p className="text-sm font-medium">{buyer.isPublic ? "Yes" : "No"}</p>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Type</h4>
-                          <div className="flex flex-wrap gap-1">
-                            {buyer.investmentType?.map((type, i) => (
-                              <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                {type}
-                              </span>
-                            )) || "Not provided"}
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-2">Geography</h4>
-                          <div className="flex flex-wrap gap-1">
-                            {buyer.geography?.map((geo, i) => (
-                              <span key={i} className="px-2 py-1 text-xs bg-cyan-50 text-cyan-700 rounded-full">
-                                {geo}
-                              </span>
-                            )) || "Not provided"}
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Preferences</h4>
-                          <div className="flex flex-wrap gap-1">
-                            {buyer.industryPreferences?.map((pref, i) => (
-                              <span key={i} className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded-full">
-                                {pref}
-                              </span>
-                            )) || "Not provided"}
-                          </div>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-2">Total Investments</h4>
-                          <p className="text-sm text-gray-600">{(buyer.investments?.split(' ')[0]) || "N/A"}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-2">EV Range</h4>
-                          <p className="text-sm text-gray-600">${buyer.investmentSize}</p>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-2">Revenue ($M)</h4>
-                          <p className="text-sm text-gray-600">{buyer.revenueRange || buyer.revenue}</p>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-2">EBITDA ($M)</h4>
-                          <p className="text-sm text-gray-600">{buyer.ebitda}</p>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-sm font-semibold text-gray-700 mb-2">AUM ($M)</h4>
-                          <p className="text-sm text-gray-600">{buyer.aum?.toFixed(1) || "N/A"}</p>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-                
-                <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Acquisition Rationale</h3>
+                <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
+                  <h3 className="text-base font-medium text-gray-800 mb-4">Score Breakdown</h3>
                   <div className="space-y-4">
                     <div>
-                      <div className="flex items-center">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'offering'))}`}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium">{buyer.type === 'strategic' ? 'Offering' : 'Sectors'}</span>
+                        <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'offering'))}`}>
                           {getRationaleScore(buyer.id, 'offering')}%
                         </span>
-                        <h4 className="text-sm font-semibold text-gray-700">{buyer.type === 'strategic' ? 'Offering' : 'Sectors'}</h4>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blueknight-500 h-2 rounded-full" 
+                          style={{ width: `${getRationaleScore(buyer.id, 'offering')}%` }}
+                        ></div>
                       </div>
                       <p className="text-sm text-gray-600 mt-1">{buyer.rationale.offering}</p>
                     </div>
-                    
+
                     {buyer.type === 'strategic' && (
                       <div>
-                        <div className="flex items-center">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'customers'))}`}>
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium">Customers</span>
+                          <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'customers'))}`}>
                             {getRationaleScore(buyer.id, 'customers')}%
                           </span>
-                          <h4 className="text-sm font-semibold text-gray-700">Customers</h4>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-blueknight-500 h-2 rounded-full" 
+                            style={{ width: `${getRationaleScore(buyer.id, 'customers')}%` }}
+                          ></div>
                         </div>
                         <p className="text-sm text-gray-600 mt-1">{buyer.rationale.customers}</p>
                       </div>
                     )}
-                    
+
                     <div>
-                      <div className="flex items-center">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'transactions'))}`}>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm font-medium">Previous Transactions</span>
+                        <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'transactions'))}`}>
                           {getRationaleScore(buyer.id, 'transactions')}%
                         </span>
-                        <h4 className="text-sm font-semibold text-gray-700">Previous Transactions</h4>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.previousTransactions}</p>
-                    </div>
-                    
-                    <div>
-                      <div className="flex items-center">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'financial'))}`}>
-                          {getRationaleScore(buyer.id, 'financial')}%
-                        </span>
-                        <h4 className="text-sm font-semibold text-gray-700">Financial Strength</h4>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.financialStrength}</p>
-                    </div>
-                    
-                    <div>
-                      <div className="flex items-center">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mr-2 ${getScoreColor(getRationaleScore(buyer.id, 'overall'))}`}>
-                          {getRationaleScore(buyer.id, 'overall')}%
-                        </span>
-                        <h4 className="text-sm font-semibold text-gray-700">Overall Rationale</h4>
-                      </div>
-                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.overall}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </ScrollArea>
-          </SheetContent>
-        </Sheet>
-      ))}
-
-      {/* Side Panel for M&A Track Record */}
-      {buyers.map(buyer => {
-        const transactions = getMockTransactions(buyer.maTrackRecord);
-        return (
-          <Sheet key={`marecord-${buyer.id}`} open={maRecordSheetOpen === buyer.id} onOpenChange={() => setMARecordSheetOpen(null)}>
-            <SheetContent className="w-[400px] sm:w-[500px] md:w-[600px] overflow-hidden">
-              <SheetHeader>
-                <SheetTitle className="flex items-center text-lg font-semibold">
-                  <History className="h-5 w-5 mr-2 text-blueknight-500" />
-                  {buyer.name} - M&A History
-                </SheetTitle>
-                <SheetDescription>
-                  Previous similar transactions and acquisition history
-                </SheetDescription>
-              </SheetHeader>
-              <ScrollArea className="h-[calc(100vh-140px)] pr-4 mt-6">
-                <div className="space-y-6">
-                  <div className="flex items-center">
-                    <div className={`px-2.5 py-1 rounded-full text-sm font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
-                      {buyer.maTrackRecord} M&A Record
-                    </div>
-                    <span className="ml-2 text-sm text-gray-500">
-                      {transactions.length} similar transaction{transactions.length !== 1 ? 's' : ''}
-                    </span>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    {transactions.map((transaction) => (
-                      <div key={transaction.id} className="border border-gray-200 rounded-lg p-4">
-                        <h4 className="font-medium text-sm">{transaction.name}</h4>
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 text-xs">
-                          <div>
-                            <span className="text-gray-500">Date: </span>
-                            <span>{transaction.date}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Type: </span>
-                            <span>{transaction.type}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-500">Amount: </span>
-                            <span>{transaction.amount}</span>
-                          </div>
-                        </div>
-                        <p className="text-xs mt-3 text-gray-600">{transaction.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="text-sm font-medium text-blueknight-700 mt-4">Why This Matters</div>
-                  <p className="text-xs text-gray-600">
-                    {buyer.name}'s {buyer.maTrackRecord.toLowerCase()} M&A track record indicates 
-                    {buyer.maTrackRecord === 'High' 
-                      ? ' strong acquisition appetite and experience in completing similar deals. They have consistently shown interest in companies with your profile.'
-                      : buyer.maTrackRecord === 'Medium'
-                        ? ' moderate acquisition experience with select strategic purchases in related sectors. They are actively looking to expand their portfolio.'
-                        : ' limited but focused acquisition strategy. They are selective but could see your company as a strategic opportunity.'}
-                  </p>
-                </div>
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
-        );
-      })}
-    </div>
-  );
-};
-
-export default SavedList;
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blueknight-500 h-2 rounded-full" 
+                          style={{ width: `${getRationaleScore(buyer.id, 'transactions')}%` }}
+                        ></div>
