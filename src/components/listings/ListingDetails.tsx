@@ -83,7 +83,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           </p>
         </div>
       ) : showAIBuyerBuilder ? (
-        // AI Buyer Builder content
+        // AI Buyer Builder content - using same layout as BlueKnight List
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
           <h2 className="text-xl font-medium text-blueknight-700 mb-4">AI Buyer Builder</h2>
           <BuyerListNew listingId={id} />
