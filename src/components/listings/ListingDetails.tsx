@@ -112,7 +112,8 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           {activeList === 'buyer' ? (
             <BuyerListNew listingId={id} />
           ) : (
-            <BuyerListNew listingId={id} />  {/* For now, using the same component for both tabs */}
+            // For now, using the same component for both tabs
+            <BuyerListNew listingId={id} />
           )}
         </div>
       )}
