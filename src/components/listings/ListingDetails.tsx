@@ -11,6 +11,7 @@ import SavedList from '../buyers/SavedList';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import Tag from '../ui/Tag';
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface ListingDetailsProps {
   id: string;
@@ -44,10 +45,10 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   const [sectorInput, setSectorInput] = useState('');
   const [customerInput, setCustomerInput] = useState('');
   
-  // Keyword operators
-  const [offeringOperator, setOfferingOperator] = useState<'AND' | 'OR' | 'NOT'>('OR');
-  const [sectorOperator, setSectorOperator] = useState<'AND' | 'OR' | 'NOT'>('OR');
-  const [customerOperator, setCustomerOperator] = useState<'AND' | 'OR' | 'NOT'>('OR');
+  // Keyword operators - updated to only use 'AND' or 'OR'
+  const [offeringOperator, setOfferingOperator] = useState<'AND' | 'OR'>('OR');
+  const [sectorOperator, setSectorOperator] = useState<'AND' | 'OR'>('OR');
+  const [customerOperator, setCustomerOperator] = useState<'AND' | 'OR'>('OR');
 
   // Determine which content to show based on the URL path
   const showAIBuyerBuilder = path.includes('/ai-buyer');
@@ -87,10 +88,10 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
     }
   };
 
-  // Handle operator change
+  // Handle operator change - updated to only use 'AND' or 'OR'
   const handleOperatorChange = (
     category: 'offering' | 'sector' | 'customer',
-    operator: 'AND' | 'OR' | 'NOT'
+    operator: 'AND' | 'OR'
   ) => {
     if (category === 'offering') {
       setOfferingOperator(operator);
@@ -119,11 +120,21 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
             <Settings className="h-4 w-4 mr-2 text-gray-600" />
             <h3 className="text-sm font-medium">Custom Builder</h3>
           </div>
-          <button 
-            className="text-xs text-blueknight-600 hover:text-blueknight-800"
-          >
-            Configure Scoring
-          </button>
+          <Sheet>
+            <SheetTrigger>
+              <button 
+                className="text-xs text-blueknight-600 hover:text-blueknight-800"
+              >
+                Configure Scoring
+              </button>
+            </SheetTrigger>
+            <SheetContent>
+              <div className="py-6">
+                <h2 className="text-lg font-semibold mb-4">Configure Scoring</h2>
+                <p>Scoring configuration options will be available here.</p>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
         {/* Filter Options Header */}
@@ -265,7 +276,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
                     ))}
                   </div>
                   
-                  {/* Keyword Input with operator selection */}
+                  {/* Keyword Input with operator selection - only AND/OR */}
                   <div className="flex items-center space-x-2">
                     {offeringKeywords.length > 0 && (
                       <select 
@@ -273,12 +284,11 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
                         value={offeringOperator}
                         onChange={(e) => handleOperatorChange(
                           'offering', 
-                          e.target.value as 'AND' | 'OR' | 'NOT'
+                          e.target.value as 'AND' | 'OR'
                         )}
                       >
                         <option value="AND">AND</option>
                         <option value="OR">OR</option>
-                        <option value="NOT">NOT</option>
                       </select>
                     )}
                     <div className="flex-grow relative">
@@ -323,7 +333,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
                     ))}
                   </div>
                   
-                  {/* Keyword Input with operator selection */}
+                  {/* Keyword Input with operator selection - only AND/OR */}
                   <div className="flex items-center space-x-2">
                     {sectorKeywords.length > 0 && (
                       <select 
@@ -331,12 +341,11 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
                         value={sectorOperator}
                         onChange={(e) => handleOperatorChange(
                           'sector', 
-                          e.target.value as 'AND' | 'OR' | 'NOT'
+                          e.target.value as 'AND' | 'OR'
                         )}
                       >
                         <option value="AND">AND</option>
                         <option value="OR">OR</option>
-                        <option value="NOT">NOT</option>
                       </select>
                     )}
                     <div className="flex-grow relative">
@@ -381,7 +390,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
                     ))}
                   </div>
                   
-                  {/* Keyword Input with operator selection */}
+                  {/* Keyword Input with operator selection - only AND/OR */}
                   <div className="flex items-center space-x-2">
                     {customerKeywords.length > 0 && (
                       <select 
@@ -389,12 +398,11 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
                         value={customerOperator}
                         onChange={(e) => handleOperatorChange(
                           'customer', 
-                          e.target.value as 'AND' | 'OR' | 'NOT'
+                          e.target.value as 'AND' | 'OR'
                         )}
                       >
                         <option value="AND">AND</option>
                         <option value="OR">OR</option>
-                        <option value="NOT">NOT</option>
                       </select>
                     )}
                     <div className="flex-grow relative">
