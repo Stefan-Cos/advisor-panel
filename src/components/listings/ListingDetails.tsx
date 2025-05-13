@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +15,7 @@ import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescri
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ListingDetailsProps {
   id: string;
@@ -186,7 +188,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
                 Configure Scoring
               </button>
             </SheetTrigger>
-            <SheetContent className="w-[400px] sm:w-[540px]">
+            <SheetContent className="w-[320px] sm:w-[380px] overflow-hidden">
               <SheetHeader>
                 <SheetTitle className="flex items-center">
                   <Settings className="h-5 w-5 mr-2 text-blueknight-600" />
@@ -197,220 +199,222 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
                 </SheetDescription>
               </SheetHeader>
               
-              <div className="py-6 space-y-6">
-                {/* Offering Config */}
-                <div className="space-y-3 border-b border-gray-100 pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-1.5 bg-blue-50 rounded-md">
-                        <Package className="h-4 w-4 text-blue-500" />
+              <ScrollArea className="h-[calc(100vh-140px)] pr-4">
+                <div className="py-4 space-y-5">
+                  {/* Offering Config */}
+                  <div className="space-y-3 border-b border-gray-100 pb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-1.5 bg-blue-50 rounded-md">
+                          <Package className="h-4 w-4 text-blue-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Offering</h3>
+                          <p className="text-xs text-gray-500">Match buyer data against your product/service offerings</p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-sm font-medium">Offering</h3>
-                        <p className="text-xs text-gray-500">Match buyer data against your product/service offerings</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={scoringConfig.offering.enabled}
-                      onCheckedChange={(checked) => handleConfigToggle('offering', checked)}
-                    />
-                  </div>
-                  {scoringConfig.offering.enabled && (
-                    <div className="pt-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <Label className="text-xs">Weight: {scoringConfig.offering.weight}%</Label>
-                      </div>
-                      <Slider 
-                        value={[scoringConfig.offering.weight]}
-                        onValueChange={(value) => handleWeightChange('offering', value)}
-                        min={5}
-                        max={100}
-                        step={5}
-                        className="py-2"
+                      <Switch 
+                        checked={scoringConfig.offering.enabled}
+                        onCheckedChange={(checked) => handleConfigToggle('offering', checked)}
                       />
                     </div>
-                  )}
-                </div>
-                
-                {/* Problem Solved Config */}
-                <div className="space-y-3 border-b border-gray-100 pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-1.5 bg-green-50 rounded-md">
-                        <Lightbulb className="h-4 w-4 text-green-500" />
+                    {scoringConfig.offering.enabled && (
+                      <div className="pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <Label className="text-xs">Weight: {scoringConfig.offering.weight}%</Label>
+                        </div>
+                        <Slider 
+                          value={[scoringConfig.offering.weight]}
+                          onValueChange={(value) => handleWeightChange('offering', value)}
+                          min={5}
+                          max={100}
+                          step={5}
+                          className="py-2"
+                        />
                       </div>
-                      <div>
-                        <h3 className="text-sm font-medium">Problem Solved</h3>
-                        <p className="text-xs text-gray-500">Match based on problems your company solves</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={scoringConfig.problemSolved.enabled}
-                      onCheckedChange={(checked) => handleConfigToggle('problemSolved', checked)}
-                    />
+                    )}
                   </div>
-                  {scoringConfig.problemSolved.enabled && (
-                    <div className="pt-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <Label className="text-xs">Weight: {scoringConfig.problemSolved.weight}%</Label>
+                  
+                  {/* Problem Solved Config */}
+                  <div className="space-y-3 border-b border-gray-100 pb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-1.5 bg-green-50 rounded-md">
+                          <Lightbulb className="h-4 w-4 text-green-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Problem Solved</h3>
+                          <p className="text-xs text-gray-500">Match based on problems your company solves</p>
+                        </div>
                       </div>
-                      <Slider 
-                        value={[scoringConfig.problemSolved.weight]}
-                        onValueChange={(value) => handleWeightChange('problemSolved', value)}
-                        min={5}
-                        max={100}
-                        step={5}
-                        className="py-2"
+                      <Switch 
+                        checked={scoringConfig.problemSolved.enabled}
+                        onCheckedChange={(checked) => handleConfigToggle('problemSolved', checked)}
                       />
                     </div>
-                  )}
-                </div>
-                
-                {/* Use Case Config */}
-                <div className="space-y-3 border-b border-gray-100 pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-1.5 bg-purple-50 rounded-md">
-                        <LayoutTemplate className="h-4 w-4 text-purple-500" />
+                    {scoringConfig.problemSolved.enabled && (
+                      <div className="pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <Label className="text-xs">Weight: {scoringConfig.problemSolved.weight}%</Label>
+                        </div>
+                        <Slider 
+                          value={[scoringConfig.problemSolved.weight]}
+                          onValueChange={(value) => handleWeightChange('problemSolved', value)}
+                          min={5}
+                          max={100}
+                          step={5}
+                          className="py-2"
+                        />
                       </div>
-                      <div>
-                        <h3 className="text-sm font-medium">Use Case</h3>
-                        <p className="text-xs text-gray-500">Consider buyer's use case compatibility</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={scoringConfig.useCase.enabled}
-                      onCheckedChange={(checked) => handleConfigToggle('useCase', checked)}
-                    />
+                    )}
                   </div>
-                  {scoringConfig.useCase.enabled && (
-                    <div className="pt-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <Label className="text-xs">Weight: {scoringConfig.useCase.weight}%</Label>
+                  
+                  {/* Use Case Config */}
+                  <div className="space-y-3 border-b border-gray-100 pb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-1.5 bg-purple-50 rounded-md">
+                          <LayoutTemplate className="h-4 w-4 text-purple-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Use Case</h3>
+                          <p className="text-xs text-gray-500">Consider buyer's use case compatibility</p>
+                        </div>
                       </div>
-                      <Slider 
-                        value={[scoringConfig.useCase.weight]}
-                        onValueChange={(value) => handleWeightChange('useCase', value)}
-                        min={5}
-                        max={100}
-                        step={5}
-                        className="py-2"
+                      <Switch 
+                        checked={scoringConfig.useCase.enabled}
+                        onCheckedChange={(checked) => handleConfigToggle('useCase', checked)}
                       />
                     </div>
-                  )}
-                </div>
-                
-                {/* Customer Base Config */}
-                <div className="space-y-3 border-b border-gray-100 pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-1.5 bg-amber-50 rounded-md">
-                        <Users className="h-4 w-4 text-amber-500" />
+                    {scoringConfig.useCase.enabled && (
+                      <div className="pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <Label className="text-xs">Weight: {scoringConfig.useCase.weight}%</Label>
+                        </div>
+                        <Slider 
+                          value={[scoringConfig.useCase.weight]}
+                          onValueChange={(value) => handleWeightChange('useCase', value)}
+                          min={5}
+                          max={100}
+                          step={5}
+                          className="py-2"
+                        />
                       </div>
-                      <div>
-                        <h3 className="text-sm font-medium">Customer Base</h3>
-                        <p className="text-xs text-gray-500">Factor in buyer's customer segments</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={scoringConfig.customerBase.enabled}
-                      onCheckedChange={(checked) => handleConfigToggle('customerBase', checked)}
-                    />
+                    )}
                   </div>
-                  {scoringConfig.customerBase.enabled && (
-                    <div className="pt-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <Label className="text-xs">Weight: {scoringConfig.customerBase.weight}%</Label>
+                  
+                  {/* Customer Base Config */}
+                  <div className="space-y-3 border-b border-gray-100 pb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-1.5 bg-amber-50 rounded-md">
+                          <Users className="h-4 w-4 text-amber-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Customer Base</h3>
+                          <p className="text-xs text-gray-500">Factor in buyer's customer segments</p>
+                        </div>
                       </div>
-                      <Slider 
-                        value={[scoringConfig.customerBase.weight]}
-                        onValueChange={(value) => handleWeightChange('customerBase', value)}
-                        min={5}
-                        max={100}
-                        step={5}
-                        className="py-2"
+                      <Switch 
+                        checked={scoringConfig.customerBase.enabled}
+                        onCheckedChange={(checked) => handleConfigToggle('customerBase', checked)}
                       />
                     </div>
-                  )}
-                </div>
-                
-                {/* Positioning Config */}
-                <div className="space-y-3 border-b border-gray-100 pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-1.5 bg-cyan-50 rounded-md">
-                        <Target className="h-4 w-4 text-cyan-500" />
+                    {scoringConfig.customerBase.enabled && (
+                      <div className="pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <Label className="text-xs">Weight: {scoringConfig.customerBase.weight}%</Label>
+                        </div>
+                        <Slider 
+                          value={[scoringConfig.customerBase.weight]}
+                          onValueChange={(value) => handleWeightChange('customerBase', value)}
+                          min={5}
+                          max={100}
+                          step={5}
+                          className="py-2"
+                        />
                       </div>
-                      <div>
-                        <h3 className="text-sm font-medium">Positioning</h3>
-                        <p className="text-xs text-gray-500">Evaluate alignment with buyer's market positioning</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={scoringConfig.positioning.enabled}
-                      onCheckedChange={(checked) => handleConfigToggle('positioning', checked)}
-                    />
+                    )}
                   </div>
-                  {scoringConfig.positioning.enabled && (
-                    <div className="pt-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <Label className="text-xs">Weight: {scoringConfig.positioning.weight}%</Label>
+                  
+                  {/* Positioning Config */}
+                  <div className="space-y-3 border-b border-gray-100 pb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-1.5 bg-cyan-50 rounded-md">
+                          <Target className="h-4 w-4 text-cyan-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Positioning</h3>
+                          <p className="text-xs text-gray-500">Evaluate alignment with buyer's market positioning</p>
+                        </div>
                       </div>
-                      <Slider 
-                        value={[scoringConfig.positioning.weight]}
-                        onValueChange={(value) => handleWeightChange('positioning', value)}
-                        min={5}
-                        max={100}
-                        step={5}
-                        className="py-2"
+                      <Switch 
+                        checked={scoringConfig.positioning.enabled}
+                        onCheckedChange={(checked) => handleConfigToggle('positioning', checked)}
                       />
                     </div>
-                  )}
-                </div>
-                
-                {/* Acquisition History Config */}
-                <div className="space-y-3 pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-1.5 bg-indigo-50 rounded-md">
-                        <History className="h-4 w-4 text-indigo-500" />
+                    {scoringConfig.positioning.enabled && (
+                      <div className="pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <Label className="text-xs">Weight: {scoringConfig.positioning.weight}%</Label>
+                        </div>
+                        <Slider 
+                          value={[scoringConfig.positioning.weight]}
+                          onValueChange={(value) => handleWeightChange('positioning', value)}
+                          min={5}
+                          max={100}
+                          step={5}
+                          className="py-2"
+                        />
                       </div>
-                      <div>
-                        <h3 className="text-sm font-medium">Acquisition History</h3>
-                        <p className="text-xs text-gray-500">Factor in buyer's past acquisition behavior</p>
-                      </div>
-                    </div>
-                    <Switch 
-                      checked={scoringConfig.acquisitionHistory.enabled}
-                      onCheckedChange={(checked) => handleConfigToggle('acquisitionHistory', checked)}
-                    />
+                    )}
                   </div>
-                  {scoringConfig.acquisitionHistory.enabled && (
-                    <div className="pt-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <Label className="text-xs">Weight: {scoringConfig.acquisitionHistory.weight}%</Label>
+                  
+                  {/* Acquisition History Config */}
+                  <div className="space-y-3 pb-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-1.5 bg-indigo-50 rounded-md">
+                          <History className="h-4 w-4 text-indigo-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-medium">Acquisition History</h3>
+                          <p className="text-xs text-gray-500">Factor in buyer's past acquisition behavior</p>
+                        </div>
                       </div>
-                      <Slider 
-                        value={[scoringConfig.acquisitionHistory.weight]}
-                        onValueChange={(value) => handleWeightChange('acquisitionHistory', value)}
-                        min={5}
-                        max={100}
-                        step={5}
-                        className="py-2"
+                      <Switch 
+                        checked={scoringConfig.acquisitionHistory.enabled}
+                        onCheckedChange={(checked) => handleConfigToggle('acquisitionHistory', checked)}
                       />
                     </div>
-                  )}
+                    {scoringConfig.acquisitionHistory.enabled && (
+                      <div className="pt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <Label className="text-xs">Weight: {scoringConfig.acquisitionHistory.weight}%</Label>
+                        </div>
+                        <Slider 
+                          value={[scoringConfig.acquisitionHistory.weight]}
+                          onValueChange={(value) => handleWeightChange('acquisitionHistory', value)}
+                          min={5}
+                          max={100}
+                          step={5}
+                          className="py-2"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex justify-end pt-2">
+                    <button
+                      onClick={applyScoring}
+                      className="px-4 py-2 text-sm font-medium text-white bg-blueknight-600 rounded-md hover:bg-blueknight-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blueknight-500"
+                    >
+                      Apply Configuration
+                    </button>
+                  </div>
                 </div>
-                
-                <div className="flex justify-end pt-2">
-                  <button
-                    onClick={applyScoring}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blueknight-600 rounded-md hover:bg-blueknight-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blueknight-500"
-                  >
-                    Apply Configuration
-                  </button>
-                </div>
-              </div>
+              </ScrollArea>
             </SheetContent>
           </Sheet>
         </div>
