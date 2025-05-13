@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -27,6 +27,7 @@ const statusColors = {
 
 const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
   
   const filteredListings = listings.filter(listing => 
     listing.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -42,6 +43,10 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
       console.error("Error formatting date:", error);
       return dateString; // Return original if can't parse
     }
+  };
+
+  const handleCreateBuyerSearch = (listingId: string) => {
+    navigate(`/buyer-search/${listingId}`);
   };
 
   return (
@@ -108,12 +113,12 @@ const ListingTable: React.FC<ListingTableProps> = ({ listings }) => {
                   </span>
                 </td>
                 <td className="table-cell text-center">
-                  <Link
-                    to={`/listings/${listing.id}`}
-                    className="px-3 py-1.5 bg-blueknight-500 hover:bg-blueknight-600 text-white rounded-md text-sm font-medium transition-colors inline-block"
+                  <button
+                    onClick={() => handleCreateBuyerSearch(listing.id)}
+                    className="px-3 py-1.5 bg-blueknight-500 hover:bg-blueknight-600 text-white rounded-md text-sm font-medium transition-colors"
                   >
                     Create Buyer Search
-                  </Link>
+                  </button>
                 </td>
               </tr>
             ))}

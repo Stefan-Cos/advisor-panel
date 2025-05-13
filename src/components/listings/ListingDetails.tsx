@@ -1,9 +1,8 @@
 
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { PieChart } from 'lucide-react';
 import BuyerListNew from '../buyers/BuyerListNew';
 import SavedList from '../buyers/SavedList';
@@ -15,7 +14,6 @@ interface ListingDetailsProps {
 
 const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   
   // Determine which content to show based on the URL path
   const showSavedList = location.pathname.includes('/saved');
@@ -40,10 +38,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
     }
   ];
 
-  const handleCreateBuyerSearch = () => {
-    navigate(`/buyer-search/${listingId}`);
-  };
-
   return (
     <div className="space-y-8 w-full relative">
       <div className="flex justify-between items-center">
@@ -62,13 +56,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
             </div>
           </CardContent>
         </Card>
-        
-        <Button
-          className="ml-4 bg-blueknight-600 hover:bg-blueknight-700"
-          onClick={handleCreateBuyerSearch}
-        >
-          Create Buyer Search
-        </Button>
       </div>
       
       {/* Show content based on the current route */}
