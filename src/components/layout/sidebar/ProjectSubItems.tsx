@@ -20,6 +20,10 @@ const ProjectSubItems = ({ listingId }: ProjectSubItemProps) => {
   ];
 
   const handleCRMClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (location.pathname.includes(`/listings/${listingId}/crm`)) {
+      return; // Allow navigation if already on the CRM page
+    }
+    
     e.preventDefault();
     toast({
       title: "CRM Features",

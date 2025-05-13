@@ -53,7 +53,7 @@ const SidebarNavItems = () => {
             <Link
               to={item.path}
               className={cn(
-                "nav-link group",
+                "flex items-center space-x-2 py-2 px-3 rounded-md font-medium nav-link group",
                 isActive 
                   ? "bg-blueknight-500 text-white" 
                   : "text-gray-600 hover:bg-gray-100"
