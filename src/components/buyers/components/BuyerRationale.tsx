@@ -166,11 +166,11 @@ const BuyerRationale: React.FC<BuyerRationaleProps> = ({
                   <ul className="space-y-2 text-sm">
                     <li className="flex justify-between">
                       <span className="text-gray-600">Industry:</span>
-                      <span className="font-medium">{buyer.sector}</span>
+                      <span className="font-medium">{buyer.sector || (buyer.sectors ? buyer.sectors.join(', ') : 'N/A')}</span>
                     </li>
                     <li className="flex justify-between">
                       <span className="text-gray-600">Location:</span>
-                      <span className="font-medium">{buyer.location}</span>
+                      <span className="font-medium">{buyer.location || buyer.hq || 'N/A'}</span>
                     </li>
                     <li className="flex justify-between">
                       <span className="text-gray-600">Employees:</span>
@@ -183,7 +183,7 @@ const BuyerRationale: React.FC<BuyerRationaleProps> = ({
                   <ul className="space-y-2 text-sm">
                     <li className="flex justify-between">
                       <span className="text-gray-600">Track Record:</span>
-                      <span className="font-medium">{buyer.maTrackRecord}</span>
+                      <span className="font-medium">{buyer.maTrackRecord || 'N/A'}</span>
                     </li>
                     <li className="flex justify-between">
                       <span className="text-gray-600">Recent Acquisitions:</span>

@@ -3,21 +3,10 @@ import React from 'react';
 import { Check, Plus } from 'lucide-react';
 import { TableCell, TableRow } from "@/components/ui/table";
 import BuyerRationale from './BuyerRationale';
+import { Buyer } from '../types/BuyerTypes';
 
 interface BuyerTableRowProps {
-  buyer: {
-    id: string;
-    name: string;
-    location: string;
-    employees: number;
-    description: string;
-    offering: string;
-    sector: string;
-    customers: string;
-    maTrackRecord: string;
-    matchingScore: number;
-    rationale: any;
-  };
+  buyer: Buyer;
   savedBuyers: string[];
   onAddToSaved: (id: string) => void;
   isExpanded: boolean;
@@ -71,15 +60,15 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
           </div>
         </div>
       </TableCell>
-      <TableCell>{buyer.location}</TableCell>
+      <TableCell>{buyer.location || buyer.hq}</TableCell>
       <TableCell>{buyer.employees.toLocaleString()}</TableCell>
       <TableCell>{buyer.description}</TableCell>
-      <TableCell>{buyer.offering}</TableCell>
-      <TableCell>{buyer.sector}</TableCell>
-      <TableCell>{buyer.customers}</TableCell>
+      <TableCell>{buyer.offering || ''}</TableCell>
+      <TableCell>{buyer.sector || (buyer.sectors ? buyer.sectors.join(', ') : '')}</TableCell>
+      <TableCell>{buyer.customers || ''}</TableCell>
       <TableCell>
-        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord)}`}>
-          {buyer.maTrackRecord}
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getMATrackRecordColor(buyer.maTrackRecord || 'N/A')}`}>
+          {buyer.maTrackRecord || 'N/A'}
         </span>
       </TableCell>
       <TableCell>

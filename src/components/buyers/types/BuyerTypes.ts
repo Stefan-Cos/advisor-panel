@@ -7,6 +7,7 @@ export interface Buyer {
   type: 'strategic' | 'pe';
   description: string;
   hq: string;
+  location?: string; // Added for backward compatibility
   employees: number;
   revenue: number;
   cash: number;
@@ -14,6 +15,11 @@ export interface Buyer {
   isPEVCBacked: boolean;
   isPublic: boolean;
   website?: string;
+  sector?: string; // Added for backward compatibility
+  maTrackRecord?: string; // Added for backward compatibility
+  offering?: string;
+  sectors?: string[];
+  customers?: string;
   rationale: {
     offering: string;
     customers: string;
@@ -36,8 +42,6 @@ export interface Buyer {
   parentCompany?: string;
   aum?: number;
   investments?: string;
-  offering?: string;
-  sectors?: string[];
 }
 
 export interface SearchCriteria {
