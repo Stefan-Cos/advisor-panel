@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { PieChart, Search, Filter, X, ChevronDown, Settings } from 'lucide-react';
+import { PieChart, Search, Filter, X, ChevronDown, Settings, Zap, Sliders } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BuyerListNew from '../buyers/BuyerListNew';
@@ -11,7 +11,10 @@ import SavedList from '../buyers/SavedList';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
 import Tag from '../ui/Tag';
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 
 interface ListingDetailsProps {
   id: string;
@@ -49,6 +52,30 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   const [offeringOperator, setOfferingOperator] = useState<'AND' | 'OR'>('OR');
   const [sectorOperator, setSectorOperator] = useState<'AND' | 'OR'>('OR');
   const [customerOperator, setCustomerOperator] = useState<'AND' | 'OR'>('OR');
+
+  // Config state for scoring
+  const [scoringConfig, setScoringConfig] = useState({
+    keywordMatching: {
+      enabled: true,
+      weight: 30,
+    },
+    industryFit: {
+      enabled: true,
+      weight: 25,
+    },
+    marketPresence: {
+      enabled: true,
+      weight: 20,
+    },
+    acquisitionHistory: {
+      enabled: true,
+      weight: 15,
+    },
+    financialStrength: {
+      enabled: true,
+      weight: 10,
+    },
+  });
 
   // Determine which content to show based on the URL path
   const showAIBuyerBuilder = path.includes('/ai-buyer');
@@ -110,6 +137,36 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
     });
   };
 
+  // Handle scoring config toggle
+  const handleConfigToggle = (key: keyof typeof scoringConfig, value: boolean) => {
+    setScoringConfig(prev => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        enabled: value
+      }
+    }));
+  };
+
+  // Handle scoring weight change
+  const handleWeightChange = (key: keyof typeof scoringConfig, value: number[]) => {
+    setScoringConfig(prev => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        weight: value[0]
+      }
+    }));
+  };
+
+  // Apply scoring configuration
+  const applyScoring = () => {
+    toast({
+      title: "Scoring Configuration Updated",
+      description: "Your buyer match scoring configuration has been applied."
+    });
+  };
+
   // Horizontal filters for AI Buyer Builder
   const renderHorizontalFilters = () => {
     return (
@@ -117,21 +174,208 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         {/* Custom Builder Section */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
-            <Settings className="h-4 w-4 mr-2 text-gray-600" />
+            <Zap className="h-4 w-4 mr-2 text-amber-500" />
             <h3 className="text-sm font-medium">Custom Builder</h3>
           </div>
           <Sheet>
-            <SheetTrigger>
+            <SheetTrigger asChild>
               <button 
-                className="text-xs text-blueknight-600 hover:text-blueknight-800"
+                className="flex items-center text-xs text-blueknight-600 hover:text-blueknight-800"
               >
+                <Sliders className="h-3.5 w-3.5 mr-1" />
                 Configure Scoring
               </button>
             </SheetTrigger>
-            <SheetContent>
-              <div className="py-6">
-                <h2 className="text-lg font-semibold mb-4">Configure Scoring</h2>
-                <p>Scoring configuration options will be available here.</p>
+            <SheetContent className="w-[400px] sm:w-[540px]">
+              <SheetHeader>
+                <SheetTitle className="flex items-center">
+                  <Settings className="h-5 w-5 mr-2 text-blueknight-600" />
+                  Configure Buyer Match Scoring
+                </SheetTitle>
+                <SheetDescription>
+                  Adjust how buyers are scored and matched to your listing. Toggle features on/off and set their relative importance.
+                </SheetDescription>
+              </SheetHeader>
+              
+              <div className="py-6 space-y-6">
+                {/* Keyword Matching Config */}
+                <div className="space-y-3 border-b border-gray-100 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="p-1.5 bg-blue-50 rounded-md">
+                        <Search className="h-4 w-4 text-blue-500" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium">Keyword Matching</h3>
+                        <p className="text-xs text-gray-500">Match buyer data against your listing's keywords</p>
+                      </div>
+                    </div>
+                    <Switch 
+                      checked={scoringConfig.keywordMatching.enabled}
+                      onCheckedChange={(checked) => handleConfigToggle('keywordMatching', checked)}
+                    />
+                  </div>
+                  {scoringConfig.keywordMatching.enabled && (
+                    <div className="pt-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <Label className="text-xs">Weight: {scoringConfig.keywordMatching.weight}%</Label>
+                      </div>
+                      <Slider 
+                        value={[scoringConfig.keywordMatching.weight]}
+                        onValueChange={(value) => handleWeightChange('keywordMatching', value)}
+                        min={5}
+                        max={50}
+                        step={5}
+                        className="py-2"
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Industry Fit Config */}
+                <div className="space-y-3 border-b border-gray-100 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="p-1.5 bg-green-50 rounded-md">
+                        <PieChart className="h-4 w-4 text-green-500" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium">Industry Fit</h3>
+                        <p className="text-xs text-gray-500">Match buyers in relevant industry segments</p>
+                      </div>
+                    </div>
+                    <Switch 
+                      checked={scoringConfig.industryFit.enabled}
+                      onCheckedChange={(checked) => handleConfigToggle('industryFit', checked)}
+                    />
+                  </div>
+                  {scoringConfig.industryFit.enabled && (
+                    <div className="pt-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <Label className="text-xs">Weight: {scoringConfig.industryFit.weight}%</Label>
+                      </div>
+                      <Slider 
+                        value={[scoringConfig.industryFit.weight]}
+                        onValueChange={(value) => handleWeightChange('industryFit', value)}
+                        min={5}
+                        max={50}
+                        step={5}
+                        className="py-2"
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Market Presence Config */}
+                <div className="space-y-3 border-b border-gray-100 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="p-1.5 bg-purple-50 rounded-md">
+                        <Zap className="h-4 w-4 text-purple-500" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium">Market Presence</h3>
+                        <p className="text-xs text-gray-500">Consider buyer's market position and reputation</p>
+                      </div>
+                    </div>
+                    <Switch 
+                      checked={scoringConfig.marketPresence.enabled}
+                      onCheckedChange={(checked) => handleConfigToggle('marketPresence', checked)}
+                    />
+                  </div>
+                  {scoringConfig.marketPresence.enabled && (
+                    <div className="pt-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <Label className="text-xs">Weight: {scoringConfig.marketPresence.weight}%</Label>
+                      </div>
+                      <Slider 
+                        value={[scoringConfig.marketPresence.weight]}
+                        onValueChange={(value) => handleWeightChange('marketPresence', value)}
+                        min={5}
+                        max={50}
+                        step={5}
+                        className="py-2"
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Acquisition History Config */}
+                <div className="space-y-3 border-b border-gray-100 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="p-1.5 bg-amber-50 rounded-md">
+                        <ChevronDown className="h-4 w-4 text-amber-500" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium">Acquisition History</h3>
+                        <p className="text-xs text-gray-500">Factor in buyer's past acquisition behavior</p>
+                      </div>
+                    </div>
+                    <Switch 
+                      checked={scoringConfig.acquisitionHistory.enabled}
+                      onCheckedChange={(checked) => handleConfigToggle('acquisitionHistory', checked)}
+                    />
+                  </div>
+                  {scoringConfig.acquisitionHistory.enabled && (
+                    <div className="pt-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <Label className="text-xs">Weight: {scoringConfig.acquisitionHistory.weight}%</Label>
+                      </div>
+                      <Slider 
+                        value={[scoringConfig.acquisitionHistory.weight]}
+                        onValueChange={(value) => handleWeightChange('acquisitionHistory', value)}
+                        min={5}
+                        max={50}
+                        step={5}
+                        className="py-2"
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Financial Strength Config */}
+                <div className="space-y-3 pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <div className="p-1.5 bg-cyan-50 rounded-md">
+                        <ChevronDown className="h-4 w-4 text-cyan-500" />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium">Financial Strength</h3>
+                        <p className="text-xs text-gray-500">Evaluate buyer's financial capability</p>
+                      </div>
+                    </div>
+                    <Switch 
+                      checked={scoringConfig.financialStrength.enabled}
+                      onCheckedChange={(checked) => handleConfigToggle('financialStrength', checked)}
+                    />
+                  </div>
+                  {scoringConfig.financialStrength.enabled && (
+                    <div className="pt-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <Label className="text-xs">Weight: {scoringConfig.financialStrength.weight}%</Label>
+                      </div>
+                      <Slider 
+                        value={[scoringConfig.financialStrength.weight]}
+                        onValueChange={(value) => handleWeightChange('financialStrength', value)}
+                        min={5}
+                        max={50}
+                        step={5}
+                        className="py-2"
+                      />
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex justify-end pt-2">
+                  <button
+                    onClick={applyScoring}
+                    className="px-4 py-2 text-sm font-medium text-white bg-blueknight-600 rounded-md hover:bg-blueknight-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blueknight-500"
+                  >
+                    Apply Configuration
+                  </button>
+                </div>
               </div>
             </SheetContent>
           </Sheet>
