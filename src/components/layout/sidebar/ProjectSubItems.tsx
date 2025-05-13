@@ -13,6 +13,9 @@ const ProjectSubItems = ({ listingId }: ProjectSubItemProps) => {
   const location = useLocation();
   const { toast } = useToast();
 
+  // Don't render if we don't have a listingId
+  if (!listingId) return null;
+
   const projectSubItems = [
     { path: `/listings/${listingId}`, label: 'Buyer List', icon: <List className="h-4 w-4" /> },
     { path: `/listings/${listingId}/saved`, label: 'Saved List', icon: <BookmarkCheck className="h-4 w-4" /> },

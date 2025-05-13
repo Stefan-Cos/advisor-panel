@@ -14,7 +14,10 @@ interface ListingDetailsProps {
 
 const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
   const location = useLocation();
-  const path = location.pathname;
+  
+  // Determine which content to show based on the URL path
+  const showSavedList = location.pathname.includes('/saved');
+  const showCRM = location.pathname.includes('/crm');
   
   // Analytics stats
   const analyticsStats = [
@@ -34,10 +37,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
       icon: <PieChart className="h-5 w-5 text-purple-500" /> 
     }
   ];
-
-  // Determine which content to show based on the URL path
-  const showSavedList = path.includes('/saved');
-  const showCRM = path.includes('/crm');
 
   return (
     <div className="space-y-8 w-full relative">

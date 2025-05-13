@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
+import Sidebar from '../components/layout/Sidebar';
 import BuyerList from '../components/buyers/BuyerList';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BuyerPreferencesSection from '../components/listings/BuyerPreferencesSection';
@@ -9,6 +10,7 @@ import ListingDetails from '../components/listings/ListingDetails';
 
 const ListingDetailsPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   
   // Ensure id is available
   if (!id) {
@@ -20,6 +22,7 @@ const ListingDetailsPage = () => {
       <Navbar />
       
       <div className="flex-1 flex">
+        <Sidebar />
         <main className="flex-1">
           <div className="p-6">
             <div className="mb-4">
@@ -35,7 +38,11 @@ const ListingDetailsPage = () => {
               <h1 className="text-2xl font-bold text-blueknight-800">Project Details</h1>
             </div>
             
-            <Tabs defaultValue="buyers" className="w-full">
+            <Tabs defaultValue="buyers" className="w-full" onValueChange={(value) => {
+              if (value === "buyers") navigate(`/listings/${id}`);
+              else if (value === "preferences") navigate(`/listings/${id}`);
+              else if (value === "details") navigate(`/listings/${id}`);
+            }}>
               <TabsList className="grid w-full grid-cols-3 mb-6">
                 <TabsTrigger 
                   value="buyers" 

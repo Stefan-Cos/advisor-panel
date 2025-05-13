@@ -71,8 +71,8 @@ const SidebarNavItems = () => {
               <span>{item.label}</span>
             </Link>
             
-            {/* Add Project Subsections immediately after Projects nav item */}
-            {index === 1 && isListingDetailsPage && (
+            {/* Always show Project Subsections after Projects nav item when on a listings page */}
+            {index === 1 && (
               <ProjectSubItems listingId={listingId} />
             )}
           </React.Fragment>

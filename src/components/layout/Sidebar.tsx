@@ -7,7 +7,7 @@ import LogoutButton from './sidebar/LogoutButton';
 
 const Sidebar = () => {
   return (
-    <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col animate-fade-in">
+    <div className="w-64 h-screen bg-white border-r border-gray-200 flex flex-col animate-fade-in shadow-sm">
       <div className="flex-1 overflow-y-auto p-4">
         <SidebarNavItems />
         <SidebarSettings />
