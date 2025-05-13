@@ -9,24 +9,10 @@ import SavedList from '../buyers/SavedList';
 import AIAssistantChat from '../ui/AIAssistantChat';
 
 interface ListingDetailsProps {
-  id: string;
-  companyName: string;
-  projectTitle: string;
-  revenue: string;
-  industry: string;
-  country: string;
-  status: 'active' | 'inactive' | 'pending';
-  date: string;
+  listingId: string;
 }
 
-const ListingDetails: React.FC<ListingDetailsProps> = ({
-  id,
-  projectTitle,
-  revenue,
-  industry,
-  country,
-  status,
-}) => {
+const ListingDetails: React.FC<ListingDetailsProps> = ({ listingId }) => {
   const location = useLocation();
   const path = location.pathname;
   
@@ -73,7 +59,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
       
       {/* Show content based on the current route */}
       {showSavedList ? (
-        <SavedList listingId={id} />
+        <SavedList listingId={listingId} />
       ) : showCRM ? (
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-12 text-center">
           <h3 className="text-xl font-medium text-gray-700">CRM Features Coming Soon</h3>
@@ -82,7 +68,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           </p>
         </div>
       ) : (
-        <BuyerListNew listingId={id} />
+        <BuyerListNew listingId={listingId} />
       )}
       
       <AIAssistantChat />
