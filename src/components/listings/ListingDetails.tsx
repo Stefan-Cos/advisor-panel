@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { PieChart, Search, Filter, X, ChevronDown } from 'lucide-react';
+import { PieChart, Search, Filter, X, ChevronDown, Settings } from 'lucide-react';
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BuyerListNew from '../buyers/BuyerListNew';
 import SavedList from '../buyers/SavedList';
 import { cn } from '@/lib/utils';
 import { useToast } from "@/hooks/use-toast";
+import Tag from '../ui/Tag';
 
 interface ListingDetailsProps {
   id: string;
@@ -33,82 +34,70 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   const location = useLocation();
   const path = location.pathname;
   const [showFilters, setShowFilters] = useState(true);
-  
-  // Analytics stats
-  const analyticsStats = [
-    { 
-      label: "Buyer Country Match", 
-      value: 13, 
-      icon: <PieChart className="h-5 w-5 text-blue-500" /> 
-    },
-    { 
-      label: "Revenue Range Match", 
-      value: 8, 
-      icon: <PieChart className="h-5 w-5 text-green-500" /> 
-    },
-    { 
-      label: "Industry Match", 
-      value: 21, 
-      icon: <PieChart className="h-5 w-5 text-purple-500" /> 
-    }
-  ];
-
-  // Keyword search state
-  const [offeringKeywords, setOfferingKeywords] = useState<{value: string, operator: string}[]>([{value: '', operator: 'AND'}]);
-  const [sectorKeywords, setSectorKeywords] = useState<{value: string, operator: string}[]>([{value: '', operator: 'AND'}]);
-  const [customerKeywords, setCustomerKeywords] = useState<{value: string, operator: string}[]>([{value: '', operator: 'AND'}]);
-  
   const { toast } = useToast();
+
+  // Keyword search state with tags
+  const [offeringKeywords, setOfferingKeywords] = useState<string[]>([]);
+  const [sectorKeywords, setSectorKeywords] = useState<string[]>([]);
+  const [customerKeywords, setCustomerKeywords] = useState<string[]>([]);
+  const [offeringInput, setOfferingInput] = useState('');
+  const [sectorInput, setSectorInput] = useState('');
+  const [customerInput, setCustomerInput] = useState('');
+  
+  // Keyword operators
+  const [offeringOperator, setOfferingOperator] = useState<'AND' | 'OR' | 'NOT'>('OR');
+  const [sectorOperator, setSectorOperator] = useState<'AND' | 'OR' | 'NOT'>('OR');
+  const [customerOperator, setCustomerOperator] = useState<'AND' | 'OR' | 'NOT'>('OR');
 
   // Determine which content to show based on the URL path
   const showAIBuyerBuilder = path.includes('/ai-buyer');
   const showSavedList = path.includes('/saved');
   const showCRM = path.includes('/crm');
 
-  // Handle keyword input change
-  const handleKeywordChange = (
-    index: number,
+  // Handle adding keywords as tags
+  const handleAddKeyword = (
     category: 'offering' | 'sector' | 'customer',
-    field: 'value' | 'operator',
-    value: string
+    inputValue: string
+  ) => {
+    if (inputValue.trim()) {
+      if (category === 'offering') {
+        setOfferingKeywords([...offeringKeywords, inputValue.trim()]);
+        setOfferingInput('');
+      } else if (category === 'sector') {
+        setSectorKeywords([...sectorKeywords, inputValue.trim()]);
+        setSectorInput('');
+      } else {
+        setCustomerKeywords([...customerKeywords, inputValue.trim()]);
+        setCustomerInput('');
+      }
+    }
+  };
+
+  // Handle removing keywords
+  const handleRemoveKeyword = (
+    category: 'offering' | 'sector' | 'customer',
+    keyword: string
   ) => {
     if (category === 'offering') {
-      const newKeywords = [...offeringKeywords];
-      newKeywords[index] = { ...newKeywords[index], [field]: value };
-      setOfferingKeywords(newKeywords);
+      setOfferingKeywords(offeringKeywords.filter(k => k !== keyword));
     } else if (category === 'sector') {
-      const newKeywords = [...sectorKeywords];
-      newKeywords[index] = { ...newKeywords[index], [field]: value };
-      setSectorKeywords(newKeywords);
+      setSectorKeywords(sectorKeywords.filter(k => k !== keyword));
     } else {
-      const newKeywords = [...customerKeywords];
-      newKeywords[index] = { ...newKeywords[index], [field]: value };
-      setCustomerKeywords(newKeywords);
+      setCustomerKeywords(customerKeywords.filter(k => k !== keyword));
     }
   };
 
-  // Add new keyword
-  const addKeyword = (category: 'offering' | 'sector' | 'customer') => {
+  // Handle operator change
+  const handleOperatorChange = (
+    category: 'offering' | 'sector' | 'customer',
+    operator: 'AND' | 'OR' | 'NOT'
+  ) => {
     if (category === 'offering') {
-      setOfferingKeywords([...offeringKeywords, {value: '', operator: 'AND'}]);
+      setOfferingOperator(operator);
     } else if (category === 'sector') {
-      setSectorKeywords([...sectorKeywords, {value: '', operator: 'AND'}]);
+      setSectorOperator(operator);
     } else {
-      setCustomerKeywords([...customerKeywords, {value: '', operator: 'AND'}]);
-    }
-  };
-
-  // Remove keyword
-  const removeKeyword = (category: 'offering' | 'sector' | 'customer', index: number) => {
-    if (category === 'offering') {
-      const newKeywords = offeringKeywords.filter((_, i) => i !== index);
-      setOfferingKeywords(newKeywords.length ? newKeywords : [{value: '', operator: 'AND'}]);
-    } else if (category === 'sector') {
-      const newKeywords = sectorKeywords.filter((_, i) => i !== index);
-      setSectorKeywords(newKeywords.length ? newKeywords : [{value: '', operator: 'AND'}]);
-    } else {
-      const newKeywords = customerKeywords.filter((_, i) => i !== index);
-      setCustomerKeywords(newKeywords.length ? newKeywords : [{value: '', operator: 'AND'}]);
+      setCustomerOperator(operator);
     }
   };
 
@@ -124,6 +113,20 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
   const renderHorizontalFilters = () => {
     return (
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm p-4 mb-4">
+        {/* Custom Builder Section */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            <Settings className="h-4 w-4 mr-2 text-gray-600" />
+            <h3 className="text-sm font-medium">Custom Builder</h3>
+          </div>
+          <button 
+            className="text-xs text-blueknight-600 hover:text-blueknight-800"
+          >
+            Configure Scoring
+          </button>
+        </div>
+
+        {/* Filter Options Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center">
             <Filter className="h-4 w-4 mr-2 text-gray-600" />
@@ -244,46 +247,63 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
               <h4 className="text-xs font-medium">Keyword Search</h4>
             </div>
             
-            {/* Horizontal keyword search sections */}
+            {/* Improved keyword search sections */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Offering Keywords */}
               <div className="mb-2">
                 <h5 className="text-xs font-medium text-gray-700 mb-2">Offering</h5>
                 <div className="space-y-2">
-                  {offeringKeywords.map((keyword, index) => (
-                    <div key={`offering-${index}`} className="flex items-center space-x-2">
-                      {index > 0 && (
-                        <select 
-                          className="h-8 pl-2 pr-8 text-xs border border-gray-300 rounded-md bg-white w-20"
-                          value={keyword.operator}
-                          onChange={(e) => handleKeywordChange(index, 'offering', 'operator', e.target.value)}
-                        >
-                          <option value="AND">AND</option>
-                          <option value="OR">OR</option>
-                          <option value="NOT">NOT</option>
-                        </select>
-                      )}
-                      <input
-                        type="text"
-                        className="h-8 pl-2 pr-2 text-xs border border-gray-300 rounded-md flex-grow"
-                        placeholder="Enter offering keyword..."
-                        value={keyword.value}
-                        onChange={(e) => handleKeywordChange(index, 'offering', 'value', e.target.value)}
+                  {/* Keyword Tags */}
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {offeringKeywords.map((keyword, idx) => (
+                      <Tag 
+                        key={`offering-${idx}`} 
+                        text={keyword} 
+                        color="blue" 
+                        onRemove={() => handleRemoveKeyword('offering', keyword)} 
                       />
-                      <button 
-                        onClick={() => removeKeyword('offering', index)}
-                        className="p-1 text-gray-400 hover:text-gray-600"
+                    ))}
+                  </div>
+                  
+                  {/* Keyword Input with operator selection */}
+                  <div className="flex items-center space-x-2">
+                    {offeringKeywords.length > 0 && (
+                      <select 
+                        className="h-8 pl-2 pr-2 text-xs border border-gray-300 rounded-md bg-white w-20"
+                        value={offeringOperator}
+                        onChange={(e) => handleOperatorChange(
+                          'offering', 
+                          e.target.value as 'AND' | 'OR' | 'NOT'
+                        )}
                       >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                        <option value="NOT">NOT</option>
+                      </select>
+                    )}
+                    <div className="flex-grow relative">
+                      <Input
+                        type="text"
+                        className="h-8 pl-2 pr-8 text-xs"
+                        placeholder="Enter offering keyword..."
+                        value={offeringInput}
+                        onChange={(e) => setOfferingInput(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddKeyword('offering', offeringInput);
+                          }
+                        }}
+                      />
+                      {offeringInput && (
+                        <button 
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                          onClick={() => handleAddKeyword('offering', offeringInput)}
+                        >
+                          <X className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600" />
+                        </button>
+                      )}
                     </div>
-                  ))}
-                  <button 
-                    className="text-xs text-blueknight-600 font-medium hover:text-blueknight-700"
-                    onClick={() => addKeyword('offering')}
-                  >
-                    + Add offering keyword
-                  </button>
+                  </div>
                 </div>
               </div>
               
@@ -291,40 +311,57 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
               <div className="mb-2">
                 <h5 className="text-xs font-medium text-gray-700 mb-2">Sectors</h5>
                 <div className="space-y-2">
-                  {sectorKeywords.map((keyword, index) => (
-                    <div key={`sector-${index}`} className="flex items-center space-x-2">
-                      {index > 0 && (
-                        <select 
-                          className="h-8 pl-2 pr-8 text-xs border border-gray-300 rounded-md bg-white w-20"
-                          value={keyword.operator}
-                          onChange={(e) => handleKeywordChange(index, 'sector', 'operator', e.target.value)}
-                        >
-                          <option value="AND">AND</option>
-                          <option value="OR">OR</option>
-                          <option value="NOT">NOT</option>
-                        </select>
-                      )}
-                      <input
-                        type="text"
-                        className="h-8 pl-2 pr-2 text-xs border border-gray-300 rounded-md flex-grow"
-                        placeholder="Enter sector keyword..."
-                        value={keyword.value}
-                        onChange={(e) => handleKeywordChange(index, 'sector', 'value', e.target.value)}
+                  {/* Keyword Tags */}
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {sectorKeywords.map((keyword, idx) => (
+                      <Tag 
+                        key={`sector-${idx}`} 
+                        text={keyword} 
+                        color="green" 
+                        onRemove={() => handleRemoveKeyword('sector', keyword)} 
                       />
-                      <button 
-                        onClick={() => removeKeyword('sector', index)}
-                        className="p-1 text-gray-400 hover:text-gray-600"
+                    ))}
+                  </div>
+                  
+                  {/* Keyword Input with operator selection */}
+                  <div className="flex items-center space-x-2">
+                    {sectorKeywords.length > 0 && (
+                      <select 
+                        className="h-8 pl-2 pr-2 text-xs border border-gray-300 rounded-md bg-white w-20"
+                        value={sectorOperator}
+                        onChange={(e) => handleOperatorChange(
+                          'sector', 
+                          e.target.value as 'AND' | 'OR' | 'NOT'
+                        )}
                       >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                        <option value="NOT">NOT</option>
+                      </select>
+                    )}
+                    <div className="flex-grow relative">
+                      <Input
+                        type="text"
+                        className="h-8 pl-2 pr-8 text-xs"
+                        placeholder="Enter sector keyword..."
+                        value={sectorInput}
+                        onChange={(e) => setSectorInput(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddKeyword('sector', sectorInput);
+                          }
+                        }}
+                      />
+                      {sectorInput && (
+                        <button 
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                          onClick={() => handleAddKeyword('sector', sectorInput)}
+                        >
+                          <X className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600" />
+                        </button>
+                      )}
                     </div>
-                  ))}
-                  <button 
-                    className="text-xs text-blueknight-600 font-medium hover:text-blueknight-700"
-                    onClick={() => addKeyword('sector')}
-                  >
-                    + Add sector keyword
-                  </button>
+                  </div>
                 </div>
               </div>
               
@@ -332,40 +369,57 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
               <div className="mb-2">
                 <h5 className="text-xs font-medium text-gray-700 mb-2">Customers</h5>
                 <div className="space-y-2">
-                  {customerKeywords.map((keyword, index) => (
-                    <div key={`customer-${index}`} className="flex items-center space-x-2">
-                      {index > 0 && (
-                        <select 
-                          className="h-8 pl-2 pr-8 text-xs border border-gray-300 rounded-md bg-white w-20"
-                          value={keyword.operator}
-                          onChange={(e) => handleKeywordChange(index, 'customer', 'operator', e.target.value)}
-                        >
-                          <option value="AND">AND</option>
-                          <option value="OR">OR</option>
-                          <option value="NOT">NOT</option>
-                        </select>
-                      )}
-                      <input
-                        type="text"
-                        className="h-8 pl-2 pr-2 text-xs border border-gray-300 rounded-md flex-grow"
-                        placeholder="Enter customer keyword..."
-                        value={keyword.value}
-                        onChange={(e) => handleKeywordChange(index, 'customer', 'value', e.target.value)}
+                  {/* Keyword Tags */}
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {customerKeywords.map((keyword, idx) => (
+                      <Tag 
+                        key={`customer-${idx}`} 
+                        text={keyword} 
+                        color="yellow" 
+                        onRemove={() => handleRemoveKeyword('customer', keyword)} 
                       />
-                      <button 
-                        onClick={() => removeKeyword('customer', index)}
-                        className="p-1 text-gray-400 hover:text-gray-600"
+                    ))}
+                  </div>
+                  
+                  {/* Keyword Input with operator selection */}
+                  <div className="flex items-center space-x-2">
+                    {customerKeywords.length > 0 && (
+                      <select 
+                        className="h-8 pl-2 pr-2 text-xs border border-gray-300 rounded-md bg-white w-20"
+                        value={customerOperator}
+                        onChange={(e) => handleOperatorChange(
+                          'customer', 
+                          e.target.value as 'AND' | 'OR' | 'NOT'
+                        )}
                       >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
+                        <option value="AND">AND</option>
+                        <option value="OR">OR</option>
+                        <option value="NOT">NOT</option>
+                      </select>
+                    )}
+                    <div className="flex-grow relative">
+                      <Input
+                        type="text"
+                        className="h-8 pl-2 pr-8 text-xs"
+                        placeholder="Enter customer keyword..."
+                        value={customerInput}
+                        onChange={(e) => setCustomerInput(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddKeyword('customer', customerInput);
+                          }
+                        }}
+                      />
+                      {customerInput && (
+                        <button 
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                          onClick={() => handleAddKeyword('customer', customerInput)}
+                        >
+                          <X className="h-3.5 w-3.5 text-gray-400 hover:text-gray-600" />
+                        </button>
+                      )}
                     </div>
-                  ))}
-                  <button 
-                    className="text-xs text-blueknight-600 font-medium hover:text-blueknight-700"
-                    onClick={() => addKeyword('customer')}
-                  >
-                    + Add customer keyword
-                  </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -386,22 +440,6 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
 
   return (
     <div className="space-y-4 w-full relative">
-      <Card>
-        <CardContent className="py-3 px-4">
-          <div className="flex flex-col">
-            <div className="grid grid-cols-3 gap-4">
-              {analyticsStats.map((stat, index) => (
-                <div key={index} className="flex flex-col items-center bg-gray-50 p-2 rounded-lg">
-                  <div className="mb-1">{stat.icon}</div>
-                  <span className="text-xs font-medium text-gray-700 mb-1">{stat.label}</span>
-                  <span className="text-lg font-bold text-blueknight-600">{stat.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
       {/* Show content based on the current route */}
       {showSavedList ? (
         <SavedList listingId={id} />
