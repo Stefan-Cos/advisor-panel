@@ -5,7 +5,6 @@ import Sidebar from '../components/layout/Sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActiveProjectsTab from '../components/listings/ActiveProjectsTab';
 import ComingSoonTab from '../components/listings/ComingSoonTab';
-import ModularScoreDashboard from '../components/buyers/components/ModularScoreDashboard';
 
 // Mock data
 const mockListings = [
@@ -72,16 +71,6 @@ const Listings = () => {
         <main className="flex-1 p-6">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-blueknight-800">All Projects ({mockListings.length})</h1>
-          </div>
-          
-          {/* Add ModularScoreDashboard at the top of the page */}
-          <div className="mb-6">
-            <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">
-                B2B M&A Matching Dashboard
-              </h2>
-              <ModularScoreDashboard />
-            </div>
           </div>
           
           <Tabs defaultValue="active-projects" className="w-full">
