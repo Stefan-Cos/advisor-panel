@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -8,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { BarChart3, Globe, Building, Flag, ArrowRight, ArrowLeft, Users, MapPin } from 'lucide-react';
+import { BarChart3, Globe, Building, Flag, ArrowRight, ArrowLeft, Users, MapPin, Check } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
@@ -183,8 +182,8 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="space-y-2">
-        <h2 className="text-xl font-semibold text-gray-800">Website Enrichment</h2>
-        <p className="text-sm text-gray-600">Enter the company website to auto-fill profile details with AI</p>
+        <h2 className="text-xl font-semibold text-gray-800">AI Company Profiling</h2>
+        <p className="text-sm text-gray-600">Paste the company's website to activate AI-driven enrichment. We'll extract and pre-fill the full profile — from product offering to GTM strategy, industry relevance, and more.</p>
       </div>
       
       <form onSubmit={handleWebsiteSubmit} className="space-y-4">
@@ -1001,9 +1000,59 @@ const BuyerPreferencesSection = ({ formData, setFormData, handleSubmit, prevStep
   );
 };
 
+// New Component: Confirmation Screen
+const ConfirmationScreen = ({ navigate }) => {
+  const [countdown, setCountdown] = useState(5);
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          navigate('/listings');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, [navigate]);
+
+  return (
+    <div className="h-full flex flex-col items-center justify-center py-16 animate-fade-in">
+      <div className="relative mb-8">
+        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blueknight-400 to-blueknight-600 flex items-center justify-center">
+          <Check className="h-8 w-8 text-white animate-scale-in" />
+        </div>
+        <div className="absolute inset-0 bg-blueknight-400/20 rounded-full animate-ping" />
+      </div>
+      
+      <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+        Your project has been created and enriched with AI
+      </h2>
+      
+      <p className="text-gray-600 text-center mb-8 max-w-md">
+        You're now one step closer to identifying the right buyer.
+      </p>
+      
+      <div className="flex flex-col items-center">
+        <p className="text-sm text-gray-500 mb-2">
+          Redirecting to your project listings in {countdown}...
+        </p>
+        <Progress 
+          value={(5 - countdown) * 20} 
+          className="h-1 w-32 bg-gray-200"
+        />
+      </div>
+    </div>
+  );
+};
+
 // Main ListingForm Component
 const ListingForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [formData, setFormData] = useState({
     projectName: '',
     companyName: '',
@@ -1029,11 +1078,11 @@ const ListingForm = () => {
   };
   
   const handleSubmit = () => {
+    // Show confirmation screen instead of immediate redirect
+    setShowConfirmation(true);
     toast({
       title: "Project created successfully",
-      description: "You will be redirected to the listings page"
     });
-    navigate('/listings');
   };
 
   // Progress indicators
@@ -1093,6 +1142,11 @@ const ListingForm = () => {
       </div>
     );
   };
+
+  // If showing confirmation, render that instead
+  if (showConfirmation) {
+    return <ConfirmationScreen navigate={navigate} />;
+  }
 
   return (
     <>
