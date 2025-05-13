@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
@@ -26,7 +25,6 @@ const FeedbackDialog = () => {
     } else {
       toast("Empty Feedback", {
         description: "Please enter some feedback before submitting.",
-        variant: "destructive"
       });
     }
   };

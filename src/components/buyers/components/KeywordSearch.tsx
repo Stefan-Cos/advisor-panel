@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Search, X, Plus } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button"; // Add Button import
 import { SearchCriteria } from "../types/BuyerTypes";
 import Tag from '@/components/ui/Tag';
 
@@ -147,16 +149,7 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({
                 />
                 <span className="text-xs">OR</span>
               </label>
-              <label className="flex items-center space-x-2">
-                <input
-                  type="radio"
-                  name={`operator-${field}`}
-                  checked={searchCriteria[field].operator === 'NOT'}
-                  onChange={() => handleOperatorChange(field, 'NOT')}
-                  className="h-4 w-4 text-blueknight-500 focus:ring-blueknight-400"
-                />
-                <span className="text-xs">NOT</span>
-              </label>
+              {/* Remove NOT option since it's not in the allowed type */}
             </div>
           </div>
         ))}

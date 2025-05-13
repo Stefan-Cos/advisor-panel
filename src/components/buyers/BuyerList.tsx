@@ -22,6 +22,7 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
+  const [selectedBuyers, setSelectedBuyers] = useState<string[]>([]); // Add this state for selected buyers
   
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
@@ -53,12 +54,24 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
     );
   };
 
+  // Add a handler for clearing selection
+  const handleClearSelection = () => {
+    setSelectedBuyers([]);
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-          <BuyerActionBar toggleFilters={toggleFilters} />
+          <div>
+            <button 
+              onClick={toggleFilters}
+              className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+            >
+              Filters
+            </button>
+          </div>
         </div>
         
         <div className="mb-4">
@@ -85,6 +98,14 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
             expandedRationales={expandedRationales}
             onAddToSaved={handleAddToSaved}
             toggleRationale={toggleRationale}
+          />
+        )}
+        
+        {selectedBuyers.length > 0 && (
+          <BuyerActionBar 
+            selectedBuyers={selectedBuyers} 
+            onClearSelection={handleClearSelection}
+            toggleFilters={toggleFilters}
           />
         )}
       </div>

@@ -5,15 +5,17 @@ import { toast } from "@/hooks/use-toast";
 interface BuyerActionBarProps {
   selectedBuyers: string[];
   onClearSelection: () => void;
+  toggleFilters?: () => void; // Add optional toggleFilters prop
 }
 
 const BuyerActionBar: React.FC<BuyerActionBarProps> = ({
   selectedBuyers,
-  onClearSelection
+  onClearSelection,
+  toggleFilters
 }) => {
   
   const handleExportCSV = () => {
-    toast("Export CSV", {
+    toast("Exported buyers", {
       description: `Exported ${selectedBuyers.length} buyers to CSV`,
     });
   };

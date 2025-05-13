@@ -60,7 +60,6 @@ const ListingForm = () => {
     if (Object.values(formData).some(value => value === '')) {
       toast("Validation Error", {
         description: "Please fill in all required fields",
-        variant: "destructive",
       });
       return;
     }
