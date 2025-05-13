@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
 import SidebarNavItems from './sidebar/SidebarNavItems';
 import SidebarSettings from './sidebar/SidebarSettings';
 import FeedbackDialog from './sidebar/FeedbackDialog';
@@ -12,7 +11,7 @@ const Sidebar = () => {
   
   // Hide sidebar when in the buyer search workspace
   if (isWorkspaceMode) {
-    return null; // Don't render the sidebar when in buyer search workspace
+    return null;
   }
   
   return (

@@ -8,8 +8,8 @@ export function useBuyerSearchWorkspace() {
   
   // Check if we're in the buyer search workspace
   useEffect(() => {
-    // Path should include /buyer-search/ to be considered in workspace mode
-    const isBuyerSearchPath = location.pathname.includes('/buyer-search/');
+    // Path should be exactly /buyer-search/[id] format to be considered in workspace mode
+    const isBuyerSearchPath = /^\/buyer-search\/\w+$/.test(location.pathname);
     setIsWorkspaceMode(isBuyerSearchPath);
   }, [location.pathname]);
   
