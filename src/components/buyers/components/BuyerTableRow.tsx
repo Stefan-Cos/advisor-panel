@@ -92,9 +92,9 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
         </TableCell>
       </TableRow>
 
-      {/* Side Panel for Buyer Rationale */}
+      {/* Side Panel for Buyer Rationale - Updated to be larger */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent className="w-[320px] sm:w-[500px] overflow-hidden">
+        <SheetContent className="w-[400px] sm:w-[600px] md:w-[750px] lg:max-w-[900px] overflow-hidden">
           <SheetHeader>
             <SheetTitle className="flex items-center text-lg font-semibold">
               {buyer.name} - Match Analysis
