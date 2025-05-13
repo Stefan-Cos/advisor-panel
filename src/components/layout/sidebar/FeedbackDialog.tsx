@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
@@ -18,13 +19,15 @@ const FeedbackDialog = () => {
   
   const handleFeedbackSubmit = () => {
     if (feedback.trim()) {
-      toast("Feedback Submitted", {
-        description: "Thank you for your feedback! We'll review it shortly.",
+      toast({
+        title: "Feedback Submitted",
+        description: "Thank you for your feedback! We'll review it shortly."
       });
       setFeedback("");
     } else {
-      toast("Empty Feedback", {
-        description: "Please enter some feedback before submitting.",
+      toast({
+        title: "Empty Feedback",
+        description: "Please enter some feedback before submitting."
       });
     }
   };

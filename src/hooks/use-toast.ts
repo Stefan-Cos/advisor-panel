@@ -1,17 +1,26 @@
 
-import { toast as sonnerToast, type ToastT } from "sonner";
+import { toast as sonnerToast, type Toast as SonnerToast } from "sonner";
 
-// Define the correct types based on the sonner library implementation
-export type Toast = ToastT;
+export type ToastProps = {
+  title?: string;
+  description?: React.ReactNode;
+  [key: string]: any;
+};
 
-export function toast(message: string | React.ReactNode) {
-  return sonnerToast(message);
+export function toast(props: ToastProps | string) {
+  if (typeof props === 'string') {
+    return sonnerToast(props);
+  }
+  
+  const { title, description, ...rest } = props;
+  return sonnerToast(title || '', {
+    description,
+    ...rest
+  });
 }
 
 export function useToast() {
   return {
-    toast: (title: string | React.ReactNode, options?: ToastT) => {
-      return sonnerToast(title, options);
-    },
+    toast
   };
 }

@@ -21,8 +21,9 @@ const ProjectSubItems = ({ listingId }: ProjectSubItemProps) => {
 
   const handleCRMClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
-    toast("CRM Features", {
-      description: "CRM features coming soon",
+    toast({
+      title: "CRM Features",
+      description: "CRM features coming soon"
     });
   };
 

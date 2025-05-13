@@ -17,8 +17,9 @@ const Navbar = () => {
   const projectTitle = isListingDetailsPage ? "Enterprise IT Solutions Company" : "";
   
   const handleNotificationClick = () => {
-    toast("Notifications", {
-      description: "Notification features coming soon",
+    toast({
+      title: "Notifications",
+      description: "Notification features coming soon"
     });
   };
 
