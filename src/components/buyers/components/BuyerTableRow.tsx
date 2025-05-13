@@ -1,11 +1,8 @@
 
 import React from 'react';
-import { Check, ChevronDown, ChevronUp, Plus } from 'lucide-react';
-import {
-  Collapsible,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Check, Plus } from 'lucide-react';
 import { TableCell, TableRow } from "@/components/ui/table";
+import BuyerRationale from './BuyerRationale';
 
 interface BuyerTableRowProps {
   buyer: {
@@ -19,6 +16,7 @@ interface BuyerTableRowProps {
     customers: string;
     maTrackRecord: string;
     matchingScore: number;
+    rationale: any;
   };
   savedBuyers: string[];
   onAddToSaved: (id: string) => void;
@@ -64,19 +62,11 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
               <span>{buyer.name}</span>
             </div>
             <div className="flex items-center mt-1">
-              <Collapsible 
-                open={isExpanded}
-                onOpenChange={() => toggleRationale(buyer.id)}
-              >
-                <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                  Rationale
-                  {isExpanded ? (
-                    <ChevronUp className="h-3 w-3 ml-1" />
-                  ) : (
-                    <ChevronDown className="h-3 w-3 ml-1" />
-                  )}
-                </CollapsibleTrigger>
-              </Collapsible>
+              <BuyerRationale
+                buyer={buyer}
+                expandedRationales={isExpanded ? [buyer.id] : []} 
+                toggleRationale={toggleRationale}
+              />
             </div>
           </div>
         </div>

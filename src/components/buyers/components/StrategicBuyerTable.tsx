@@ -4,7 +4,6 @@ import { Table, TableBody } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import BuyerTableHeader from './BuyerTableHeader';
 import BuyerTableRow from './BuyerTableRow';
-import BuyerTableRationaleRow from './BuyerTableRationaleRow';
 
 interface StrategicBuyerTableProps {
   buyers: any[];
@@ -31,20 +30,15 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
             <BuyerTableHeader />
             <TableBody>
               {buyers.map((buyer) => (
-                <React.Fragment key={buyer.id}>
-                  <BuyerTableRow
-                    buyer={buyer}
-                    savedBuyers={savedBuyers}
-                    onAddToSaved={onAddToSaved}
-                    isExpanded={expandedRationales.includes(buyer.id)}
-                    toggleRationale={toggleRationale}
-                    getMATrackRecordColor={getMATrackRecordColor}
-                  />
-                  
-                  {expandedRationales.includes(buyer.id) && (
-                    <BuyerTableRationaleRow buyer={buyer} type="strategic" />
-                  )}
-                </React.Fragment>
+                <BuyerTableRow
+                  key={buyer.id}
+                  buyer={buyer}
+                  savedBuyers={savedBuyers}
+                  onAddToSaved={onAddToSaved}
+                  isExpanded={expandedRationales.includes(buyer.id)}
+                  toggleRationale={toggleRationale}
+                  getMATrackRecordColor={getMATrackRecordColor}
+                />
               ))}
             </TableBody>
           </Table>
