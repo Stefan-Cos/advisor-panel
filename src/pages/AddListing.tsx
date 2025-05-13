@@ -13,9 +13,9 @@ const AddListing = () => {
         <Sidebar />
         
         <main className="flex-1 p-6">
-          <div className="max-w-3xl mx-auto">
-            <h1 className="text-2xl font-bold text-blueknight-800 mb-2">Add New Listing</h1>
-            <p className="text-gray-600 mb-8">Enter basic company information to create a new listing</p>
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-2xl font-bold text-blueknight-800 mb-2">New Project</h1>
+            <p className="text-gray-600 mb-8">Create a new company project to find potential buyers</p>
             
             <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
               <ListingForm />
