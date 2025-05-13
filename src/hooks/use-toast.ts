@@ -6,12 +6,15 @@ export type ToastProps = Omit<Parameters<typeof sonnerToast>[1], "title" | "desc
   description?: React.ReactNode;
 };
 
-export function toast(title: string, props?: ToastProps) {
-  return sonnerToast(title, props);
-}
-
-export function useToast() {
+const useToast = () => {
   return {
-    toast,
+    toast: ({ title, description, ...props }: ToastProps) => {
+      sonnerToast(title, {
+        description,
+        ...props,
+      });
+    },
   };
-}
+};
+
+export { useToast, sonnerToast as toast };

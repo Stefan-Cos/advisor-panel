@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { ChevronDown, ChevronUp, Trash, History } from 'lucide-react';
@@ -655,38 +654,37 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
         )}
       </div>
 
-      {/* Side Panel for Buyer Rationale */}
+      {/* Side Panel for Buyer Rationale - Updated to match AI Buyer Builder design */}
       {buyers.map(buyer => (
         <Sheet key={`rationale-${buyer.id}`} open={sheetOpen === buyer.id} onOpenChange={() => setSheetOpen(null)}>
-          <SheetContent className="w-[500px] sm:w-[700px] md:w-[900px] lg:max-w-[1200px] overflow-hidden">
-            <SheetHeader>
-              <SheetTitle className="flex items-center text-lg font-semibold">
+          <SheetContent className="w-[500px] sm:w-[700px] md:w-[900px] lg:max-w-[1200px] p-0 overflow-hidden">
+            <div className="p-6 border-b border-gray-200">
+              <SheetTitle className="text-lg font-semibold">
                 {buyer.name} - Match Analysis
               </SheetTitle>
               <SheetDescription>
                 Detailed analysis of why this buyer may be a good match for your company.
               </SheetDescription>
-            </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-140px)] pr-4 mt-6">
-              <div className="space-y-6">
-                {/* New Buyer Information Section */}
-                <Card className="border border-gray-200">
-                  <CardHeader className="border-b pb-3">
-                    <CardTitle className="text-sm font-semibold text-gray-700">Buyer Information</CardTitle>
+            </div>
+            <ScrollArea className="h-[calc(100vh-140px)] pr-4">
+              <div className="p-6">
+                <Card className="mb-6">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base font-medium">Buyer Information</CardTitle>
                   </CardHeader>
-                  <CardContent className="pt-4">
+                  <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
-                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Long Description</h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Long Description</h4>
                         <p className="text-sm text-gray-600">
                           {buyer.longDescription || "Not provided"}
                         </p>
                       </div>
                       <div>
-                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Primary Industries</h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Primary Industries</h4>
                         <div className="flex flex-wrap gap-1 mt-1">
                           {buyer.primaryIndustries?.map((industry, i) => (
-                            <span key={i} className="px-2.5 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                            <span key={i} className="px-2.5 py-0.5 text-xs bg-gray-100 text-gray-700 rounded-full">
                               {industry}
                             </span>
                           )) || <span className="text-sm text-gray-500">Not provided</span>}
@@ -695,207 +693,169 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                     </div>
 
                     {buyer.type === 'strategic' && (
-                      <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                          <div>
-                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Keywords</h4>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {buyer.keywords?.map((keyword, i) => (
-                                <span key={i} className="px-2.5 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                  {keyword}
-                                </span>
-                              )) || <span className="text-sm text-gray-500">Not provided</span>}
-                            </div>
-                          </div>
-                          <div>
-                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Target Customer Types</h4>
-                            <p className="text-sm text-gray-600">
-                              {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
-                            </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Keywords</h4>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {buyer.keywords?.map((keyword, i) => (
+                              <span key={i} className="px-2.5 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">
+                                {keyword}
+                              </span>
+                            )) || <span className="text-sm text-gray-500">Not provided</span>}
                           </div>
                         </div>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                          <div>
-                            <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
-                            <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
-                          </div>
-                          <div>
-                            <h4 className="text-xs text-gray-500 mb-1">Website</h4>
-                            <p className="text-sm font-medium text-blue-500 hover:underline cursor-pointer">Visit</p>
-                          </div>
-                          <div>
-                            <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
-                            <p className="text-sm font-medium">{buyer.location}</p>
-                          </div>
-                          <div>
-                            <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
-                            <p className="text-sm font-medium">{buyer.employees?.toLocaleString()}</p>
-                          </div>
-                          <div>
-                            <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
-                            <p className="text-sm font-medium">${(buyer.revenue / 1000000).toFixed(1)}</p>
-                          </div>
-                          <div>
-                            <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
-                            <p className="text-sm font-medium">${(buyer.cash / 1000000).toFixed(1)}</p>
-                          </div>
-                          <div>
-                            <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
-                            <p className="text-sm font-medium">
-                              {buyer.reportedDate ? new Date(buyer.reportedDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }) : 'N/A'}
-                            </p>
-                          </div>
-                          <div>
-                            <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
-                            <p className="text-sm font-medium">{buyer.isPEVCBacked ? 'Yes' : 'No'}</p>
-                          </div>
-                          <div>
-                            <h4 className="text-xs text-gray-500 mb-1">Public</h4>
-                            <p className="text-sm font-medium">{buyer.isPublic ? 'Yes' : 'No'}</p>
+                        <div>
+                          <h4 className="text-sm font-medium text-gray-700 mb-2">Target Customer Types</h4>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {buyer.targetCustomerTypes?.map((type, i) => (
+                              <span key={i} className="px-2.5 py-0.5 text-xs bg-blue-50 text-blue-700 rounded-full">
+                                {type}
+                              </span>
+                            )) || <span className="text-sm text-gray-500">Not provided</span>}
                           </div>
                         </div>
-                      </>
+                      </div>
                     )}
 
-                    {buyer.type === 'pe' && (
-                      <>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                          <div>
-                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Type</h4>
-                            <div className="flex flex-wrap gap-1">
-                              {buyer.investmentType?.map((type, i) => (
-                                <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                  {type}
-                                </span>
-                              )) || <span className="text-sm text-gray-500">Not provided</span>}
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Geography</h4>
-                            <div className="flex flex-wrap gap-1">
-                              {buyer.geography?.map((geo, i) => (
-                                <span key={i} className="px-2 py-1 text-xs bg-cyan-50 text-cyan-700 rounded-full">
-                                  {geo}
-                                </span>
-                              )) || <span className="text-sm text-gray-500">Not provided</span>}
-                            </div>
-                          </div>
-                          
-                          <div>
-                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Size</h4>
-                            <p className="text-sm text-gray-600">{buyer.investmentSize || "Not provided"}</p>
-                          </div>
+                    <div className="grid grid-cols-4 sm:grid-cols-4 lg:grid-cols-8 gap-4">
+                      <div>
+                        <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
+                        <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-xs text-gray-500 mb-1">Website</h4>
+                        <p className="text-sm font-medium text-blue-500">Visit</p>
+                      </div>
+                      <div>
+                        <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
+                        <p className="text-sm font-medium">{buyer.location}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
+                        <p className="text-sm font-medium">{buyer.employees?.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
+                        <p className="text-sm font-medium">${buyer.revenue?.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
+                        <p className="text-sm font-medium">${buyer.cash?.toLocaleString()}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
+                        <p className="text-sm font-medium">
+                          {buyer.reportedDate ? formatReportDate(buyer.reportedDate) : 'N/A'}
+                        </p>
+                      </div>
+                      {buyer.type === 'strategic' && (
+                        <div>
+                          <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
+                          <p className="text-sm font-medium">{buyer.isPEVCBacked ? 'Yes' : 'No'}</p>
                         </div>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Revenue Range</h4>
-                            <p className="text-sm text-gray-600">{buyer.revenueRange || "Not provided"}</p>
-                          </div>
-                          
-                          <div>
-                            <h4 className="text-sm font-semibold text-gray-700 mb-2">EBITDA</h4>
-                            <p className="text-sm text-gray-600">{buyer.ebitda || "Not provided"}</p>
-                          </div>
-                          
-                          <div>
-                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Focus</h4>
-                            <p className="text-sm text-gray-600">{buyer.industryFocus || "Not provided"}</p>
-                          </div>
+                      )}
+                      {buyer.type === 'strategic' && (
+                        <div>
+                          <h4 className="text-xs text-gray-500 mb-1">Public</h4>
+                          <p className="text-sm font-medium">{buyer.isPublic ? 'Yes' : 'No'}</p>
                         </div>
-                      </>
-                    )}
+                      )}
+                      {buyer.type === 'pe' && (
+                        <div>
+                          <h4 className="text-xs text-gray-500 mb-1">AUM ($M)</h4>
+                          <p className="text-sm font-medium">${buyer.aum?.toLocaleString()}</p>
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
 
-                {/* Score Breakdown Section */}
-                <Card className="bg-blue-50 border border-blue-100">
-                  <CardHeader className="border-b border-blue-100 pb-3">
-                    <CardTitle className="text-sm font-semibold text-blue-800">Acquisition Rationale</CardTitle>
+                {/* Acquisition Rationale Section - styled like the UI in the image */}
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-base font-medium">Acquisition Rationale</CardTitle>
                   </CardHeader>
-                  <CardContent className="pt-4 space-y-4">
+                  <CardContent className="space-y-6">
                     <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">{buyer.type === 'strategic' ? 'Offering' : 'Sectors'}</span>
-                        <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'offering'))}`}>
-                          {getRationaleScore(buyer.id, 'offering')}%
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium flex items-center">
+                          <span className="text-green-600 font-medium mr-2">{getRationaleScore(buyer.id, 'offering')}%</span>
+                          Offering
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
                         <div 
-                          className="bg-blueknight-500 h-2 rounded-full" 
+                          className="bg-green-500 h-1.5 rounded-full" 
                           style={{ width: `${getRationaleScore(buyer.id, 'offering')}%` }}
                         ></div>
                       </div>
-                      <p className="text-sm text-gray-700 mt-1">{buyer.rationale.offering}</p>
+                      <p className="text-sm text-gray-700">{buyer.rationale.offering}</p>
                     </div>
 
                     {buyer.type === 'strategic' && (
                       <div>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium">Customers</span>
-                          <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'customers'))}`}>
-                            {getRationaleScore(buyer.id, 'customers')}%
+                        <div className="flex justify-between items-center mb-1">
+                          <span className="text-sm font-medium flex items-center">
+                            <span className="text-blue-600 font-medium mr-2">{getRationaleScore(buyer.id, 'customers')}%</span>
+                            Customers
                           </span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
                           <div 
-                            className="bg-blueknight-500 h-2 rounded-full" 
+                            className="bg-blue-500 h-1.5 rounded-full" 
                             style={{ width: `${getRationaleScore(buyer.id, 'customers')}%` }}
                           ></div>
                         </div>
-                        <p className="text-sm text-gray-700 mt-1">{buyer.rationale.customers}</p>
+                        <p className="text-sm text-gray-700">{buyer.rationale.customers}</p>
                       </div>
                     )}
 
                     <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Previous Transactions</span>
-                        <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'transactions'))}`}>
-                          {getRationaleScore(buyer.id, 'transactions')}%
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium flex items-center">
+                          <span className="text-purple-600 font-medium mr-2">{getRationaleScore(buyer.id, 'transactions')}%</span>
+                          Previous Transactions
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
                         <div 
-                          className="bg-blueknight-500 h-2 rounded-full" 
+                          className="bg-purple-500 h-1.5 rounded-full" 
                           style={{ width: `${getRationaleScore(buyer.id, 'transactions')}%` }}
                         ></div>
                       </div>
-                      <p className="text-sm text-gray-700 mt-1">{buyer.rationale.previousTransactions}</p>
+                      <p className="text-sm text-gray-700">{buyer.rationale.previousTransactions}</p>
                     </div>
 
                     <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Financial Strength</span>
-                        <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'financial'))}`}>
-                          {getRationaleScore(buyer.id, 'financial')}%
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium flex items-center">
+                          <span className="text-yellow-600 font-medium mr-2">{getRationaleScore(buyer.id, 'financial')}%</span>
+                          Financial Strength
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
                         <div 
-                          className="bg-blueknight-500 h-2 rounded-full" 
+                          className="bg-yellow-500 h-1.5 rounded-full" 
                           style={{ width: `${getRationaleScore(buyer.id, 'financial')}%` }}
                         ></div>
                       </div>
-                      <p className="text-sm text-gray-700 mt-1">{buyer.rationale.financialStrength}</p>
+                      <p className="text-sm text-gray-700">{buyer.rationale.financialStrength}</p>
                     </div>
 
                     <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Overall Assessment</span>
-                        <span className={`text-sm font-medium ${getScoreBadgeStyle(getRationaleScore(buyer.id, 'overall'))}`}>
-                          {getRationaleScore(buyer.id, 'overall')}%
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm font-medium flex items-center">
+                          <span className="text-indigo-600 font-medium mr-2">{getRationaleScore(buyer.id, 'overall')}%</span>
+                          Overall Rationale
                         </span>
                       </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
+                      <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
                         <div 
-                          className="bg-blueknight-500 h-2 rounded-full" 
+                          className="bg-indigo-500 h-1.5 rounded-full" 
                           style={{ width: `${getRationaleScore(buyer.id, 'overall')}%` }}
                         ></div>
                       </div>
-                      <p className="text-sm text-gray-700 mt-1">{buyer.rationale.overall}</p>
+                      <p className="text-sm text-gray-700">{buyer.rationale.overall}</p>
                     </div>
                   </CardContent>
                 </Card>
