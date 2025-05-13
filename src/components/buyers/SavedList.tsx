@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { ChevronDown, ChevronUp, Trash, History } from 'lucide-react';
@@ -294,7 +293,9 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
     } else {
       setPEBuyers(prev => prev.filter(buyer => buyer.id !== id));
     }
-    toast({ title: "Removed", description: "Buyer removed from saved list" });
+    toast("Removed", {
+      description: "Buyer removed from saved list"
+    });
   };
 
   const toggleRationale = (buyerId: string) => {
