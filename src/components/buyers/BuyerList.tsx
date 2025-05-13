@@ -7,6 +7,7 @@ import BuyerSearch from './components/BuyerSearch';
 import BuyerActionBar from './components/BuyerActionBar';
 import StrategicBuyerTable from './components/StrategicBuyerTable';
 import PEBuyerTable from './components/PEBuyerTable';
+import ModularScoreDashboard from './components/ModularScoreDashboard';
 import { getMATrackRecordColor } from './utils/buyerUtils';
 
 // Mock data imports
@@ -23,6 +24,13 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const { toast } = useToast();
+  
+  // Mock metrics for the modular dashboard
+  const metrics = [
+    { name: "Buyer Country Match", value: 65, count: 13 },
+    { name: "Revenue Range Match", value: 42, count: 8 },
+    { name: "Industry Match", value: 87, count: 21 }
+  ];
   
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
@@ -59,6 +67,12 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   return (
     <div className="animate-fade-in">
       <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+        <h2 className="text-xl font-bold mb-4 text-gray-800">
+          A modular B2B M&A matching dashboard for M&A advisors
+        </h2>
+        
+        <ModularScoreDashboard metrics={metrics} />
+        
         <div className="flex items-center justify-between mb-6">
           <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
           <BuyerActionBar toggleFilters={toggleFilters} />
