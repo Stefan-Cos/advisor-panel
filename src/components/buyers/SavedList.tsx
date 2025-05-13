@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { ChevronDown, ChevronUp, Trash, History } from 'lucide-react';
 import {
   Table,
@@ -18,6 +17,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { getMATrackRecordColor } from '../buyers/utils/buyerUtils';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface SavedListProps {
   listingId: string;
@@ -667,9 +668,153 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
             </SheetHeader>
             <ScrollArea className="h-[calc(100vh-140px)] pr-4 mt-6">
               <div className="space-y-6">
-                <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-                  <h3 className="text-base font-medium text-gray-800 mb-4">Score Breakdown</h3>
-                  <div className="space-y-4">
+                {/* New Buyer Information Section */}
+                <Card className="border border-gray-200">
+                  <CardHeader className="border-b pb-3">
+                    <CardTitle className="text-sm font-semibold text-gray-700">Buyer Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Long Description</h4>
+                        <p className="text-sm text-gray-600">
+                          {buyer.longDescription || "Not provided"}
+                        </p>
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-700 mb-2">Primary Industries</h4>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {buyer.primaryIndustries?.map((industry, i) => (
+                            <span key={i} className="px-2.5 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                              {industry}
+                            </span>
+                          )) || <span className="text-sm text-gray-500">Not provided</span>}
+                        </div>
+                      </div>
+                    </div>
+
+                    {buyer.type === 'strategic' && (
+                      <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Keywords</h4>
+                            <div className="flex flex-wrap gap-1 mt-1">
+                              {buyer.keywords?.map((keyword, i) => (
+                                <span key={i} className="px-2.5 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
+                                  {keyword}
+                                </span>
+                              )) || <span className="text-sm text-gray-500">Not provided</span>}
+                            </div>
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Target Customer Types</h4>
+                            <p className="text-sm text-gray-600">
+                              {buyer.targetCustomerTypes?.join(', ') || "Not provided"}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                          <div>
+                            <h4 className="text-xs text-gray-500 mb-1">Parent Company</h4>
+                            <p className="text-sm font-medium">{buyer.parentCompany || "None/Independent"}</p>
+                          </div>
+                          <div>
+                            <h4 className="text-xs text-gray-500 mb-1">Website</h4>
+                            <p className="text-sm font-medium text-blue-500 hover:underline cursor-pointer">Visit</p>
+                          </div>
+                          <div>
+                            <h4 className="text-xs text-gray-500 mb-1">HQ</h4>
+                            <p className="text-sm font-medium">{buyer.location || buyer.hq}</p>
+                          </div>
+                          <div>
+                            <h4 className="text-xs text-gray-500 mb-1">Employees</h4>
+                            <p className="text-sm font-medium">{buyer.employees?.toLocaleString()}</p>
+                          </div>
+                          <div>
+                            <h4 className="text-xs text-gray-500 mb-1">Revenue ($M)</h4>
+                            <p className="text-sm font-medium">${(buyer.revenue / 1000000).toFixed(1)}</p>
+                          </div>
+                          <div>
+                            <h4 className="text-xs text-gray-500 mb-1">Cash ($M)</h4>
+                            <p className="text-sm font-medium">${(buyer.cash / 1000000).toFixed(1)}</p>
+                          </div>
+                          <div>
+                            <h4 className="text-xs text-gray-500 mb-1">Reported Date</h4>
+                            <p className="text-sm font-medium">
+                              {buyer.reportedDate ? new Date(buyer.reportedDate).toLocaleDateString('en-US', { month: 'short', year: '2-digit' }) : 'N/A'}
+                            </p>
+                          </div>
+                          <div>
+                            <h4 className="text-xs text-gray-500 mb-1">PE/VC-Backed</h4>
+                            <p className="text-sm font-medium">{buyer.isPEVCBacked ? 'Yes' : 'No'}</p>
+                          </div>
+                          <div>
+                            <h4 className="text-xs text-gray-500 mb-1">Public</h4>
+                            <p className="text-sm font-medium">{buyer.isPublic ? 'Yes' : 'No'}</p>
+                          </div>
+                        </div>
+                      </>
+                    )}
+
+                    {buyer.type === 'pe' && (
+                      <>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Type</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {buyer.investmentType?.map((type, i) => (
+                                <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
+                                  {type}
+                                </span>
+                              )) || <span className="text-sm text-gray-500">Not provided</span>}
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Geography</h4>
+                            <div className="flex flex-wrap gap-1">
+                              {buyer.geography?.map((geo, i) => (
+                                <span key={i} className="px-2 py-1 text-xs bg-cyan-50 text-cyan-700 rounded-full">
+                                  {geo}
+                                </span>
+                              )) || <span className="text-sm text-gray-500">Not provided</span>}
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Size</h4>
+                            <p className="text-sm text-gray-600">{buyer.investmentSize || "Not provided"}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Revenue Range</h4>
+                            <p className="text-sm text-gray-600">{buyer.revenueRange || "Not provided"}</p>
+                          </div>
+                          
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">EBITDA</h4>
+                            <p className="text-sm text-gray-600">{buyer.ebitda || "Not provided"}</p>
+                          </div>
+                          
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Focus</h4>
+                            <p className="text-sm text-gray-600">{buyer.industryFocus || "Not provided"}</p>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Score Breakdown Section */}
+                <Card className="bg-blue-50 border border-blue-100">
+                  <CardHeader className="border-b border-blue-100 pb-3">
+                    <CardTitle className="text-sm font-semibold text-blue-800">Acquisition Rationale</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-4 space-y-4">
                     <div>
                       <div className="flex justify-between mb-1">
                         <span className="text-sm font-medium">{buyer.type === 'strategic' ? 'Offering' : 'Sectors'}</span>
@@ -683,7 +828,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                           style={{ width: `${getRationaleScore(buyer.id, 'offering')}%` }}
                         ></div>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.offering}</p>
+                      <p className="text-sm text-gray-700 mt-1">{buyer.rationale.offering}</p>
                     </div>
 
                     {buyer.type === 'strategic' && (
@@ -700,7 +845,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                             style={{ width: `${getRationaleScore(buyer.id, 'customers')}%` }}
                           ></div>
                         </div>
-                        <p className="text-sm text-gray-600 mt-1">{buyer.rationale.customers}</p>
+                        <p className="text-sm text-gray-700 mt-1">{buyer.rationale.customers}</p>
                       </div>
                     )}
 
@@ -717,7 +862,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                           style={{ width: `${getRationaleScore(buyer.id, 'transactions')}%` }}
                         ></div>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.previousTransactions}</p>
+                      <p className="text-sm text-gray-700 mt-1">{buyer.rationale.previousTransactions}</p>
                     </div>
 
                     <div>
@@ -733,7 +878,7 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                           style={{ width: `${getRationaleScore(buyer.id, 'financial')}%` }}
                         ></div>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.financialStrength}</p>
+                      <p className="text-sm text-gray-700 mt-1">{buyer.rationale.financialStrength}</p>
                     </div>
 
                     <div>
@@ -749,10 +894,10 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                           style={{ width: `${getRationaleScore(buyer.id, 'overall')}%` }}
                         ></div>
                       </div>
-                      <p className="text-sm text-gray-600 mt-1">{buyer.rationale.overall}</p>
+                      <p className="text-sm text-gray-700 mt-1">{buyer.rationale.overall}</p>
                     </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               </div>
             </ScrollArea>
           </SheetContent>
@@ -773,35 +918,36 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
             </SheetHeader>
             <ScrollArea className="h-[calc(100vh-140px)] pr-4 mt-6">
               <div className="space-y-6">
-                <div className="bg-white rounded-lg border border-gray-200">
-                  <div className="p-4 border-b border-gray-200 bg-gray-50">
-                    <h3 className="text-base font-medium text-gray-800">Recent Transactions</h3>
-                  </div>
-                  
-                  {getMockTransactions(buyer.maTrackRecord).map(transaction => (
-                    <div key={transaction.id} className="p-4 border-b border-gray-100 hover:bg-gray-50">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-medium text-gray-900">{transaction.name}</h4>
-                        <span className="text-sm text-gray-500">{transaction.date}</span>
+                <Card>
+                  <CardHeader className="border-b border-gray-200 bg-gray-50 pb-3">
+                    <CardTitle className="text-base font-medium text-gray-800">Recent Transactions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0">
+                    {getMockTransactions(buyer.maTrackRecord).map(transaction => (
+                      <div key={transaction.id} className="p-4 border-b border-gray-100 hover:bg-gray-50">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-medium text-gray-900">{transaction.name}</h4>
+                          <span className="text-sm text-gray-500">{transaction.date}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          <span className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-md">
+                            {transaction.type}
+                          </span>
+                          <span className="px-2 py-1 text-xs bg-green-50 text-green-700 rounded-md">
+                            {transaction.amount}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600">{transaction.description}</p>
                       </div>
-                      <div className="flex flex-wrap gap-2 mb-2">
-                        <span className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-md">
-                          {transaction.type}
-                        </span>
-                        <span className="px-2 py-1 text-xs bg-green-50 text-green-700 rounded-md">
-                          {transaction.amount}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-600">{transaction.description}</p>
-                    </div>
-                  ))}
+                    ))}
 
-                  {getMockTransactions(buyer.maTrackRecord).length === 0 && (
-                    <div className="p-4 text-center text-gray-500">
-                      No transaction history available.
-                    </div>
-                  )}
-                </div>
+                    {getMockTransactions(buyer.maTrackRecord).length === 0 && (
+                      <div className="p-4 text-center text-gray-500">
+                        No transaction history available.
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
             </ScrollArea>
           </SheetContent>
