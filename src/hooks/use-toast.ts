@@ -1,7 +1,7 @@
 
-import { toast as sonnerToast, type ToastOptions as SonnerToastOptions } from "sonner";
+import { toast as sonnerToast, type Toast } from "sonner";
 
-export type ToastProps = SonnerToastOptions & {
+export type ToastProps = Omit<Parameters<typeof sonnerToast>[1], "title" | "description"> & {
   title?: string;
   description?: React.ReactNode;
 };
