@@ -253,7 +253,8 @@ const BuyerPreferencesForm = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    toast("Preferences Updated", {
+    toast({
+      title: "Preferences Updated",
       description: "Your buyer preferences have been applied",
     });
     

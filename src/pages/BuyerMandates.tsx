@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
@@ -35,10 +36,16 @@ const BuyerMandatesPage = () => {
     // Simulate API call
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      toast("Success", { description: "New mandate created successfully" });
+      toast({
+        title: "Success",
+        description: "New mandate created successfully"
+      });
       navigate('/buyer-mandates'); // Redirect to the mandates list
     } catch (error) {
-      toast("Error", { description: "Failed to create mandate. Please try again." });
+      toast({
+        title: "Error",
+        description: "Failed to create mandate. Please try again."
+      });
     }
   };
 

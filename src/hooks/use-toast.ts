@@ -1,20 +1,17 @@
 
-import { toast as sonnerToast } from "sonner";
+import { toast as sonnerToast, type ToastT } from "sonner";
 
-export type ToastProps = Omit<Parameters<typeof sonnerToast>[1], "title" | "description"> & {
-  title?: string;
-  description?: React.ReactNode;
-};
+// Define the correct types based on the sonner library implementation
+export type Toast = ToastT;
 
-const useToast = () => {
+export function toast(message: string | React.ReactNode) {
+  return sonnerToast(message);
+}
+
+export function useToast() {
   return {
-    toast: ({ title, description, ...props }: ToastProps) => {
-      sonnerToast(title, {
-        description,
-        ...props,
-      });
+    toast: (title: string | React.ReactNode, options?: ToastT) => {
+      return sonnerToast(title, options);
     },
   };
-};
-
-export { useToast, sonnerToast as toast };
+}

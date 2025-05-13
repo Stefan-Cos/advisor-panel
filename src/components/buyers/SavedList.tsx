@@ -296,7 +296,8 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
     } else {
       setPEBuyers(prev => prev.filter(buyer => buyer.id !== id));
     }
-    toast("Removed", {
+    toast({
+      title: "Removed",
       description: "Buyer removed from saved list"
     });
   };

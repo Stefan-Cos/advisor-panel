@@ -60,7 +60,8 @@ const BuyerPreferencesEditor: React.FC<BuyerPreferencesEditorProps> = ({ initial
   const toggleEditPreferences = () => {
     if (isEditingPreferences) {
       // Save changes
-      toast("Preferences Updated", {
+      toast({
+        title: "Preferences Updated",
         description: "Your buyer preferences have been applied",
       });
     }
