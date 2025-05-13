@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Route, Routes, Navigate } from 'react-router-dom';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import ListingDetails from '../components/listings/ListingDetails';
@@ -29,7 +29,13 @@ const ListingDetailsPage = () => {
         
         <main className="flex-1 p-6 overflow-auto">
           <div className="w-full">
-            <ListingDetails {...listingData} />
+            <Routes>
+              <Route path="/" element={<ListingDetails {...listingData} />} />
+              <Route path="/ai-buyer" element={<ListingDetails {...listingData} />} />
+              <Route path="/saved" element={<ListingDetails {...listingData} />} />
+              <Route path="/crm" element={<ListingDetails {...listingData} />} />
+              <Route path="*" element={<Navigate to={`/listings/${id}`} replace />} />
+            </Routes>
           </div>
         </main>
       </div>
