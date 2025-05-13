@@ -5,10 +5,7 @@ import { toast } from "@/hooks/use-toast";
 
 const LogoutButton = () => {
   const handleLogout = () => {
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out"
-    });
+    toast("You have been successfully logged out");
     // Redirect to login in a real app
     window.location.href = '/';
   };

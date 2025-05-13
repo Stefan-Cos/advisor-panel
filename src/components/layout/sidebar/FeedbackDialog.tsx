@@ -19,16 +19,10 @@ const FeedbackDialog = () => {
   
   const handleFeedbackSubmit = () => {
     if (feedback.trim()) {
-      toast({
-        title: "Feedback Submitted",
-        description: "Thank you for your feedback! We'll review it shortly."
-      });
+      toast("Thank you for your feedback! We'll review it shortly.");
       setFeedback("");
     } else {
-      toast({
-        title: "Empty Feedback",
-        description: "Please enter some feedback before submitting."
-      });
+      toast("Please enter some feedback before submitting.");
     }
   };
 

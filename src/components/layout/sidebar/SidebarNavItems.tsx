@@ -34,10 +34,7 @@ const SidebarNavItems = () => {
   const handleMessagesClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (location.pathname !== '/messages') {
       e.preventDefault();
-      toast({
-        title: "Messages",
-        description: "Messaging features coming soon"
-      });
+      toast("Messaging features coming soon");
     }
   };
 

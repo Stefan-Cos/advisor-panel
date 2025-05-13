@@ -20,10 +20,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({
   const handleAddToSaved = () => {
     if (onAddToSaved) {
       onAddToSaved(id);
-      toast({
-        title: "Buyer Saved",
-        description: `${name} has been added to your saved list.`,
-      });
+      toast(`${name} has been added to your saved list.`);
     }
   };
 

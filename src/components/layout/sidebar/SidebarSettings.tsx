@@ -13,10 +13,7 @@ const SidebarSettings = () => {
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);
   
   const handleSettingsItemClick = (settingType: string) => {
-    toast({
-      title: `${settingType} Settings`,
-      description: `${settingType} settings features coming soon`,
-    });
+    toast(`${settingType} settings features coming soon`);
   };
 
   return (
