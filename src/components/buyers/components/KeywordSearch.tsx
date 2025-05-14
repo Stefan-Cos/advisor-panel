@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Search, X, Plus } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
@@ -57,8 +56,9 @@ const KeywordSearch: React.FC<KeywordSearchProps> = ({
   };
 
   const handleApplySearch = () => {
-    toast("Search Applied", {
-      description: "Your keyword search has been applied to the buyer list.",
+    toast({
+      title: "Search Applied",
+      description: "Your keyword search has been applied to the buyer list."
     });
     onSearchApply();
   };

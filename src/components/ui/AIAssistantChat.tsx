@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   MessageCircle, 
@@ -60,8 +59,9 @@ const AIAssistantChat: React.FC = () => {
       
       setMessages(prev => [...prev, aiResponse]);
       
-      toast("AI Assistant", {
-        description: "New message from your AI Assistant",
+      toast({
+        title: "AI Assistant",
+        description: "New message from your AI Assistant"
       });
     }, 1000);
   };

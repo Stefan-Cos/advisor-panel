@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, Search, Check, ChevronsUpDown } from 'lucide-react';
 import StrategicBuyers from './StrategicBuyers';
@@ -105,7 +104,6 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
   const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [showFilters, setShowFilters] = useState(false);
-  const { toast } = useToast();
   
   // Strategic buyer filter states
   const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
