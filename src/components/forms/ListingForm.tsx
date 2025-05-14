@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
-import { BarChart3, Globe, Building, Flag, ArrowRight, ArrowLeft, Users, MapPin, Check } from 'lucide-react';
+import { BarChart3, Globe, Building, Flag, ArrowRight, ArrowLeft, Users, MapPin, Check, Sparkles } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
@@ -132,6 +132,7 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [animatingFields, setAnimatingFields] = useState([]);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
   
   const handleWebsiteSubmit = (e) => {
     e.preventDefault();
@@ -139,60 +140,65 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
     
     setIsAnalyzing(true);
     
-    // Simulate AI analysis with progress updates over 20 seconds
+    // Simulate AI analysis with continuous progress over 20 seconds
     const totalDuration = 20000; // 20 seconds
+    const startTime = Date.now();
+    
     const interval = setInterval(() => {
-      setProgress(prev => {
-        const newProgress = prev + 1.67; // ~60 updates over 20 seconds
+      const elapsedTime = Date.now() - startTime;
+      const newProgress = Math.min((elapsedTime / totalDuration) * 100, 100);
+      
+      setProgress(newProgress);
+      
+      // Animate fields flying in at different progress points
+      if (newProgress > 15 && !animatingFields.includes('companyOverview')) {
+        setAnimatingFields(prev => [...prev, 'companyOverview']);
+      }
+      if (newProgress > 35 && !animatingFields.includes('marketPositioning')) {
+        setAnimatingFields(prev => [...prev, 'marketPositioning']);
+      }
+      if (newProgress > 55 && !animatingFields.includes('problemsUseCases')) {
+        setAnimatingFields(prev => [...prev, 'problemsUseCases']);
+      }
+      if (newProgress > 75 && !animatingFields.includes('customerProfile')) {
+        setAnimatingFields(prev => [...prev, 'customerProfile']);
+      }
+      
+      if (newProgress >= 100) {
+        clearInterval(interval);
         
-        // Animate fields flying in at different progress points
-        if (newProgress > 15 && !animatingFields.includes('description')) {
-          setAnimatingFields(prev => [...prev, 'description']);
-        }
-        if (newProgress > 30 && !animatingFields.includes('industry')) {
-          setAnimatingFields(prev => [...prev, 'industry']);
-        }
-        if (newProgress > 45 && !animatingFields.includes('productTags')) {
-          setAnimatingFields(prev => [...prev, 'productTags']);
-        }
-        if (newProgress > 60 && !animatingFields.includes('financials')) {
-          setAnimatingFields(prev => [...prev, 'financials']);
-        }
-        if (newProgress > 80 && !animatingFields.includes('customers')) {
-          setAnimatingFields(prev => [...prev, 'customers']);
-        }
+        // Show completion animation
+        setAnalysisComplete(true);
         
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            // Update form with "AI-enriched" data
-            setFormData(prev => ({
-              ...prev,
-              website,
-              description: `${formData.companyName} is a leading provider of innovative solutions in their industry.`,
-              industry: "Technology",
-              offering: "Software as a service platform for enterprise customers",
-              productTags: ["SaaS", "Enterprise Software"],
-              deliveryMethod: "Cloud-based",
-              supplyChainRole: "Software Provider",
-              useCase: ["Workflow Automation", "Data Analytics"],
-              problemSolved: "Inefficient manual processes and lack of data visibility",
-              useCases: "Used by operations teams to streamline workflows and improve decision-making",
-              competitors: ["Competitor A", "Competitor B"],
-              revenueLastYear: "2,500,000",
-              revenueThisYear: "3,200,000",
-              ebitdaLastYear: "500,000",
-              ebitdaThisYear: "750,000",
-              targetCustomers: "Mid to large enterprises with complex operational needs",
-              customerType: "Enterprise",
-              customerIndustries: ["Manufacturing", "Healthcare", "Finance"]
-            }));
-            nextStep();
-          }, 500);
-        }
-        return newProgress >= 100 ? 100 : newProgress;
-      });
-    }, totalDuration / 60); // Update ~60 times over the duration
+        // After completion animation, move to next step
+        setTimeout(() => {
+          // Update form with "AI-enriched" data
+          setFormData(prev => ({
+            ...prev,
+            website,
+            description: `${formData.companyName} is a leading provider of innovative solutions in their industry.`,
+            industry: "Technology",
+            offering: "Software as a service platform for enterprise customers",
+            productTags: ["SaaS", "Enterprise Software"],
+            deliveryMethod: "Cloud-based",
+            supplyChainRole: "Software Provider",
+            useCase: ["Workflow Automation", "Data Analytics"],
+            problemSolved: "Inefficient manual processes and lack of data visibility",
+            useCases: "Used by operations teams to streamline workflows and improve decision-making",
+            competitors: ["Competitor A", "Competitor B"],
+            revenueLastYear: "2,500,000",
+            revenueThisYear: "3,200,000",
+            ebitdaLastYear: "500,000",
+            ebitdaThisYear: "750,000",
+            targetCustomers: "Mid to large enterprises with complex operational needs",
+            customerType: "Enterprise",
+            customerIndustries: ["Manufacturing", "Healthcare", "Finance"]
+          }));
+          
+          nextStep();
+        }, 3000); // Show completion animation for 3 seconds before proceeding
+      }
+    }, 50); // Update frequently for smoother animation
   };
 
   return (
@@ -236,46 +242,52 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
           
           <Progress value={progress} className="h-2" />
           
-          <div className="relative h-40 flex items-center justify-center overflow-hidden">
-            <div className="absolute w-full h-full opacity-10">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 animate-pulse rounded-full blur-xl"/>
+          {analysisComplete ? (
+            <div className="relative h-40 flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-600/20 animate-pulse rounded-full blur-3xl"/>
+              <div className="z-10 flex flex-col items-center space-y-4">
+                <div className="p-3 bg-blueknight-50 rounded-full">
+                  <Sparkles className="h-12 w-12 text-blueknight-500 animate-scale-in" />
+                </div>
+                <p className="text-lg font-medium text-blueknight-700 animate-fade-in">
+                  Analysis complete!
+                </p>
+              </div>
             </div>
-            <div className="z-10 flex flex-col items-center space-y-2">
-              <BarChart3 className="h-10 w-10 text-blueknight-500 animate-pulse" />
-              <p className="text-sm font-medium text-gray-500">Processing company data...</p>
+          ) : (
+            <div className="relative h-40 flex items-center justify-center overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-600/20 animate-pulse rounded-full blur-3xl"/>
+              <div className="z-10 flex flex-col items-center space-y-2">
+                <BarChart3 className="h-10 w-10 text-blueknight-500 animate-pulse" />
+                <p className="text-sm font-medium text-gray-500">Processing company data...</p>
+              </div>
             </div>
-          </div>
+          )}
           
           {/* Animated section for incoming data */}
           <div className="space-y-4 mt-8">
-            {animatingFields.includes('description') && (
+            {animatingFields.includes('companyOverview') && (
               <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
                 <Check className="h-4 w-4 text-green-500" />
-                <span>Found company description</span>
+                <span>Extracted Company Overview</span>
               </div>
             )}
-            {animatingFields.includes('industry') && (
+            {animatingFields.includes('marketPositioning') && (
               <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
                 <Check className="h-4 w-4 text-green-500" />
-                <span>Detected industry classification</span>
+                <span>Extracted Market Positioning</span>
               </div>
             )}
-            {animatingFields.includes('productTags') && (
+            {animatingFields.includes('problemsUseCases') && (
               <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
                 <Check className="h-4 w-4 text-green-500" />
-                <span>Extracted product keywords</span>
+                <span>Extracted Problems and Use Cases</span>
               </div>
             )}
-            {animatingFields.includes('financials') && (
+            {animatingFields.includes('customerProfile') && (
               <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
                 <Check className="h-4 w-4 text-green-500" />
-                <span>Estimated financial metrics</span>
-              </div>
-            )}
-            {animatingFields.includes('customers') && (
-              <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
-                <Check className="h-4 w-4 text-green-500" />
-                <span>Identified target customer profile</span>
+                <span>Extracted Customer Profile</span>
               </div>
             )}
           </div>
@@ -296,7 +308,7 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
           <Button 
             onClick={nextStep}
             variant="outline"
-            className="flex items-center gap-2 text-gray-600 border-gray-300"
+            className="flex items-center gap-2 text-gray-500 border-gray-300"
           >
             Proceed Without Analysis
             <ArrowRight className="h-4 w-4" />
