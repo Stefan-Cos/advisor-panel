@@ -13,7 +13,6 @@ import {
   Settings, 
   ChevronRight,
   ChevronLeft,
-  BookmarkCheck,
   Search,
   Save,
   Loader
@@ -25,6 +24,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import BuyerListNew from '../buyers/BuyerListNew';
 import FilterSidebar from './FilterSidebar';
+import SavedSearchTable from '../buyers/components/SavedSearchTable';
 
 interface AiBuyerBuilderProps {
   listingId: string;
@@ -52,22 +52,48 @@ const savedSearches = [
   }
 ];
 
-// Saved search dummy results
+// Format buyer data to match the structure expected by BuyerTableRow
+const formatBuyerData = (buyers: any[]) => {
+  return buyers.map(buyer => ({
+    id: buyer.id,
+    name: buyer.name,
+    matchingScore: buyer.matchScore,
+    location: buyer.location,
+    description: `${buyer.type === 'strategic' ? 'Strategic buyer' : 'Private equity firm'} focused on ${buyer.industry || 'multiple industries'}`,
+    hq: buyer.location,
+    employees: Math.floor(Math.random() * 5000) + 100,
+    maTrackRecord: buyer.trackRecord || (Math.random() > 0.6 ? 'High' : Math.random() > 0.3 ? 'Medium' : 'Low'),
+    rationale: {
+      overall: {
+        text: `This ${buyer.type === 'strategic' ? 'company' : 'fund'} is a good match based on their focus in ${buyer.industry || 'your industry'} and history of similar acquisitions.`,
+        score: buyer.matchScore
+      }
+    }
+  }));
+};
+
+// Saved search dummy results with more details
 const savedSearchResults = {
   '1': [
-    { id: 'saas1', name: 'Enterprise Tech Solutions', matchScore: 92, location: 'San Francisco, CA', type: 'strategic' },
-    { id: 'saas2', name: 'Cloud Innovations Inc', matchScore: 88, location: 'Austin, TX', type: 'strategic' },
-    { id: 'saas3', name: 'Software Ventures LLC', matchScore: 84, location: 'Seattle, WA', type: 'pe' }
+    { id: 'saas1', name: 'Enterprise Tech Solutions', matchScore: 92, location: 'San Francisco, CA', type: 'strategic', industry: 'Technology', trackRecord: 'High' },
+    { id: 'saas2', name: 'Cloud Innovations Inc', matchScore: 88, location: 'Austin, TX', type: 'strategic', industry: 'SaaS', trackRecord: 'Medium' },
+    { id: 'saas3', name: 'Software Ventures LLC', matchScore: 84, location: 'Seattle, WA', type: 'pe', industry: 'Technology', trackRecord: 'High' },
+    { id: 'saas4', name: 'Tech Growth Partners', matchScore: 81, location: 'Boston, MA', type: 'pe', industry: 'Software', trackRecord: 'Medium' },
+    { id: 'saas5', name: 'Digital Transformation Group', matchScore: 79, location: 'Chicago, IL', type: 'strategic', industry: 'Enterprise Software', trackRecord: 'Medium' }
   ],
   '2': [
-    { id: 'pe1', name: 'Horizon Capital Partners', matchScore: 95, location: 'New York, NY', type: 'pe' },
-    { id: 'pe2', name: 'Techvest Partners', matchScore: 89, location: 'Boston, MA', type: 'pe' },
-    { id: 'pe3', name: 'Growth Equity Fund', matchScore: 86, location: 'Chicago, IL', type: 'pe' }
+    { id: 'pe1', name: 'Horizon Capital Partners', matchScore: 95, location: 'New York, NY', type: 'pe', industry: 'Technology', trackRecord: 'High' },
+    { id: 'pe2', name: 'Techvest Partners', matchScore: 89, location: 'Boston, MA', type: 'pe', industry: 'Software', trackRecord: 'Medium' },
+    { id: 'pe3', name: 'Growth Equity Fund', matchScore: 86, location: 'Chicago, IL', type: 'pe', industry: 'Technology', trackRecord: 'High' },
+    { id: 'pe4', name: 'Innovation Ventures', matchScore: 84, location: 'San Francisco, CA', type: 'pe', industry: 'Tech Hardware', trackRecord: 'Low' },
+    { id: 'pe5', name: 'Digital Growth Fund', matchScore: 82, location: 'Austin, TX', type: 'pe', industry: 'SaaS', trackRecord: 'Medium' }
   ],
   '3': [
-    { id: 'hc1', name: 'HealthTech Innovations', matchScore: 91, location: 'Minneapolis, MN', type: 'strategic' },
-    { id: 'hc2', name: 'MedServe Solutions', matchScore: 87, location: 'Philadelphia, PA', type: 'strategic' },
-    { id: 'hc3', name: 'BioScience Partners', matchScore: 82, location: 'San Diego, CA', type: 'pe' }
+    { id: 'hc1', name: 'HealthTech Innovations', matchScore: 91, location: 'Minneapolis, MN', type: 'strategic', industry: 'Healthcare', trackRecord: 'High' },
+    { id: 'hc2', name: 'MedServe Solutions', matchScore: 87, location: 'Philadelphia, PA', type: 'strategic', industry: 'Medical Devices', trackRecord: 'Medium' },
+    { id: 'hc3', name: 'BioScience Partners', matchScore: 82, location: 'San Diego, CA', type: 'pe', industry: 'Healthcare', trackRecord: 'High' },
+    { id: 'hc4', name: 'Healthcare Equity Group', matchScore: 80, location: 'Boston, MA', type: 'pe', industry: 'Health IT', trackRecord: 'Medium' },
+    { id: 'hc5', name: 'Medical Innovation Co', matchScore: 78, location: 'Denver, CO', type: 'strategic', industry: 'Healthcare', trackRecord: 'Low' }
   ]
 };
 
@@ -77,6 +103,8 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
   const [processing, setProcessing] = useState<boolean>(false);
   const [showMatches, setShowMatches] = useState<boolean>(false);
   const [selectedSavedSearch, setSelectedSavedSearch] = useState<string | null>(null);
+  const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
+  const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   
   // Scoring configuration state
   const [scoringConfig, setScoringConfig] = useState({
@@ -105,6 +133,26 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
       weight: 100,
     },
   });
+
+  // Handle saving a buyer
+  const handleAddToSaved = (buyerId: string) => {
+    if (!savedBuyers.includes(buyerId)) {
+      setSavedBuyers(prev => [...prev, buyerId]);
+      toast({
+        title: "Buyer Saved",
+        description: "This buyer has been added to your saved list."
+      });
+    }
+  };
+
+  // Handle expanding a buyer rationale
+  const toggleRationale = (buyerId: string) => {
+    setExpandedRationales(prev => 
+      prev.includes(buyerId) 
+        ? prev.filter(id => id !== buyerId) 
+        : [...prev, buyerId]
+    );
+  };
 
   // Handle scoring config toggle
   const handleConfigToggle = (key: keyof typeof scoringConfig, value: boolean) => {
@@ -173,6 +221,13 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     }
   }, [activeTab]);
 
+  // Get formatted buyers for the selected saved search
+  const getFormattedSavedSearchBuyers = () => {
+    if (!selectedSavedSearch) return [];
+    const rawBuyers = savedSearchResults[selectedSavedSearch as keyof typeof savedSearchResults] || [];
+    return formatBuyerData(rawBuyers);
+  };
+
   return (
     <div className="bg-white shadow-sm rounded-lg border border-gray-200">
       <Tabs defaultValue="scoring" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -192,15 +247,15 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
         </div>
 
         <div className="flex relative">
-          {/* Floating Filter Sidebar Toggle */}
+          {/* Floating Filter Sidebar Toggle - positioned to align with feedback item in sidebar */}
           <div 
             className={cn(
-              "fixed top-1/2 -translate-y-1/2 z-10 bg-blueknight-500 shadow-md rounded-r-md cursor-pointer transition-all duration-300",
+              "fixed top-[200px] z-10 bg-[#001437] shadow-md rounded-r-md cursor-pointer transition-all duration-300",
               filterVisible ? "left-[280px]" : "left-0"
             )}
             onClick={toggleFilterSidebar}
           >
-            <div className="p-1.5 hover:bg-blueknight-600 rounded-r-md">
+            <div className="p-1.5 hover:bg-opacity-80 rounded-r-md">
               {filterVisible 
                 ? <ChevronLeft className="h-4 w-4 text-white" /> 
                 : <ChevronRight className="h-4 w-4 text-white" />
@@ -555,48 +610,14 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
                       </Button>
                     </div>
                     
-                    {/* Mock results table for the saved search */}
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-collapse">
-                        <thead>
-                          <tr className="bg-gray-50 text-left">
-                            <th className="p-2 text-xs font-medium text-gray-500">Company</th>
-                            <th className="p-2 text-xs font-medium text-gray-500">Type</th>
-                            <th className="p-2 text-xs font-medium text-gray-500">Location</th>
-                            <th className="p-2 text-xs font-medium text-gray-500">Match Score</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {savedSearchResults[selectedSavedSearch as keyof typeof savedSearchResults]?.map((result) => (
-                            <tr key={result.id} className="border-t border-gray-100 hover:bg-gray-50">
-                              <td className="p-2 text-sm">{result.name}</td>
-                              <td className="p-2 text-sm">
-                                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                                  result.type === 'strategic' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
-                                }`}>
-                                  {result.type === 'strategic' ? 'Strategic' : 'PE Fund'}
-                                </span>
-                              </td>
-                              <td className="p-2 text-sm">{result.location}</td>
-                              <td className="p-2">
-                                <div className="flex items-center">
-                                  <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
-                                    <div 
-                                      className={`h-2 rounded-full ${
-                                        result.matchScore > 90 ? 'bg-green-500' :
-                                        result.matchScore > 80 ? 'bg-yellow-500' : 'bg-orange-500'
-                                      }`}
-                                      style={{ width: `${result.matchScore}%` }}
-                                    ></div>
-                                  </div>
-                                  <span className="text-xs font-medium">{result.matchScore}%</span>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                    {/* Using our SavedSearchTable component with the saved search data */}
+                    <SavedSearchTable
+                      buyers={getFormattedSavedSearchBuyers()}
+                      savedBuyers={savedBuyers}
+                      expandedRationales={expandedRationales}
+                      onAddToSaved={handleAddToSaved}
+                      toggleRationale={toggleRationale}
+                    />
                   </div>
                 </div>
               ) : (
