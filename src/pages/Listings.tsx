@@ -70,26 +70,26 @@ const Listings = () => {
         
         <main className="flex-1 p-6">
           <div className="mb-4">
-            <h1 className="text-2xl font-bold text-blueknight-700">All Projects ({mockListings.length})</h1>
+            <h1 className="text-2xl font-bold text-blueknight-500">All Projects ({mockListings.length})</h1>
           </div>
           
           <Tabs defaultValue="active-projects" className="w-full mt-6">
-            <TabsList className="grid w-full grid-cols-3 mb-6 overflow-hidden rounded-lg shadow-md">
+            <TabsList className="grid w-full grid-cols-3 mb-6 overflow-hidden rounded-lg shadow-md bg-blueknight-500">
               <TabsTrigger 
                 value="active-projects" 
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blueknight-600 data-[state=active]:to-blue-700 data-[state=active]:text-white py-3"
+                className="data-[state=active]:bg-blueknight-700 data-[state=active]:text-white py-3"
               >
                 Active Projects
               </TabsTrigger>
               <TabsTrigger 
                 value="buyer-pitches"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blueknight-600 data-[state=active]:to-blue-700 data-[state=active]:text-white py-3"
+                className="data-[state=active]:bg-blueknight-700 data-[state=active]:text-white py-3"
               >
                 Pitch Support
               </TabsTrigger>
               <TabsTrigger 
                 value="client-opportunities"
-                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blueknight-600 data-[state=active]:to-blue-700 data-[state=active]:text-white py-3"
+                className="data-[state=active]:bg-blueknight-700 data-[state=active]:text-white py-3"
               >
                 Source New Mandates
               </TabsTrigger>
