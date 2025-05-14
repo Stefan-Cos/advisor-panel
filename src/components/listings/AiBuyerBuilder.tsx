@@ -1,10 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from '@/lib/utils';
 import { toast } from "@/hooks/use-toast";
 import { Settings, Save } from 'lucide-react';
-import FilterSidebar from './FilterSidebar';
+import BuyerFilter from '../buyers/components/BuyerFilter';
 
 // Import components
 import ProcessingAnimation from './ai-builder/ProcessingAnimation';
@@ -149,6 +148,14 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     setFilterVisible(!filterVisible);
   };
 
+  // Handler for filter application
+  const handleFilterApply = () => {
+    toast({
+      title: "Filters Applied",
+      description: "Your filters have been applied successfully."
+    });
+  };
+
   // Handle saving a search
   const handleSaveSearch = (searchName: string) => {
     toast({
@@ -183,14 +190,19 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
 
   return (
     <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-      {/* Filter Sidebar Toggle */}
+      {/* Filter Sidebar Toggle with BuyerFilter component */}
       <FilterSidebarToggle 
         filterVisible={filterVisible} 
         toggleFilterSidebar={toggleFilterSidebar} 
       />
       
       {/* Filter Sidebar Content Injection */}
-      {filterVisible && <FilterSidebar />}
+      {filterVisible && (
+        <BuyerFilter
+          onFilterApply={handleFilterApply}
+          onClose={toggleFilterSidebar}
+        />
+      )}
       
       <Tabs defaultValue="scoring" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="border-b border-gray-200">

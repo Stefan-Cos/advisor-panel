@@ -8,7 +8,7 @@ import StrategicBuyerTable from './components/StrategicBuyerTable';
 import PEBuyerTable from './components/PEBuyerTable';
 import BlueKnightDescription from '../listings/BlueKnightDescription';
 import FilterSidebarToggle from '../listings/ai-builder/FilterSidebarToggle';
-import FilterSidebar from '../listings/FilterSidebar';
+import BuyerFilter from './components/BuyerFilter';
 
 interface BlueKnightListProps {
   listingId: string;
@@ -86,16 +86,30 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     setFilterVisible(!filterVisible);
   };
 
+  // Handler for filter application
+  const handleFilterApply = () => {
+    // This would normally filter the data based on selected filters
+    toast({
+      title: "Filters Applied",
+      description: "Your filters have been applied to the buyer list."
+    });
+  };
+
   return (
     <div className="space-y-4">
-      {/* Filter Sidebar Toggle */}
+      {/* Filter Sidebar Toggle with BuyerFilter component */}
       <FilterSidebarToggle 
         filterVisible={filterVisible} 
         toggleFilterSidebar={toggleFilterSidebar} 
       />
       
       {/* Filter Sidebar Content Injection */}
-      {filterVisible && <FilterSidebar />}
+      {filterVisible && (
+        <BuyerFilter
+          onFilterApply={handleFilterApply}
+          onClose={toggleFilterSidebar}
+        />
+      )}
       
       {/* Description component rendered outside the tab-switching area */}
       <BlueKnightDescription />
