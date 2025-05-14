@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
@@ -602,7 +603,7 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
           <Table>
             <BuyerTableHeader />
             <TableBody>
-              {filteredBuyers.map((buyer) => (
+              {filteredBuyers.map((buyer, index) => (
                 <React.Fragment key={buyer.id}>
                   <BuyerTableRow 
                     buyer={buyer}
@@ -611,6 +612,7 @@ const StrategicBuyers: React.FC<StrategicBuyersProps> = ({ savedBuyers = [], onA
                     isExpanded={expandedRationales.includes(buyer.id)}
                     toggleRationale={toggleRationale}
                     getMATrackRecordColor={getMATrackRecordColor}
+                    index={index}
                   />
                   
                   {expandedRationales.includes(buyer.id) && (

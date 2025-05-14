@@ -44,8 +44,8 @@ const BuyerCard: React.FC<BuyerCardProps> = ({
             <SaveButton
               id={id}
               name={name}
-              addedToSaved={addedToSaved}
-              onAddToSaved={onAddToSaved}
+              isSaved={addedToSaved}
+              onSave={onAddToSaved}
             />
           </div>
         </div>
