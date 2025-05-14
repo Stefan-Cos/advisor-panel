@@ -908,120 +908,120 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
       title="Financials" 
       description="Enter financial details"
     >
-      <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <div className="flex items-end gap-4">
-              <div className="flex-1">
-                <Label htmlFor="lastYearDate" className="block mb-2">Last Year Period</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left",
-                        !lastYearDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {lastYearDate ? format(lastYearDate, "MMM-yy") : <span>Select period</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={lastYearDate}
-                      onSelect={setLastYearDate}
-                      initialFocus
-                      className="pointer-events-auto"
-                      captionLayout="dropdown-buttons"
-                      fromYear={2010}
-                      toYear={2030}
-                      showMonthYearPicker
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+      <div className="space-y-8">
+        {/* Last Year Row */}
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Last Year</h3>
+          <div className="flex flex-col md:flex-row md:items-end gap-6">
+            <div className="md:w-1/3">
+              <Label htmlFor="lastYearDate" className="block mb-2">Period</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left",
+                      !lastYearDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {lastYearDate ? format(lastYearDate, "MMM-yy") : <span>Select period</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={lastYearDate}
+                    onSelect={setLastYearDate}
+                    initialFocus
+                    captionLayout="dropdown-buttons"
+                    fromYear={2010}
+                    toYear={2030}
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
 
-              <div className="flex-1">
-                <Label htmlFor="revenueLastYear">Revenue ($)</Label>
-                <Input
-                  id="revenueLastYear"
-                  name="revenueLastYear"
-                  value={formData.revenueLastYear || ""}
-                  onChange={handleChange}
-                  placeholder="0"
-                />
-              </div>
+            <div className="md:w-1/3">
+              <Label htmlFor="revenueLastYear">Revenue ($)</Label>
+              <Input
+                id="revenueLastYear"
+                name="revenueLastYear"
+                value={formData.revenueLastYear || ""}
+                onChange={handleChange}
+                placeholder="0"
+              />
+            </div>
+            
+            <div className="md:w-1/3">
+              <Label htmlFor="ebitdaLastYear">EBITDA ($)</Label>
+              <Input
+                id="ebitdaLastYear"
+                name="ebitdaLastYear"
+                value={formData.ebitdaLastYear || ""}
+                onChange={handleChange}
+                placeholder="0"
+              />
             </div>
           </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-end gap-4">
-              <div className="flex-1">
-                <Label htmlFor="thisYearDate" className="block mb-2">This Year Period</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left",
-                        !thisYearDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {thisYearDate ? format(thisYearDate, "MMM-yy") : <span>Select period</span>}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={thisYearDate}
-                      onSelect={setThisYearDate}
-                      initialFocus
-                      className="pointer-events-auto"
-                      captionLayout="dropdown-buttons"
-                      fromYear={2010}
-                      toYear={2030}
-                      showMonthYearPicker
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-
-              <div className="flex-1">
-                <Label htmlFor="revenueThisYear">Revenue ($)</Label>
-                <Input
-                  id="revenueThisYear"
-                  name="revenueThisYear"
-                  value={formData.revenueThisYear || ""}
-                  onChange={handleChange}
-                  placeholder="0"
-                />
-              </div>
+        </div>
+        
+        {/* This Year Row */}
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
+          <h3 className="text-lg font-semibold text-blue-700 mb-4">This Year</h3>
+          <div className="flex flex-col md:flex-row md:items-end gap-6">
+            <div className="md:w-1/3">
+              <Label htmlFor="thisYearDate" className="block mb-2">Period</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left",
+                      !thisYearDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {thisYearDate ? format(thisYearDate, "MMM-yy") : <span>Select period</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={thisYearDate}
+                    onSelect={setThisYearDate}
+                    initialFocus
+                    captionLayout="dropdown-buttons"
+                    fromYear={2010}
+                    toYear={2030}
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="ebitdaLastYear">Last Year EBITDA ($)</Label>
-            <Input
-              id="ebitdaLastYear"
-              name="ebitdaLastYear"
-              value={formData.ebitdaLastYear || ""}
-              onChange={handleChange}
-              placeholder="0"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="ebitdaThisYear">This Year EBITDA ($)</Label>
-            <Input
-              id="ebitdaThisYear"
-              name="ebitdaThisYear"
-              value={formData.ebitdaThisYear || ""}
-              onChange={handleChange}
-              placeholder="0"
-            />
+
+            <div className="md:w-1/3">
+              <Label htmlFor="revenueThisYear">Revenue ($)</Label>
+              <Input
+                id="revenueThisYear"
+                name="revenueThisYear"
+                value={formData.revenueThisYear || ""}
+                onChange={handleChange}
+                placeholder="0"
+              />
+            </div>
+            
+            <div className="md:w-1/3">
+              <Label htmlFor="ebitdaThisYear">EBITDA ($)</Label>
+              <Input
+                id="ebitdaThisYear"
+                name="ebitdaThisYear"
+                value={formData.ebitdaThisYear || ""}
+                onChange={handleChange}
+                placeholder="0"
+              />
+            </div>
           </div>
         </div>
       </div>
