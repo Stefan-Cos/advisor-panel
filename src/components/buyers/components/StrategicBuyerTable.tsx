@@ -13,6 +13,7 @@ interface StrategicBuyerTableProps {
   onAddToSaved: (id: string) => void;
   toggleRationale: (buyerId: string) => void;
   getMATrackRecordColor: (record: string) => string;
+  showDescription?: boolean;
 }
 
 const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
@@ -21,12 +22,13 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
   expandedRationales,
   onAddToSaved,
   toggleRationale,
-  getMATrackRecordColor
+  getMATrackRecordColor,
+  showDescription = false
 }) => {
   return (
     <div>
-      {/* BlueKnightDescription displayed prominently at the top */}
-      <BlueKnightDescription />
+      {/* Only show BlueKnightDescription if specifically requested */}
+      {showDescription && <BlueKnightDescription />}
       
       <ScrollArea className="h-[600px] w-full mt-6" orientation="both">
         <div className="min-w-max">

@@ -17,6 +17,7 @@ interface PEBuyerTableProps {
   expandedRationales: string[];
   onAddToSaved: (id: string) => void;
   toggleRationale: (id: string) => void;
+  showDescription?: boolean;
 }
 
 const PEBuyerTable: React.FC<PEBuyerTableProps> = ({ 
@@ -24,12 +25,13 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
   savedBuyers, 
   expandedRationales, 
   onAddToSaved, 
-  toggleRationale 
+  toggleRationale,
+  showDescription = false
 }) => {
   return (
     <div>
-      {/* BlueKnightDescription displayed prominently at the top */}
-      <BlueKnightDescription />
+      {/* Only show BlueKnightDescription if specifically requested */}
+      {showDescription && <BlueKnightDescription />}
       
       <ScrollArea className="h-[600px] w-full mt-6" orientation="both">
         <div className="min-w-max">
