@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import BlueKnightTable from './BlueKnightTable';
-import { mockBuyers } from './data/mockBuyers';
+import { strategicBuyers } from './data/mockBuyers';
 import { Buyer } from './types/BuyerTypes';
 
 interface BlueKnightListProps {
@@ -23,11 +23,12 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
       // In a real app, you would fetch this data from an API
       // using the listingId to get buyer data specific to this listing
       setTimeout(() => {
-        const strategicBuyers = mockBuyers.filter(buyer => 
+        // Use strategicBuyers instead of mockBuyers
+        const filteredBuyers = strategicBuyers.filter(buyer => 
           buyer.type === 'strategic' && buyer.matchingScore > 0
         ).sort((a, b) => b.matchingScore - a.matchingScore);
         
-        setBuyers(strategicBuyers);
+        setBuyers(filteredBuyers);
         setIsLoading(false);
       }, 500);
     };
