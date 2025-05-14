@@ -1,8 +1,6 @@
 
 import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import BlueKnightList from '../buyers/BlueKnightList';
 import SavedList from '../buyers/SavedList';
 import AiBuyerBuilder from './AiBuyerBuilder';
@@ -47,7 +45,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           </p>
         </div>
       ) : showAIBuyerBuilder ? (
-        // AI Buyer Builder content - using our new component
+        // AI Buyer Builder content - using our redesigned component
         <AiBuyerBuilder listingId={id} />
       ) : (
         // Default content (BlueKnight List)
