@@ -2,15 +2,19 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import BuyerFilter from '@/components/buyers/components/BuyerFilter';
 
 interface FilterSidebarToggleProps {
   filterVisible: boolean;
   toggleFilterSidebar: () => void;
+  onFilterApply: () => void;
 }
 
 const FilterSidebarToggle: React.FC<FilterSidebarToggleProps> = ({
   filterVisible,
-  toggleFilterSidebar
+  toggleFilterSidebar,
+  onFilterApply
 }) => {
   return (
     <>
@@ -35,10 +39,13 @@ const FilterSidebarToggle: React.FC<FilterSidebarToggleProps> = ({
         "fixed top-[64px] left-0 bottom-0 w-[300px] bg-white border-r border-gray-200 shadow-md overflow-hidden transition-all duration-300 ease-in-out z-10",
         filterVisible ? "translate-x-0" : "-translate-x-[300px]"
       )}>
-        {/* Container for the sidebar content (child component will be injected here) */}
-        <div className="h-full">
-          {/* FilterSidebar component is imported in the parent */}
-        </div>
+        {/* Container for the sidebar content with BuyerFilter directly embedded */}
+        {filterVisible && (
+          <BuyerFilter
+            onFilterApply={onFilterApply}
+            onClose={toggleFilterSidebar}
+          />
+        )}
       </div>
     </>
   );

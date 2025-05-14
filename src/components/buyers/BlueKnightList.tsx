@@ -8,7 +8,6 @@ import StrategicBuyerTable from './components/StrategicBuyerTable';
 import PEBuyerTable from './components/PEBuyerTable';
 import BlueKnightDescription from '../listings/BlueKnightDescription';
 import FilterSidebarToggle from '../listings/ai-builder/FilterSidebarToggle';
-import BuyerFilter from './components/BuyerFilter';
 
 interface BlueKnightListProps {
   listingId: string;
@@ -97,19 +96,12 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
 
   return (
     <div className="space-y-4">
-      {/* Filter Sidebar Toggle with BuyerFilter component */}
+      {/* Filter Sidebar Toggle with BuyerFilter component directly embedded */}
       <FilterSidebarToggle 
         filterVisible={filterVisible} 
-        toggleFilterSidebar={toggleFilterSidebar} 
+        toggleFilterSidebar={toggleFilterSidebar}
+        onFilterApply={handleFilterApply}
       />
-      
-      {/* Filter Sidebar Content Injection */}
-      {filterVisible && (
-        <BuyerFilter
-          onFilterApply={handleFilterApply}
-          onClose={toggleFilterSidebar}
-        />
-      )}
       
       {/* Description component rendered outside the tab-switching area */}
       <BlueKnightDescription />

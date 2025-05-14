@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
 import { Settings, Save } from 'lucide-react';
-import BuyerFilter from '../buyers/components/BuyerFilter';
 
 // Import components
 import ProcessingAnimation from './ai-builder/ProcessingAnimation';
@@ -190,19 +189,12 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
 
   return (
     <div className="bg-white shadow-sm rounded-lg border border-gray-200">
-      {/* Filter Sidebar Toggle with BuyerFilter component */}
+      {/* Filter Sidebar Toggle with BuyerFilter component directly embedded */}
       <FilterSidebarToggle 
         filterVisible={filterVisible} 
-        toggleFilterSidebar={toggleFilterSidebar} 
+        toggleFilterSidebar={toggleFilterSidebar}
+        onFilterApply={handleFilterApply}
       />
-      
-      {/* Filter Sidebar Content Injection */}
-      {filterVisible && (
-        <BuyerFilter
-          onFilterApply={handleFilterApply}
-          onClose={toggleFilterSidebar}
-        />
-      )}
       
       <Tabs defaultValue="scoring" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="border-b border-gray-200">
