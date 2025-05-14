@@ -2,7 +2,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import BuyerFilter from '@/components/buyers/components/BuyerFilter';
 
 interface FilterSidebarToggleProps {
@@ -18,23 +17,22 @@ const FilterSidebarToggle: React.FC<FilterSidebarToggleProps> = ({
 }) => {
   return (
     <>
-      {/* Floating Filter Sidebar Toggle */}
+      {/* Toggle button for the sidebar */}
       <div 
         className={cn(
-          "fixed top-[280px] z-10 bg-[#001437] shadow-md rounded-r-md cursor-pointer transition-all duration-300",
+          "fixed top-[100px] left-0 flex items-center justify-center p-1 bg-white border border-gray-200 rounded-r-md shadow-sm cursor-pointer z-20 transition-all duration-300",
           filterVisible ? "left-[300px]" : "left-0"
         )}
         onClick={toggleFilterSidebar}
       >
-        <div className="p-1.5 hover:bg-opacity-80 rounded-r-md">
-          {filterVisible 
-            ? <ChevronLeft className="h-4 w-4 text-white" /> 
-            : <ChevronRight className="h-4 w-4 text-white" />
-          }
-        </div>
+        {filterVisible ? (
+          <ChevronLeft className="h-5 w-5 text-gray-600" />
+        ) : (
+          <ChevronRight className="h-5 w-5 text-gray-600" />
+        )}
       </div>
       
-      {/* Floating Fixed Filter Sidebar */}
+      {/* Sidebar container */}
       <div className={cn(
         "fixed top-[64px] left-0 bottom-0 w-[300px] bg-white border-r border-gray-200 shadow-md overflow-hidden transition-all duration-300 ease-in-out z-10",
         filterVisible ? "translate-x-0" : "-translate-x-[300px]"
