@@ -28,14 +28,14 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
   // Function to render the current processing step icon
   const renderProcessingIcon = () => {
     const IconComponent = processingSteps[processingStep].icon;
-    return <IconComponent className="h-8 w-8 text-blueknight-900 animate-pulse" />;
+    return <IconComponent className="h-8 w-8 text-blue-600 animate-pulse" />;
   };
 
   return (
     <div className="p-8 flex flex-col items-center justify-center min-h-[500px] space-y-6">
-      <div className="w-full max-w-lg mx-auto bg-gradient-to-b from-white to-blueknight-100 rounded-xl shadow-lg p-8 border border-blueknight-200">
+      <div className="w-full max-w-lg mx-auto bg-gradient-to-b from-white to-blue-50 rounded-xl shadow-lg p-8 border border-blue-100">
         <div className="text-center mb-8">
-          <h3 className="text-2xl font-bold text-blueknight-900 mb-2">AI Matching in Progress</h3>
+          <h3 className="text-2xl font-bold text-blueknight-700 mb-2">AI Matching in Progress</h3>
           <p className="text-gray-600">Our AI is analyzing potential buyers based on your criteria</p>
         </div>
         
@@ -47,7 +47,7 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
                 <path 
                   className="animate-[dash_3s_ease-in-out_infinite]" 
                   fill="none" 
-                  stroke="#C4DBFA" 
+                  stroke="#E0E7FF" 
                   strokeWidth="2"
                   strokeDasharray="210" 
                   strokeDashoffset="210" 
@@ -56,7 +56,7 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
                 <path 
                   className="animate-[dash_3s_ease-in-out_infinite_0.5s]" 
                   fill="none" 
-                  stroke="#9DC5F4" 
+                  stroke="#C7D2FE" 
                   strokeWidth="2" 
                   strokeDasharray="240" 
                   strokeDashoffset="240" 
@@ -66,7 +66,7 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
                   cx="200" 
                   cy="112" 
                   r="12" 
-                  fill="#001437" 
+                  fill="#4F46E5" 
                   className="animate-pulse" 
                 />
                 <circle 
@@ -74,7 +74,7 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
                   cy="112" 
                   r="24" 
                   fill="none" 
-                  stroke="#3A6CD9" 
+                  stroke="#6366F1" 
                   strokeWidth="1" 
                   opacity="0.7"
                   className="animate-ping"
@@ -84,7 +84,7 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
               {/* Central icon with pulsing effect */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative">
-                  <div className="absolute -inset-4 bg-blueknight-100 rounded-full opacity-30 animate-ping"></div>
+                  <div className="absolute -inset-4 bg-blue-100 rounded-full opacity-30 animate-ping"></div>
                   <div className="relative z-10 bg-white p-2.5 rounded-full shadow-md">
                     {renderProcessingIcon()}
                   </div>
@@ -96,16 +96,16 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
         
         <div className="mb-8">
           <div className="flex justify-between mb-2">
-            <span className="text-xs font-medium text-blueknight-900">Processing</span>
-            <span className="text-xs font-medium text-blueknight-900">{progressValue}%</span>
+            <span className="text-xs font-medium text-blueknight-600">Processing</span>
+            <span className="text-xs font-medium text-blueknight-600">{progressValue}%</span>
           </div>
-          <Progress value={progressValue} className="h-2.5 bg-blueknight-100">
-            <div className="h-full bg-gradient-to-r from-blueknight-700 to-blueknight-900 rounded-full" style={{ width: `${progressValue}%` }}></div>
+          <Progress value={progressValue} className="h-2.5 bg-blue-100">
+            <div className="h-full bg-gradient-to-r from-indigo-400 to-blue-600 rounded-full" style={{ width: `${progressValue}%` }}></div>
           </Progress>
         </div>
         
         <div className="text-center space-y-2">
-          <p className="text-sm font-medium text-blueknight-900">{processingSteps[processingStep].message}</p>
+          <p className="text-sm font-medium text-blueknight-700">{processingSteps[processingStep].message}</p>
           
           <div className="flex flex-wrap justify-center gap-2 py-4">
             {Object.entries(scoringConfig)
@@ -113,9 +113,9 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
               .map(([key]) => (
                 <span key={key} className={cn(
                   "px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300",
-                  processingStep >= 1 ? "bg-blueknight-100 text-blueknight-900" : "bg-gray-100 text-gray-500",
-                  processingStep >= 2 && key === Object.entries(scoringConfig).filter(([_, cfg]) => cfg.enabled)[0][0] ? "bg-blueknight-200 text-blueknight-900 border border-blueknight-300 shadow-sm scale-105" : "",
-                  processingStep >= 3 && key === Object.entries(scoringConfig).filter(([_, cfg]) => cfg.enabled)[1][0] ? "bg-blueknight-200 text-blueknight-900 border border-blueknight-300 shadow-sm scale-105" : ""
+                  processingStep >= 1 ? "bg-blueknight-100 text-blueknight-600" : "bg-gray-100 text-gray-500",
+                  processingStep >= 2 && key === Object.entries(scoringConfig).filter(([_, cfg]) => cfg.enabled)[0][0] ? "bg-blue-100 text-blue-700 border border-blue-200 shadow-sm scale-105" : "",
+                  processingStep >= 3 && key === Object.entries(scoringConfig).filter(([_, cfg]) => cfg.enabled)[1][0] ? "bg-blue-100 text-blue-700 border border-blue-200 shadow-sm scale-105" : ""
                 )}>
                   {key === 'problemSolved' ? 'Problem Solved' : 
                    key === 'useCase' ? 'Use Case' : 
