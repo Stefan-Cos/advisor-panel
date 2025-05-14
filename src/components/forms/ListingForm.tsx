@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
@@ -9,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   BarChart3, Globe, Building, Flag, ArrowRight, ArrowLeft, 
-  Users, MapPin, Check, Sparkles, HelpCircle, Info 
+  Users, MapPin, Check, Sparkles, HelpCircle, Info, Brain 
 } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -231,11 +232,11 @@ const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) =
             ...prev,
             website,
             description: `${formData.companyName} is a leading provider of innovative solutions in their industry.`,
-            industry: "Technology",
+            industry: ["Technology"],
             offering: "Software as a service platform for enterprise customers",
             productTags: ["SaaS", "Enterprise Software"],
-            deliveryMethod: "Cloud-based",
-            supplyChainRole: "Software Provider",
+            deliveryMethod: ["Cloud-based"],
+            supplyChainRole: ["Software Provider"],
             useCase: ["Workflow Automation", "Data Analytics"],
             problemSolved: "Inefficient manual processes and lack of data visibility",
             useCases: "Used by operations teams to streamline workflows and improve decision-making",
@@ -245,7 +246,7 @@ const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) =
             ebitdaLastYear: "500,000",
             ebitdaThisYear: "750,000",
             targetCustomers: "Mid to large enterprises with complex operational needs",
-            customerType: "Enterprise",
+            customerType: ["Enterprise"],
             customerIndustries: ["Manufacturing", "Healthcare", "Finance"]
           }));
           
@@ -300,10 +301,10 @@ const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) =
             <div className="relative h-40 flex items-center justify-center overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-600/20 animate-pulse rounded-full blur-3xl"/>
               <div className="z-10 flex flex-col items-center space-y-4">
-                <div className="p-3 bg-blueknight-50 rounded-full">
-                  <Sparkles className="h-12 w-12 text-blueknight-500 animate-scale-in" />
+                <div className="p-3 bg-purple-50 rounded-full">
+                  <Brain className="h-12 w-12 text-purple-500 animate-scale-in" />
                 </div>
-                <p className="text-lg font-medium text-blueknight-700 animate-fade-in">
+                <p className="text-lg font-medium text-purple-700 animate-fade-in">
                   Analysis complete!
                 </p>
               </div>
@@ -376,7 +377,8 @@ const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) =
 const CompanyProfileStep = ({ formData, setFormData, nextStep, prevStep }) => {
   const [inputValue, setInputValue] = useState({
     productTags: "",
-    useCase: ""
+    useCase: "",
+    industry: ""
   });
   
   const handleSelectChange = (name: string, value: string) => {
@@ -408,14 +410,29 @@ const CompanyProfileStep = ({ formData, setFormData, nextStep, prevStep }) => {
     }
   };
   
+  // Convert to multi-select arrays
   const deliveryMethods = ["Cloud-based", "On-premise", "Mobile App", "API", "Hardware", "Hybrid"];
   
   const supplyChainRoles = ["Software Provider", "Hardware Manufacturer", "Service Provider", "Distributor", "Reseller"];
   
-  const industries = [
-    "Technology", "Healthcare", "Finance", "Manufacturing", "Retail", "Energy", 
-    "Real Estate", "Media", "Telecommunications", "Transportation", "Education"
-  ];
+  // Multiple select handler for checkboxes
+  const handleMultiSelectToggle = (field: string, value: string) => {
+    setFormData(prev => {
+      const currentValues = prev[field] || [];
+      
+      if (currentValues.includes(value)) {
+        return {
+          ...prev,
+          [field]: currentValues.filter(item => item !== value)
+        };
+      } else {
+        return {
+          ...prev,
+          [field]: [...currentValues, value]
+        };
+      }
+    });
+  };
 
   const InfoSection = ({ title, example }) => {
     return (
@@ -490,19 +507,43 @@ const CompanyProfileStep = ({ formData, setFormData, nextStep, prevStep }) => {
               </Popover>
             </div>
             <p className="text-xs text-gray-500">The commercial category the company's offering fits into</p>
-            <Select 
-              value={formData.industry || ""} 
-              onValueChange={(value) => handleSelectChange("industry", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select industry" />
-              </SelectTrigger>
-              <SelectContent>
-                {industries.map(industry => (
-                  <SelectItem key={industry} value={industry}>{industry}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            
+            {/* Changed to tags input instead of dropdown */}
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.industry?.map((tag, index) => (
+                <div 
+                  key={index} 
+                  className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                >
+                  {tag}
+                  <button 
+                    type="button" 
+                    onClick={() => handleRemoveTag("industry", index)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={inputValue.industry}
+                onChange={(e) => setInputValue(prev => ({ ...prev, industry: e.target.value }))}
+                onKeyDown={(e) => handleKeyDown("industry", e)}
+                placeholder="Add industry categories"
+                className="flex-1"
+              />
+              <Button 
+                type="button"
+                size="sm"
+                onClick={() => handleAddTag("industry", inputValue.industry)}
+                disabled={!inputValue.industry}
+              >
+                Add
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500">Press Enter to add</p>
           </div>
           
           <div className="space-y-2">
@@ -588,82 +629,53 @@ const CompanyProfileStep = ({ formData, setFormData, nextStep, prevStep }) => {
           </div>
           
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="deliveryMethod">Go-To-Market/Delivery Method</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-6 w-6">
-                    <Info className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <InfoSection 
-                  title="Delivery Method" 
-                  example="How is the company's offering being delivered or brought to market"
-                />
-              </Popover>
-            </div>
+            <Label htmlFor="deliveryMethod">Go-To-Market/Delivery Method</Label>
             <p className="text-xs text-gray-500">How is the company's offering being delivered or brought to market</p>
-            <Select 
-              value={formData.deliveryMethod || ""} 
-              onValueChange={(value) => handleSelectChange("deliveryMethod", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select delivery method" />
-              </SelectTrigger>
-              <SelectContent>
-                {deliveryMethods.map(method => (
-                  <SelectItem key={method} value={method}>{method}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            
+            {/* Multi-select checkboxes */}
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              {deliveryMethods.map(method => (
+                <div key={method} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={`delivery-${method}`}
+                    checked={(formData.deliveryMethod || []).includes(method)}
+                    onChange={() => handleMultiSelectToggle("deliveryMethod", method)}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor={`delivery-${method}`} className="text-sm font-normal">
+                    {method}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
           
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="supplyChainRole">Company's Position in Supply Chain</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-6 w-6">
-                    <Info className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <InfoSection 
-                  title="Supply Chain Role" 
-                  example="Where does the company sit on the supply chain"
-                />
-              </Popover>
-            </div>
+            <Label htmlFor="supplyChainRole">Company's Position in Supply Chain</Label>
             <p className="text-xs text-gray-500">Where does the company sit on the supply chain</p>
-            <Select 
-              value={formData.supplyChainRole || ""} 
-              onValueChange={(value) => handleSelectChange("supplyChainRole", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select role in supply chain" />
-              </SelectTrigger>
-              <SelectContent>
-                {supplyChainRoles.map(role => (
-                  <SelectItem key={role} value={role}>{role}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            
+            {/* Multi-select checkboxes */}
+            <div className="grid grid-cols-2 gap-2 mt-1">
+              {supplyChainRoles.map(role => (
+                <div key={role} className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id={`role-${role}`}
+                    checked={(formData.supplyChainRole || []).includes(role)}
+                    onChange={() => handleMultiSelectToggle("supplyChainRole", role)}
+                    className="h-4 w-4"
+                  />
+                  <Label htmlFor={`role-${role}`} className="text-sm font-normal">
+                    {role}
+                  </Label>
+                </div>
+              ))}
+            </div>
           </div>
           
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label>Functional Category</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-6 w-6">
-                    <Info className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <InfoSection 
-                  title="Functional Category" 
-                  example="What does the company build, deliver or enable - not the industry it serves"
-                />
-              </Popover>
-            </div>
+            <Label>Functional Category</Label>
             <p className="text-xs text-gray-500">What does the company build, deliver or enable - not the industry it serves</p>
             <div className="flex flex-wrap gap-2 mb-2">
               {formData.useCase?.map((tag, index) => (
@@ -824,7 +836,7 @@ const ProblemUseCaseSection = ({ formData, setFormData, nextStep, prevStep }) =>
   );
 };
 
-// Now this becomes Step 5: Competitive & Financials
+// Now this becomes Step 5: Financials (renamed from Competitive & Financials)
 const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevStep }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -871,8 +883,8 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
 
   return (
     <SectionContainer 
-      title="Competitive & Financials" 
-      description="Enter financial details and competitor information"
+      title="Financials" 
+      description="Enter financial details"
     >
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -950,8 +962,23 @@ const TargetCustomerSection = ({ formData, setFormData, nextStep, prevStep }) =>
     setFormData(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
+  // Multi-select handler for customer types
+  const handleMultiSelectToggle = (field: string, value: string) => {
+    setFormData(prev => {
+      const currentValues = prev[field] || [];
+      
+      if (currentValues.includes(value)) {
+        return {
+          ...prev,
+          [field]: currentValues.filter(item => item !== value)
+        };
+      } else {
+        return {
+          ...prev,
+          [field]: [...currentValues, value]
+        };
+      }
+    });
   };
 
   const [industry, setIndustry] = useState("");
@@ -1028,34 +1055,26 @@ const TargetCustomerSection = ({ formData, setFormData, nextStep, prevStep }) =>
         </div>
         
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="customerType">Target Customer Type</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6">
-                  <Info className="h-4 w-4" />
-                </Button>
-              </PopoverTrigger>
-              <InfoSection 
-                title="Customer Type" 
-                example="The type and size of the company's target customers"
-              />
-            </Popover>
-          </div>
+          <Label htmlFor="customerType">Target Customer Type</Label>
           <p className="text-xs text-gray-500">The type and size of the company's target customers</p>
-          <Select 
-            value={formData.customerType || ""} 
-            onValueChange={(value) => handleSelectChange("customerType", value)}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select customer type" />
-            </SelectTrigger>
-            <SelectContent>
-              {customerTypes.map(type => (
-                <SelectItem key={type} value={type}>{type}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          
+          {/* Multi-select checkboxes for customer types */}
+          <div className="grid grid-cols-2 gap-2 mt-1">
+            {customerTypes.map(type => (
+              <div key={type} className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id={`customer-type-${type}`}
+                  checked={(formData.customerType || []).includes(type)}
+                  onChange={() => handleMultiSelectToggle("customerType", type)}
+                  className="h-4 w-4"
+                />
+                <Label htmlFor={`customer-type-${type}`} className="text-sm font-normal">
+                  {type}
+                </Label>
+              </div>
+            ))}
+          </div>
         </div>
         
         <div className="space-y-2">
@@ -1359,7 +1378,7 @@ const BuyerPreferencesSection = ({ formData, setFormData, handleSubmit, prevStep
   );
 };
 
-// New Component: Confirmation Screen
+// New Component: Confirmation Screen with improved AI visual
 const ConfirmationScreen = ({ navigate }) => {
   const [countdown, setCountdown] = useState(5);
   
@@ -1380,11 +1399,13 @@ const ConfirmationScreen = ({ navigate }) => {
 
   return (
     <div className="h-full flex flex-col items-center justify-center py-16 animate-fade-in">
+      {/* Enhanced AI visual with gradient and animation */}
       <div className="relative mb-8">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blueknight-400 to-blueknight-600 flex items-center justify-center">
-          <Check className="h-8 w-8 text-white animate-scale-in" />
+        <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-center shadow-lg">
+          <Brain className="h-12 w-12 text-white animate-pulse" />
         </div>
-        <div className="absolute inset-0 bg-blueknight-400/20 rounded-full animate-ping" />
+        <div className="absolute inset-0 bg-purple-400/30 rounded-full animate-ping" />
+        <div className="absolute -inset-4 bg-gradient-to-r from-purple-400/20 to-blue-500/20 rounded-full blur-xl animate-pulse" />
       </div>
       
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
@@ -1419,7 +1440,7 @@ const ListingForm = () => {
     employeeCount: '',
     website: '',
     description: '',
-    industry: '',
+    industry: [],
     offering: '',
     includeGeographies: [],
     excludeGeographies: [],
@@ -1489,7 +1510,7 @@ const ListingForm = () => {
             <span>Section {currentStep - 3} of 4: </span>
             <span className="text-blueknight-600 font-semibold">
               {currentStep === 4 ? "Problem & Use Case" :
-               currentStep === 5 ? "Competitive & Financials" :
+               currentStep === 5 ? "Financials" :
                currentStep === 6 ? "Target Customer Profile" :
                "Buyer Preferences"}
             </span>
