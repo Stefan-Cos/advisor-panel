@@ -136,7 +136,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
           setShowKeywords={setShowKeywords}
         />
 
-        {/* Conditionally render either the legacy table or the new tables based on activeTab */}
+        {/* Always set showDescription to true to ensure the BlueKnightDescription is displayed */}
         {activeTab === 'strategic' ? (
           <StrategicBuyerTable
             buyers={strategicBuyers}
@@ -145,7 +145,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
             onAddToSaved={handleAddToSaved}
             toggleRationale={toggleRationale}
             getMATrackRecordColor={getMATrackRecordColor}
-            showDescription={false}
+            showDescription={true}
           />
         ) : (
           <PEBuyerTable
@@ -154,7 +154,7 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
             expandedRationales={expandedRationales}
             onAddToSaved={handleAddToSaved}
             toggleRationale={toggleRationale}
-            showDescription={false}
+            showDescription={true}
           />
         )}
       </div>
