@@ -376,7 +376,7 @@ const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) =
   );
 };
 
-// NEW Step 3: Company Profile - First section is Company Overview
+// Step 3: Company Profile - First section is Company Overview
 const CompanyProfileStep = ({ formData, setFormData, nextStep, prevStep }) => {
   const [inputValue, setInputValue] = useState({
     productTags: "",
@@ -741,7 +741,7 @@ const CompanyProfileStep = ({ formData, setFormData, nextStep, prevStep }) => {
   );
 };
 
-// Now this becomes Step 4: Problem & Use Case
+// Now this becomes part of "Company Profile" as Section 2: Problem & Use Case
 const ProblemUseCaseSection = ({ formData, setFormData, nextStep, prevStep }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -839,7 +839,7 @@ const ProblemUseCaseSection = ({ formData, setFormData, nextStep, prevStep }) =>
   );
 };
 
-// Now this becomes Step 5: Financials (renamed from Competitive & Financials)
+// Now this becomes part of "Company Profile" as Section 3: Financials
 const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevStep }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -990,7 +990,7 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
   );
 };
 
-// Now this becomes Step 6: Target Customer Profile
+// Now this becomes part of "Company Profile" as Section 4: Target Customer Profile
 const TargetCustomerSection = ({ formData, setFormData, nextStep, prevStep }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -1187,7 +1187,7 @@ const TargetCustomerSection = ({ formData, setFormData, nextStep, prevStep }) =>
   );
 };
 
-// Now this becomes Step 7: Buyer Preferences
+// Now this becomes part of "Company Profile" as Section 5: Buyer Preferences
 const BuyerPreferencesSection = ({ formData, setFormData, handleSubmit, prevStep }) => {
   const [includeGeography, setIncludeGeography] = useState(true);
   const [excludeGeography, setExcludeGeography] = useState(false);
@@ -1501,11 +1501,11 @@ const ListingForm = () => {
   };
 
   const renderStepIndicator = () => {
+    // Updated to have only 3 main steps
     const steps = [
       { number: 1, label: "Project Setup" },
-      { number: 2, label: "AI Company Profiling" },
-      { number: 3, label: "Company Profile" },
-      { number: 4, label: "Complete Profile" }
+      { number: 2, label: "AI Profiling" },
+      { number: 3, label: "Company Profile" }
     ];
 
     return (
@@ -1537,14 +1537,14 @@ const ListingForm = () => {
           <span className="text-xs font-medium">Project Setup</span>
           <span className="text-xs font-medium">AI Profiling</span>
           <span className="text-xs font-medium">Company Profile</span>
-          <span className="text-xs font-medium">Complete Profile</span>
         </div>
 
         {currentStep > 3 && (
           <div className="mt-6 text-sm font-medium text-gray-600">
-            <span>Section {currentStep - 3} of 4: </span>
+            <span>Section {currentStep - 2} of 5: </span>
             <span className="text-blueknight-600 font-semibold">
-              {currentStep === 4 ? "Problem & Use Case" :
+              {currentStep === 3 ? "Company Overview" :
+               currentStep === 4 ? "Problem & Use Case" :
                currentStep === 5 ? "Financials" :
                currentStep === 6 ? "Target Customer Profile" :
                "Buyer Preferences"}
