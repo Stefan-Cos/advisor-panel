@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { strategicBuyers, peBuyers } from './data/mockBuyers';
@@ -82,35 +83,37 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
   }
 
   return (
-    <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-      {/* Description component rendered separately above the tabs and table */}
+    <div className="space-y-4">
+      {/* Description component rendered outside the tab-switching area */}
       <BlueKnightDescription />
       
-      <div className="flex items-center justify-between mb-6">
-        <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
-      
-      <div className="space-y-4">
-        {activeTab === 'strategic' ? (
-          <StrategicBuyerTable
-            buyers={buyers}
-            savedBuyers={savedBuyers}
-            expandedRationales={expandedRationales}
-            onAddToSaved={handleAddToSaved}
-            toggleRationale={toggleRationale}
-            getMATrackRecordColor={getMATrackRecordColor}
-            showDescription={false}
-          />
-        ) : (
-          <PEBuyerTable
-            buyers={buyers}
-            savedBuyers={savedBuyers}
-            expandedRationales={expandedRationales}
-            onAddToSaved={handleAddToSaved}
-            toggleRationale={toggleRationale}
-            showDescription={false}
-          />
-        )}
+      <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
+        
+        <div className="space-y-4">
+          {activeTab === 'strategic' ? (
+            <StrategicBuyerTable
+              buyers={buyers}
+              savedBuyers={savedBuyers}
+              expandedRationales={expandedRationales}
+              onAddToSaved={handleAddToSaved}
+              toggleRationale={toggleRationale}
+              getMATrackRecordColor={getMATrackRecordColor}
+              showDescription={false}
+            />
+          ) : (
+            <PEBuyerTable
+              buyers={buyers}
+              savedBuyers={savedBuyers}
+              expandedRationales={expandedRationales}
+              onAddToSaved={handleAddToSaved}
+              toggleRationale={toggleRationale}
+              showDescription={false}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
