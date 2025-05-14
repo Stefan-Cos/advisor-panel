@@ -62,7 +62,7 @@ const mockListings = [
 
 const Listings = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col neural-bg">
       <Navbar />
       
       <div className="flex flex-1">
@@ -70,32 +70,36 @@ const Listings = () => {
         
         <main className="flex-1 p-6">
           <div className="mb-4">
-            <h1 className="text-2xl font-bold text-blueknight-500">All Projects ({mockListings.length})</h1>
+            <h1 className="text-2xl font-bold text-gradient bg-clip-text text-transparent bg-gradient-to-r from-blueknight-700 to-blue-500">All Projects ({mockListings.length})</h1>
           </div>
           
-          <Tabs defaultValue="active-projects" className="w-full mt-6">
-            <TabsList className="grid w-full grid-cols-3 mb-6 overflow-hidden rounded-lg shadow-md bg-blueknight-500">
+          <div className="relative mb-6 mt-2">
+            <div className="absolute inset-0 bg-blue-500 rounded-full filter blur-3xl opacity-5"></div>
+          </div>
+          
+          <Tabs defaultValue="active-projects" className="w-full mt-6 animate-fade-in">
+            <TabsList className="grid w-full grid-cols-3 mb-6 overflow-hidden rounded-lg shadow-md">
               <TabsTrigger 
                 value="active-projects" 
-                className="data-[state=active]:bg-blueknight-700 data-[state=active]:text-white py-3"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blueknight-600 data-[state=active]:to-blue-700 data-[state=active]:text-white py-3"
               >
                 Active Projects
               </TabsTrigger>
               <TabsTrigger 
                 value="buyer-pitches"
-                className="data-[state=active]:bg-blueknight-700 data-[state=active]:text-white py-3"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blueknight-600 data-[state=active]:to-blue-700 data-[state=active]:text-white py-3"
               >
                 Pitch Support
               </TabsTrigger>
               <TabsTrigger 
                 value="client-opportunities"
-                className="data-[state=active]:bg-blueknight-700 data-[state=active]:text-white py-3"
+                className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blueknight-600 data-[state=active]:to-blue-700 data-[state=active]:text-white py-3"
               >
                 Source New Mandates
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="active-projects">
+            <TabsContent value="active-projects" className="animate-fade-in">
               <ActiveProjectsTab listings={mockListings} />
             </TabsContent>
             
@@ -115,6 +119,10 @@ const Listings = () => {
               />
             </TabsContent>
           </Tabs>
+          
+          {/* AI-themed decorative elements */}
+          <div className="absolute bottom-5 right-5 w-2 h-2 rounded-full bg-blue-300 animate-pulse opacity-70"></div>
+          <div className="absolute bottom-10 right-10 w-3 h-3 rounded-full bg-blue-400 animate-pulse opacity-50"></div>
         </main>
       </div>
     </div>
