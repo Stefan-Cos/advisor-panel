@@ -56,12 +56,34 @@ const BuyerTables: React.FC<BuyerTablesProps> = ({
   // Format PE buyers to match the structure expected by BuyerTableRow if needed
   const formattedBuyers = filteredBuyers.map(buyer => {
     if (activeTab === 'pe') {
+      // Safely handle revenue
+      let revenueValue = 0;
+      if (buyer.revenue) {
+        if (typeof buyer.revenue === 'string' && buyer.revenue.includes(' - ')) {
+          revenueValue = parseFloat(buyer.revenue.split(' - ')[0]) * 1000000;
+        } else if (typeof buyer.revenue === 'number') {
+          revenueValue = buyer.revenue;
+        }
+      }
+      
+      // Safely handle EBITDA/cash
+      let cashValue = 0;
+      if (buyer.ebitda) {
+        if (typeof buyer.ebitda === 'string' && buyer.ebitda.includes(' - ')) {
+          cashValue = parseFloat(buyer.ebitda.split(' - ')[0]) * 1000000;
+        } else if (buyer.cash && typeof buyer.cash === 'number') {
+          cashValue = buyer.cash;
+        }
+      } else if (buyer.cash && typeof buyer.cash === 'number') {
+        cashValue = buyer.cash;
+      }
+      
       return {
         ...buyer,
         hq: buyer.location || buyer.hq, 
         employees: buyer.aum || buyer.employees || 0,
-        revenue: typeof buyer.revenue === 'string' ? parseFloat(buyer.revenue.split(' - ')[0]) * 1000000 : buyer.revenue || 0,
-        cash: typeof buyer.ebitda === 'string' ? parseFloat(buyer.ebitda.split(' - ')[0]) * 1000000 : buyer.cash || 0,
+        revenue: revenueValue,
+        cash: cashValue,
         reportedDate: buyer.reportedDate || new Date().toISOString().substring(0, 10),
         isPEVCBacked: buyer.isPEVCBacked !== undefined ? buyer.isPEVCBacked : true,
         isPublic: buyer.isPublic !== undefined ? buyer.isPublic : false,

@@ -44,16 +44,38 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
   };
 
   // Convert PE buyers format to match the structure expected by BuyerTableRow
-  const formattedBuyers = buyers.map(buyer => ({
-    ...buyer,
-    hq: buyer.location, // Map location to hq for consistency
-    employees: buyer.aum || 0, // Use AUM as employee count for PE funds
-    revenue: parseFloat(buyer.revenue?.split(' - ')[0]) * 1000000 || 0, // Convert revenue range to number
-    cash: parseFloat(buyer.ebitda?.split(' - ')[0]) * 1000000 || 0, // Use EBITDA as cash for display
-    reportedDate: new Date().toISOString().substring(0, 10), // Add a placeholder date
-    isPEVCBacked: true,
-    isPublic: false,
-  }));
+  const formattedBuyers = buyers.map(buyer => {
+    // Handle revenue safely - check if it's a string before using split
+    let revenueValue = 0;
+    if (buyer.revenue) {
+      if (typeof buyer.revenue === 'string' && buyer.revenue.includes(' - ')) {
+        revenueValue = parseFloat(buyer.revenue.split(' - ')[0]) * 1000000;
+      } else if (typeof buyer.revenue === 'number') {
+        revenueValue = buyer.revenue;
+      }
+    }
+    
+    // Similarly handle EBITDA safely
+    let ebitdaValue = 0;
+    if (buyer.ebitda) {
+      if (typeof buyer.ebitda === 'string' && buyer.ebitda.includes(' - ')) {
+        ebitdaValue = parseFloat(buyer.ebitda.split(' - ')[0]) * 1000000;
+      } else if (typeof buyer.ebitda === 'number') {
+        ebitdaValue = buyer.ebitda;
+      }
+    }
+    
+    return {
+      ...buyer,
+      hq: buyer.location || buyer.hq, // Map location to hq for consistency
+      employees: buyer.aum || buyer.employees || 0, // Use AUM as employee count for PE funds
+      revenue: revenueValue,
+      cash: ebitdaValue,
+      reportedDate: buyer.reportedDate || new Date().toISOString().substring(0, 10), // Add a placeholder date
+      isPEVCBacked: buyer.isPEVCBacked !== undefined ? buyer.isPEVCBacked : true,
+      isPublic: buyer.isPublic !== undefined ? buyer.isPublic : false,
+    };
+  });
 
   return (
     <div>
