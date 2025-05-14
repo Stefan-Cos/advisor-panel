@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { strategicBuyers, peBuyers } from './data/mockBuyers';
@@ -84,8 +83,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
 
   return (
     <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-      <h2 className="text-xl font-semibold text-blueknight-800 mb-2">BlueKnight List</h2>
-      
+      {/* Description component rendered separately above the tabs and table */}
       <BlueKnightDescription />
       
       <div className="flex items-center justify-between mb-6">
