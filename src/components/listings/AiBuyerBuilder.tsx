@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from '@/lib/utils';
@@ -267,6 +268,12 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     { message: "Preparing results...", icon: Target }
   ];
 
+  // Function to render the current processing step icon
+  const renderProcessingIcon = () => {
+    const IconComponent = processingSteps[processingStep].icon;
+    return <IconComponent className="h-8 w-8 text-blueknight-600 animate-pulse" />;
+  };
+
   return (
     <div className="bg-white shadow-sm rounded-lg border border-gray-200">
       <Tabs defaultValue="scoring" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -335,11 +342,9 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
                           <div className="absolute inset-0 flex items-center justify-center">
                             <div className="w-1/2 h-1/2 border-4 border-blueknight-300 border-l-transparent rounded-full animate-spin animation-delay-400"></div>
                           </div>
-                          {processingSteps[processingStep].icon && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <processingSteps[processingStep].icon className="h-8 w-8 text-blueknight-600 animate-pulse" />
-                            </div>
-                          )}
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            {renderProcessingIcon()}
+                          </div>
                         </div>
                       </AspectRatio>
                     </div>
