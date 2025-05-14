@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -16,13 +16,21 @@ import { Textarea } from "@/components/ui/textarea";
 
 const FeedbackDialog = () => {
   const [feedback, setFeedback] = React.useState("");
+  const { toast } = useToast();
   
   const handleFeedbackSubmit = () => {
     if (feedback.trim()) {
-      toast("Thank you for your feedback! We'll review it shortly.");
+      toast({
+        title: "Thank you for your feedback!",
+        description: "We'll review it shortly."
+      });
       setFeedback("");
     } else {
-      toast("Please enter some feedback before submitting.");
+      toast({
+        title: "Error",
+        description: "Please enter some feedback before submitting.",
+        variant: "destructive"
+      });
     }
   };
 
