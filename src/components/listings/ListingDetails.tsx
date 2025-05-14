@@ -6,6 +6,7 @@ import { PieChart, Search, Filter, X, ChevronDown, Settings, Zap, Sliders, Packa
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BuyerListNew from '../buyers/BuyerListNew';
+import BlueKnightList from '../buyers/BlueKnightList';
 import SavedList from '../buyers/SavedList';
 import { cn } from '@/lib/utils';
 import { toast } from "@/hooks/use-toast";
@@ -15,7 +16,6 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import BlueKnightDescription from './BlueKnightDescription';
 
 interface ListingDetailsProps {
   id: string;
@@ -751,10 +751,10 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
           <BuyerListNew listingId={id} />
         </div>
       ) : (
-        // Default content (BlueKnight List)
+        // Default content (BlueKnight List) - Now using our new BlueKnightList component
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
           <h2 className="text-xl font-medium text-blueknight-700 mb-4">BlueKnight List</h2>
-          <BuyerListNew listingId={id} />
+          <BlueKnightList listingId={id} />
         </div>
       )}
     </div>
