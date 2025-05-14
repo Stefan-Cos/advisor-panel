@@ -174,7 +174,7 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
         {/* Overall Rationale Column (replacing Offering) */}
         <TableCell className="text-xs">
           {isInTop100 ? (
-            buyer.rationale?.overall?.text || "No rationale available"
+            buyer.rationale?.overall || "No rationale available"
           ) : (
             <span className="italic text-gray-400">
               Not in top 100 results
