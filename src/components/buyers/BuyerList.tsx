@@ -27,7 +27,9 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
       setSavedBuyers([...savedBuyers, buyerId]);
-      toast("The buyer has been added to your saved list");
+      toast({
+        title: "The buyer has been added to your saved list"
+      });
     }
   };
   
@@ -38,7 +40,9 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
   };
   
   const handleFilterApply = () => {
-    toast("Your search filters have been applied");
+    toast({
+      title: "Your search filters have been applied"
+    });
     setShowFilters(false);
   };
 

@@ -13,8 +13,9 @@ const AIAssistant: React.FC<AIAssistantProps> = ({ onClose }) => {
     const form = e.currentTarget;
     const input = form.elements.namedItem('aiQuery') as HTMLInputElement;
     if (input.value.trim()) {
-      toast("AI Assistant", {
-        description: "Your query has been sent to the AI Assistant",
+      toast({
+        title: "AI Assistant",
+        description: "Your query has been sent to the AI Assistant"
       });
       input.value = '';
     }

@@ -15,7 +15,8 @@ const BuyerActionBar: React.FC<BuyerActionBarProps> = ({
 }) => {
   
   const handleExportCSV = () => {
-    toast("Exported buyers", {
+    toast({
+      title: "Exported buyers",
       description: `Exported ${selectedBuyers.length} buyers to CSV`,
     });
   };

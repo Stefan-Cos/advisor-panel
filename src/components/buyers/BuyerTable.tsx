@@ -30,7 +30,8 @@ const BuyerTable: React.FC<BuyerTableProps> = ({ listingId }) => {
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
       setSavedBuyers([...savedBuyers, buyerId]);
-      toast("Buyer Saved", {
+      toast({
+        title: "Buyer Saved",
         description: "Buyer has been added to your saved list"
       });
     }

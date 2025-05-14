@@ -1,8 +1,9 @@
+
 import React, { useState } from 'react';
 import { Filter, SlidersHorizontal, Search, Check, ChevronsUpDown } from 'lucide-react';
 import StrategicBuyers from './StrategicBuyers';
 import PEFunds from './PEFunds';
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import {
   Popover,
   PopoverContent,
@@ -140,7 +141,10 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
       setSavedBuyers([...savedBuyers, buyerId]);
-      toast("Saved", { description: "Buyer added to saved list" });
+      toast({
+        title: "Saved", 
+        description: "Buyer added to saved list"
+      });
     }
   };
   
@@ -149,7 +153,10 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
   };
   
   const handleFilterApply = () => {
-    toast("Applied", { description: "Your search filters have been applied" });
+    toast({
+      title: "Applied", 
+      description: "Your search filters have been applied"
+    });
     setShowFilters(false);
   };
   
