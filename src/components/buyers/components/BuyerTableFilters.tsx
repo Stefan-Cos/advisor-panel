@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { SlidersHorizontal, X } from 'lucide-react';
 import AIAssistant from './AIAssistant';
 import BuyerFilter from './BuyerFilter';
 import KeywordSearch from './KeywordSearch';
