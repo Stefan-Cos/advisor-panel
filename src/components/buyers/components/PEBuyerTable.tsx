@@ -1,16 +1,10 @@
 
 import React from 'react';
-import { Check, ChevronDown, ChevronUp, Plus } from 'lucide-react';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Collapsible,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import BuyerTableHeader from './BuyerTableHeader';
-import BuyerTableRationaleRow from './BuyerTableRationaleRow';
-import BlueKnightDescription from '@/components/listings/BlueKnightDescription';
 import BuyerTableRow from './BuyerTableRow';
+import BlueKnightDescription from '@/components/listings/BlueKnightDescription';
 
 interface PEBuyerTableProps {
   buyers: any[];

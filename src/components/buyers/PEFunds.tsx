@@ -1,22 +1,8 @@
-
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Plus, Check, Search } from 'lucide-react';
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
-import { Command, CommandInput, CommandList } from "@/components/ui/command";
+import { Command, CommandInput } from "@/components/ui/command";
+import { toast } from "@/hooks/use-toast";
+import PEBuyerTable from './components/PEBuyerTable';
 
 interface PEFundsProps {
   savedBuyers?: string[];
@@ -223,12 +209,6 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers = [], onAddToSaved }) => 
     );
   };
   
-  const getMatchScoreColor = (score: number) => {
-    if (score >= 85) return 'text-green-600';
-    if (score >= 70) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
   // Filter the buyers based on company name search
   const filteredBuyers = peBuyers.filter(buyer => 
     buyer.name.toLowerCase().includes(companyNameSearch.toLowerCase())
@@ -246,223 +226,13 @@ const PEFunds: React.FC<PEFundsProps> = ({ savedBuyers = [], onAddToSaved }) => 
         </Command>
       </div>
       
-      <ScrollArea className="h-[600px] w-full" orientation="both">
-        <div className="min-w-max">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-blueknight-500">
-                <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">Fund Name</TableHead>
-                <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
-                <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
-                <TableHead className="text-white font-medium w-[250px]">Previous Acquisitions</TableHead>
-                <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredBuyers.map((buyer) => (
-                <React.Fragment key={buyer.id}>
-                  <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-                    <TableCell 
-                      className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
-                    >
-                      <div className="flex items-center">
-                        {/* Plus/Check button moved to the left */}
-                        <button
-                          onClick={() => onAddToSaved(buyer.id)}
-                          disabled={savedBuyers.includes(buyer.id)}
-                          className={`flex items-center justify-center p-1 rounded-full mr-3 self-center ${
-                            savedBuyers.includes(buyer.id)
-                              ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                              : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
-                          }`}
-                          title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-                        >
-                          {savedBuyers.includes(buyer.id) ? (
-                            <Check className="h-3.5 w-3.5" />
-                          ) : (
-                            <Plus className="h-3.5 w-3.5" />
-                          )}
-                        </button>
-                        
-                        <div>
-                          <div>{buyer.name}</div>
-                          <div className="flex items-center mt-1">
-                            <Collapsible 
-                              open={expandedRationales.includes(buyer.id)}
-                              onOpenChange={() => toggleRationale(buyer.id)}
-                            >
-                              <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                                Rationale
-                                {expandedRationales.includes(buyer.id) ? (
-                                  <ChevronUp className="h-3 w-3 ml-1" />
-                                ) : (
-                                  <ChevronDown className="h-3 w-3 ml-1" />
-                                )}
-                              </CollapsibleTrigger>
-                            </Collapsible>
-                          </div>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{buyer.location}</TableCell>
-                    <TableCell>{buyer.description}</TableCell>
-                    <TableCell>{buyer.sector}</TableCell>
-                    <TableCell>{buyer.previousAcquisitions}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
-                          <div
-                            className="bg-blueknight-500 h-2 rounded-full"
-                            style={{ width: `${buyer.matchingScore}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                  
-                  {expandedRationales.includes(buyer.id) && (
-                    <TableRow className="bg-green-50">
-                      <TableCell colSpan={6} className="p-0">
-                        <div className="p-4">
-                          <div className="mb-6 bg-white p-4 rounded-md border border-gray-200 shadow-sm">
-                            <h3 className="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Fund Information</h3>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
-                                <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
-                              </div>
-                            
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {buyer.primaryIndustries?.map((industry, i) => (
-                                    <span key={i} className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                                      {industry}
-                                    </span>
-                                  )) || "Not provided"}
-                                </div>
-                              </div>
-                            </div>
-                            
-                            {/* First row - Investment Type, Geography, Industry Preferences, Total Investments */}
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Investment Type</h4>
-                                <div className="flex flex-wrap gap-1">
-                                  {buyer.investmentType?.map((type, i) => (
-                                    <span key={i} className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full">
-                                      {type}
-                                    </span>
-                                  )) || "Not provided"}
-                                </div>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Geography</h4>
-                                <div className="flex flex-wrap gap-1">
-                                  {buyer.geography?.map((geo, i) => (
-                                    <span key={i} className="px-2 py-1 text-xs bg-cyan-50 text-cyan-700 rounded-full">
-                                      {geo}
-                                    </span>
-                                  )) || "Not provided"}
-                                </div>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Industry Preferences</h4>
-                                <div className="flex flex-wrap gap-1">
-                                  {buyer.industryPreferences?.map((pref, i) => (
-                                    <span key={i} className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded-full">
-                                      {pref}
-                                    </span>
-                                  )) || "Not provided"}
-                                </div>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Total Investments</h4>
-                                <p className="text-sm text-gray-600">{(buyer.investments?.split(' ')[0]) || "N/A"}</p>
-                              </div>
-                            </div>
-                            
-                            {/* Second row - EV Range, Revenue, EBITDA, AUM */}
-                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">EV Range</h4>
-                                <p className="text-sm text-gray-600">{buyer.investmentSize}</p>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">Revenue ($M)</h4>
-                                <p className="text-sm text-gray-600">{buyer.revenue}</p>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">EBITDA ($M)</h4>
-                                <p className="text-sm text-gray-600">{buyer.ebitda}</p>
-                              </div>
-                              
-                              <div>
-                                <h4 className="text-sm font-semibold text-gray-700 mb-2">AUM ($M)</h4>
-                                <p className="text-sm text-gray-600">{buyer.aum.toFixed(1)}</p>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="bg-blue-50 p-4 rounded-md border border-blue-100 shadow-sm">
-                            <h3 className="text-sm font-semibold text-blue-800 mb-3 border-b border-blue-100 pb-2">Acquisition Rationale</h3>
-                            <div className="space-y-4">
-                              <div>
-                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.sectors.score)}`}>
-                                    {buyer.rationale.sectors.score}%
-                                  </span>
-                                  <span>Sectors</span>
-                                </h4>
-                                <p className="text-sm text-gray-700">{buyer.rationale.sectors.text}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.previousTransactions.score)}`}>
-                                    {buyer.rationale.previousTransactions.score}%
-                                  </span>
-                                  <span>Previous Transactions</span>
-                                </h4>
-                                <p className="text-sm text-gray-700">{buyer.rationale.previousTransactions.text}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.financialStrength.score)}`}>
-                                    {buyer.rationale.financialStrength.score}%
-                                  </span>
-                                  <span>Financial Strength</span>
-                                </h4>
-                                <p className="text-sm text-gray-700">{buyer.rationale.financialStrength.text}</p>
-                              </div>
-                              <div>
-                                <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-                                  <span className={`text-sm font-medium mr-2 ${getMatchScoreColor(buyer.rationale.overall.score)}`}>
-                                    {buyer.rationale.overall.score}%
-                                  </span>
-                                  <span>Overall Rationale</span>
-                                </h4>
-                                <p className="text-sm text-gray-700">{buyer.rationale.overall.text}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </React.Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </ScrollArea>
+      <PEBuyerTable
+        buyers={filteredBuyers}
+        savedBuyers={savedBuyers}
+        expandedRationales={expandedRationales}
+        onAddToSaved={onAddToSaved}
+        toggleRationale={toggleRationale}
+      />
     </div>
   );
 };
