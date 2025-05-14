@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
@@ -10,7 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { 
   BarChart3, Globe, Building, Flag, ArrowRight, ArrowLeft, 
-  Users, MapPin, Check, Sparkles, HelpCircle, Info, Brain 
+  Users, MapPin, Check, Sparkles, HelpCircle, Info, Brain,
+  CalendarIcon 
 } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -21,6 +21,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 
 // Add SectionContainer component
 const SectionContainer = ({ title, description, children }) => {
@@ -844,6 +847,25 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
   };
 
   const [competitor, setCompetitor] = useState("");
+  const [lastYearDate, setLastYearDate] = useState<Date | undefined>(
+    formData.lastYearDate ? new Date(formData.lastYearDate) : undefined
+  );
+  const [thisYearDate, setThisYearDate] = useState<Date | undefined>(
+    formData.thisYearDate ? new Date(formData.thisYearDate) : undefined
+  );
+  
+  // Update form data when dates change
+  useEffect(() => {
+    if (lastYearDate) {
+      setFormData(prev => ({ ...prev, lastYearDate }));
+    }
+  }, [lastYearDate]);
+
+  useEffect(() => {
+    if (thisYearDate) {
+      setFormData(prev => ({ ...prev, thisYearDate }));
+    }
+  }, [thisYearDate]);
   
   const handleAddCompetitor = () => {
     if (!competitor.trim()) return;
@@ -889,25 +911,95 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="revenueLastYear">Last Year Revenue ($)</Label>
-            <Input
-              id="revenueLastYear"
-              name="revenueLastYear"
-              value={formData.revenueLastYear || ""}
-              onChange={handleChange}
-              placeholder="0"
-            />
+            <div className="flex items-end gap-4">
+              <div className="flex-1">
+                <Label htmlFor="lastYearDate" className="block mb-2">Last Year Period</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left",
+                        !lastYearDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {lastYearDate ? format(lastYearDate, "MMM-yy") : <span>Select period</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={lastYearDate}
+                      onSelect={setLastYearDate}
+                      initialFocus
+                      className="pointer-events-auto"
+                      captionLayout="dropdown-buttons"
+                      fromYear={2010}
+                      toYear={2030}
+                      showMonthYearPicker
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="flex-1">
+                <Label htmlFor="revenueLastYear">Revenue ($)</Label>
+                <Input
+                  id="revenueLastYear"
+                  name="revenueLastYear"
+                  value={formData.revenueLastYear || ""}
+                  onChange={handleChange}
+                  placeholder="0"
+                />
+              </div>
+            </div>
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="revenueThisYear">This Year Revenue ($)</Label>
-            <Input
-              id="revenueThisYear"
-              name="revenueThisYear"
-              value={formData.revenueThisYear || ""}
-              onChange={handleChange}
-              placeholder="0"
-            />
+            <div className="flex items-end gap-4">
+              <div className="flex-1">
+                <Label htmlFor="thisYearDate" className="block mb-2">This Year Period</Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left",
+                        !thisYearDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {thisYearDate ? format(thisYearDate, "MMM-yy") : <span>Select period</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={thisYearDate}
+                      onSelect={setThisYearDate}
+                      initialFocus
+                      className="pointer-events-auto"
+                      captionLayout="dropdown-buttons"
+                      fromYear={2010}
+                      toYear={2030}
+                      showMonthYearPicker
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+
+              <div className="flex-1">
+                <Label htmlFor="revenueThisYear">Revenue ($)</Label>
+                <Input
+                  id="revenueThisYear"
+                  name="revenueThisYear"
+                  value={formData.revenueThisYear || ""}
+                  onChange={handleChange}
+                  placeholder="0"
+                />
+              </div>
+            </div>
           </div>
           
           <div className="space-y-2">
