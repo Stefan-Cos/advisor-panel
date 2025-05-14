@@ -847,25 +847,6 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
   };
 
   const [competitor, setCompetitor] = useState("");
-  const [lastYearDate, setLastYearDate] = useState<Date | undefined>(
-    formData.lastYearDate ? new Date(formData.lastYearDate) : undefined
-  );
-  const [thisYearDate, setThisYearDate] = useState<Date | undefined>(
-    formData.thisYearDate ? new Date(formData.thisYearDate) : undefined
-  );
-  
-  // Update form data when dates change
-  useEffect(() => {
-    if (lastYearDate) {
-      setFormData(prev => ({ ...prev, lastYearDate }));
-    }
-  }, [lastYearDate]);
-
-  useEffect(() => {
-    if (thisYearDate) {
-      setFormData(prev => ({ ...prev, thisYearDate }));
-    }
-  }, [thisYearDate]);
   
   const handleAddCompetitor = () => {
     if (!competitor.trim()) return;
@@ -914,33 +895,14 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Last Year</h3>
           <div className="flex flex-col md:flex-row md:items-end gap-6">
             <div className="md:w-1/3">
-              <Label htmlFor="lastYearDate" className="block mb-2">Period</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left",
-                      !lastYearDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {lastYearDate ? format(lastYearDate, "MMM-yy") : <span>Select period</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={lastYearDate}
-                    onSelect={setLastYearDate}
-                    initialFocus
-                    captionLayout="dropdown-buttons"
-                    fromYear={2010}
-                    toYear={2030}
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label htmlFor="lastYearPeriod">Period (MMM-YY)</Label>
+              <Input
+                id="lastYearPeriod"
+                name="lastYearPeriod"
+                value={formData.lastYearPeriod || ""}
+                onChange={handleChange}
+                placeholder="MMM-YY"
+              />
             </div>
 
             <div className="md:w-1/3">
@@ -972,33 +934,14 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
           <h3 className="text-lg font-semibold text-blue-700 mb-4">This Year</h3>
           <div className="flex flex-col md:flex-row md:items-end gap-6">
             <div className="md:w-1/3">
-              <Label htmlFor="thisYearDate" className="block mb-2">Period</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left",
-                      !thisYearDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {thisYearDate ? format(thisYearDate, "MMM-yy") : <span>Select period</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={thisYearDate}
-                    onSelect={setThisYearDate}
-                    initialFocus
-                    captionLayout="dropdown-buttons"
-                    fromYear={2010}
-                    toYear={2030}
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label htmlFor="thisYearPeriod">Period (MMM-YY)</Label>
+              <Input
+                id="thisYearPeriod"
+                name="thisYearPeriod"
+                value={formData.thisYearPeriod || ""}
+                onChange={handleChange}
+                placeholder="MMM-YY"
+              />
             </div>
 
             <div className="md:w-1/3">
