@@ -43,6 +43,22 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
 
   const sampleRationale = getSampleRationale(index);
   const isSaved = savedBuyers.includes(buyer.id);
+  
+  // Safely extract rationale text to ensure we're always dealing with strings
+  const getRationaleText = (rationale: any): string => {
+    if (!rationale) return '';
+    // If rationale is a string, just return it
+    if (typeof rationale === 'string') return rationale;
+    // If rationale is an object with text property, return the text as string
+    if (typeof rationale === 'object' && rationale.text) {
+      return typeof rationale.text === 'string' ? rationale.text : rationale.text?.toString() || '';
+    }
+    // Default case - convert to string or return empty string
+    return rationale.toString ? rationale.toString() : '';
+  };
+  
+  // Get the overall rationale text safely
+  const overallRationaleText = buyer.rationale?.overall ? getRationaleText(buyer.rationale.overall) : '';
 
   return (
     <>
@@ -69,7 +85,7 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
         {/* Overall Rationale Column */}
         <RationaleCell 
           sampleRationale={sampleRationale} 
-          buyerRationale={buyer.rationale?.overall} 
+          buyerRationale={overallRationaleText}
           isInTop100={isInTop100}
         />
         
