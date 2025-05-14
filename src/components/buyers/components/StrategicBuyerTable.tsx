@@ -28,7 +28,7 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
       {/* BlueKnightDescription displayed prominently at the top */}
       <BlueKnightDescription />
       
-      <ScrollArea className="h-[600px] w-full mt-4" orientation="both">
+      <ScrollArea className="h-[600px] w-full mt-6" orientation="both">
         <div className="min-w-max">
           <Table>
             <BuyerTableHeader />

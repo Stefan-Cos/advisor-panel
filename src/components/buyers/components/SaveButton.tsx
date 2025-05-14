@@ -21,10 +21,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({
   const handleSave = () => {
     if (!isSaved) {
       onSave(id);
-      toast({
-        title: "Buyer Saved",
-        description: `${name} has been added to your saved list.`
-      });
+      // The toast notification is now only shown here, not in the parent component
     }
   };
 
