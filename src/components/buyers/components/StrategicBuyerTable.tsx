@@ -4,6 +4,7 @@ import { Table, TableBody } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import BuyerTableHeader from './BuyerTableHeader';
 import BuyerTableRow from './BuyerTableRow';
+import BlueKnightDescription from '@/components/listings/BlueKnightDescription';
 
 interface StrategicBuyerTableProps {
   buyers: any[];
@@ -24,6 +25,7 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
 }) => {
   return (
     <div className="relative overflow-hidden">
+      <BlueKnightDescription />
       <ScrollArea className="h-[600px] w-full" orientation="both">
         <div className="min-w-max">
           <Table>

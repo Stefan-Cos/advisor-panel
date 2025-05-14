@@ -1,8 +1,9 @@
 
 import React from 'react';
-import { Check, BookmarkPlus } from 'lucide-react';
+import { Save } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface SaveButtonProps {
   id: string;
@@ -28,23 +29,24 @@ const SaveButton: React.FC<SaveButtonProps> = ({
   };
 
   return (
-    <button
+    <Button
       onClick={handleSave}
       disabled={isSaved}
+      variant="ghost"
+      size="icon"
       className={cn(
-        "flex items-center justify-center p-1.5 rounded-md transition-all duration-200",
+        "flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300",
         isSaved 
-          ? "bg-green-50 text-green-600 border border-green-200" 
-          : "bg-blueknight-50 text-blueknight-600 hover:bg-blueknight-100 border border-blueknight-200 hover:shadow-sm"
+          ? "bg-gradient-to-r from-green-100 to-green-50 text-green-600 shadow-sm ring-1 ring-green-200" 
+          : "bg-gradient-to-r from-blueknight-100 to-blueknight-50 text-blueknight-600 hover:bg-blueknight-100 hover:shadow-md hover:text-blueknight-700"
       )}
       title={isSaved ? "Already saved" : "Save this buyer"}
     >
-      {isSaved ? (
-        <Check className="h-4 w-4" />
-      ) : (
-        <BookmarkPlus className="h-4 w-4" />
-      )}
-    </button>
+      <Save className={cn(
+        "h-4 w-4",
+        isSaved ? "fill-green-100 stroke-green-600" : "stroke-blueknight-600 hover:stroke-blueknight-700"
+      )} />
+    </Button>
   );
 };
 
