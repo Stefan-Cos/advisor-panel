@@ -157,9 +157,35 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
         </div>
 
         <div className="flex relative">
+          {/* Floating Filter Sidebar Toggle */}
+          <div 
+            className={cn(
+              "fixed top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-r-md cursor-pointer transition-all duration-300",
+              filterVisible ? "left-[280px]" : "left-0"
+            )}
+            onClick={toggleFilterSidebar}
+          >
+            <div className="p-1.5 text-blueknight-600 hover:text-blueknight-800">
+              {filterVisible 
+                ? <ChevronLeft className="h-4 w-4" /> 
+                : <ChevronRight className="h-4 w-4" />
+              }
+            </div>
+          </div>
+          
+          {/* Floating Filter Sidebar */}
+          <div className={cn(
+            "fixed top-[64px] bottom-0 left-0 transition-all duration-300 ease-in-out z-10",
+            filterVisible ? "translate-x-0" : "-translate-x-[280px]"
+          )}>
+            <div className="w-[280px] bg-white border-r border-gray-200 shadow-md h-full">
+              <FilterSidebar />
+            </div>
+          </div>
+          
           <div className={cn(
             "transition-all duration-300 flex-grow",
-            filterVisible ? "pr-[280px]" : "pr-0"
+            filterVisible ? "pl-[280px]" : "pl-0"
           )}>
             <TabsContent value="scoring" className="p-0 m-0">
               <div className="p-4">
@@ -461,32 +487,6 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
                 </div>
               </div>
             </TabsContent>
-          </div>
-          
-          {/* Floating Filter Sidebar Toggle */}
-          <div 
-            className={cn(
-              "fixed top-1/2 -translate-y-1/2 z-10 bg-white shadow-md rounded-l-md cursor-pointer transition-all duration-300",
-              filterVisible ? "right-[280px]" : "right-0"
-            )}
-            onClick={toggleFilterSidebar}
-          >
-            <div className="p-1.5 text-gray-600 hover:text-gray-800">
-              {filterVisible 
-                ? <ChevronRight className="h-4 w-4" /> 
-                : <ChevronLeft className="h-4 w-4" />
-              }
-            </div>
-          </div>
-          
-          {/* Floating Filter Sidebar */}
-          <div className={cn(
-            "fixed top-[64px] bottom-0 right-0 transition-all duration-300 ease-in-out z-10",
-            filterVisible ? "translate-x-0" : "translate-x-[280px]"
-          )}>
-            <div className="w-[280px] bg-white border-l border-gray-200 shadow-md h-full">
-              <FilterSidebar />
-            </div>
           </div>
         </div>
       </Tabs>
