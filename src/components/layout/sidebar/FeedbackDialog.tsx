@@ -26,10 +26,10 @@ const FeedbackDialog = () => {
       });
       setFeedback("");
     } else {
+      // Remove the variant property since it's not available in our toast type definition
       toast({
         title: "Error",
-        description: "Please enter some feedback before submitting.",
-        variant: "destructive"
+        description: "Please enter some feedback before submitting."
       });
     }
   };
