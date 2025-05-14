@@ -4,6 +4,9 @@ import React from 'react';
 const BlueKnightDescription: React.FC = () => {
   return (
     <div className="mb-6 bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
+      <h3 className="text-lg font-semibold text-gray-800 mb-2">
+        AI-Generated Buyer Recommendations
+      </h3>
       <p className="text-sm text-gray-600 leading-relaxed mb-3">
         This table shows potential strategic buyers for your company, ranked by match score. 
         Our AI-powered analysis evaluates each buyer based on their strategic fit, acquisition history, 
