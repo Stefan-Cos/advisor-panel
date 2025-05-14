@@ -7,6 +7,9 @@ import BuyerTabs from './components/BuyerTabs';
 import StrategicBuyerTable from './components/StrategicBuyerTable';
 import PEBuyerTable from './components/PEBuyerTable';
 import BlueKnightDescription from '../listings/BlueKnightDescription';
+import FilterSidebarToggle from '../listings/ai-builder/FilterSidebarToggle';
+import FilterSidebar from '../listings/FilterSidebar';
+import { cn } from '@/lib/utils';
 
 interface BlueKnightListProps {
   listingId: string;
@@ -18,6 +21,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [filterVisible, setFilterVisible] = useState<boolean>(false);
 
   useEffect(() => {
     // Simulate loading data
@@ -78,12 +82,29 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     }
   };
 
+  // Toggle filter sidebar
+  const toggleFilterSidebar = () => {
+    setFilterVisible(!filterVisible);
+  };
+
   return (
     <div className="space-y-4">
+      {/* Filter Sidebar Toggle */}
+      <FilterSidebarToggle 
+        filterVisible={filterVisible} 
+        toggleFilterSidebar={toggleFilterSidebar} 
+      />
+      
+      {/* Render the FilterSidebar when visible */}
+      {filterVisible && <FilterSidebar />}
+      
       {/* Description component rendered outside the tab-switching area */}
       <BlueKnightDescription />
       
-      <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+      <div className={cn(
+        "bg-white shadow-sm rounded-lg border border-gray-200 p-6 transition-all duration-300",
+        filterVisible ? "ml-[280px]" : "ml-0"
+      )}>
         <div className="flex items-center justify-between mb-6">
           <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>

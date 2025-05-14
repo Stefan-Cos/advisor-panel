@@ -49,10 +49,7 @@ const ListingDetails: React.FC<ListingDetailsProps> = ({
         <AiBuyerBuilder listingId={id} />
       ) : (
         // Default content (BlueKnight List)
-        <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-          <h2 className="text-xl font-medium text-blueknight-700 mb-4">BlueKnight List</h2>
-          <BlueKnightList listingId={id} />
-        </div>
+        <BlueKnightList listingId={id} />
       )}
     </div>
   );
