@@ -59,7 +59,7 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
         </Link>
       </div>
       
-      <div className="bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden glass-effect">
+      <div className="bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-gradient-to-r from-blueknight-600 to-blue-700">
@@ -67,9 +67,8 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
               <TableHead className="text-white font-medium">Project Title</TableHead>
               <TableHead className="text-white font-medium text-center">Date Created</TableHead>
               <TableHead className="text-white font-medium text-center">Saved Buyers</TableHead>
-              <TableHead className="text-white font-medium">Advisor</TableHead>
-              <TableHead className="text-white font-medium text-center">Project Form</TableHead>
               <TableHead className="text-white font-medium text-center">Actions</TableHead>
+              <TableHead className="text-white font-medium text-center">Project Form</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -83,7 +82,14 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
                     {listing.savedBuyers}
                   </span>
                 </TableCell>
-                <TableCell>{listing.advisorCreated}</TableCell>
+                <TableCell className="text-center">
+                  <Link
+                    to={`/listings/${listing.id}`}
+                    className="px-3 py-1.5 bg-gradient-to-r from-blueknight-500 to-blue-500 hover:from-blueknight-600 hover:to-blue-600 text-white rounded-md text-sm font-medium transition-colors inline-block shadow-sm hover:shadow-md"
+                  >
+                    Create Buyer Search
+                  </Link>
+                </TableCell>
                 <TableCell className="text-center">
                   <Link 
                     to={`/add-listing/edit/${listing.id}`} 
@@ -91,14 +97,6 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
                   >
                     <PencilLine className="h-4 w-4" />
                     Edit
-                  </Link>
-                </TableCell>
-                <TableCell className="text-center">
-                  <Link
-                    to={`/listings/${listing.id}`}
-                    className="px-3 py-1.5 bg-gradient-to-r from-blueknight-500 to-blue-500 hover:from-blueknight-600 hover:to-blue-600 text-white rounded-md text-sm font-medium transition-colors inline-block shadow-sm hover:shadow-md"
-                  >
-                    Create Buyer Search
                   </Link>
                 </TableCell>
               </TableRow>
