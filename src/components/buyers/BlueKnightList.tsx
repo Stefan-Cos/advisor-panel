@@ -37,7 +37,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
         
         setBuyers(filteredBuyers);
         setIsLoading(false);
-      }, 500);
+      }, 300); // Reduced timeout for faster loading
     };
     
     loadData();
@@ -78,10 +78,6 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     }
   };
 
-  if (isLoading) {
-    return <div className="py-12 text-center">Loading buyer data...</div>;
-  }
-
   return (
     <div className="space-y-4">
       {/* Description component rendered outside the tab-switching area */}
@@ -92,28 +88,40 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
           <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
         
-        <div className="space-y-4">
-          {activeTab === 'strategic' ? (
-            <StrategicBuyerTable
-              buyers={buyers}
-              savedBuyers={savedBuyers}
-              expandedRationales={expandedRationales}
-              onAddToSaved={handleAddToSaved}
-              toggleRationale={toggleRationale}
-              getMATrackRecordColor={getMATrackRecordColor}
-              showDescription={false}
-            />
-          ) : (
-            <PEBuyerTable
-              buyers={buyers}
-              savedBuyers={savedBuyers}
-              expandedRationales={expandedRationales}
-              onAddToSaved={handleAddToSaved}
-              toggleRationale={toggleRationale}
-              showDescription={false}
-            />
-          )}
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-pulse space-y-4">
+              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-200 rounded w-full"></div>
+              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+              <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+            </div>
+          </div>
+        ) : (
+          <div>
+            {activeTab === 'strategic' ? (
+              <StrategicBuyerTable
+                buyers={buyers}
+                savedBuyers={savedBuyers}
+                expandedRationales={expandedRationales}
+                onAddToSaved={handleAddToSaved}
+                toggleRationale={toggleRationale}
+                getMATrackRecordColor={getMATrackRecordColor}
+                showDescription={false}
+              />
+            ) : (
+              <PEBuyerTable
+                buyers={buyers}
+                savedBuyers={savedBuyers}
+                expandedRationales={expandedRationales}
+                onAddToSaved={handleAddToSaved}
+                toggleRationale={toggleRationale}
+                showDescription={false}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

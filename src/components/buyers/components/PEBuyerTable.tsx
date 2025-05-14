@@ -26,7 +26,7 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
   expandedRationales, 
   onAddToSaved, 
   toggleRationale,
-  showDescription = false // Changed default to false
+  showDescription = false
 }) => {
   return (
     <div>
