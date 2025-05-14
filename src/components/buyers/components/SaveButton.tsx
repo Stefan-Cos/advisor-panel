@@ -1,44 +1,49 @@
 
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Check, BookmarkPlus } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 interface SaveButtonProps {
   id: string;
   name: string;
-  addedToSaved: boolean;
-  onAddToSaved?: (id: string) => void;
+  isSaved: boolean;
+  onSave: (id: string) => void;
 }
 
 const SaveButton: React.FC<SaveButtonProps> = ({
   id,
   name,
-  addedToSaved,
-  onAddToSaved
+  isSaved,
+  onSave
 }) => {
-  
-  const handleAddToSaved = () => {
-    if (onAddToSaved) {
-      onAddToSaved(id);
-      toast(`${name} has been added to your saved list.`);
+  const handleSave = () => {
+    if (!isSaved) {
+      onSave(id);
+      toast({
+        title: "Buyer Saved",
+        description: `${name} has been added to your saved list.`
+      });
     }
   };
 
-  if (addedToSaved) {
-    return (
-      <span className="text-xs font-medium bg-green-50 text-green-700 px-2 py-1 rounded-full">
-        Saved
-      </span>
-    );
-  }
-  
   return (
     <button
-      onClick={handleAddToSaved}
-      className="h-8 w-8 flex items-center justify-center rounded-full bg-blueknight-50 text-blueknight-500 hover:bg-blueknight-100 transition-colors"
+      onClick={handleSave}
+      disabled={isSaved}
+      className={cn(
+        "flex items-center justify-center p-1.5 rounded-md transition-all duration-200",
+        isSaved 
+          ? "bg-green-50 text-green-600 border border-green-200" 
+          : "bg-blueknight-50 text-blueknight-600 hover:bg-blueknight-100 border border-blueknight-200 hover:shadow-sm"
+      )}
+      title={isSaved ? "Already saved" : "Save this buyer"}
     >
-      <Plus className="h-5 w-5" />
-      <span className="sr-only">Add to saved list</span>
+      {isSaved ? (
+        <Check className="h-4 w-4" />
+      ) : (
+        <BookmarkPlus className="h-4 w-4" />
+      )}
     </button>
   );
 };

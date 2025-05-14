@@ -95,7 +95,7 @@ const Listings = () => {
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="active-projects">
+            <TabsContent value="active-projects" className="animate-fade-in">
               <ActiveProjectsTab listings={mockListings} />
             </TabsContent>
             

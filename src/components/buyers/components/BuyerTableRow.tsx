@@ -1,12 +1,12 @@
-
 import React from 'react';
-import { Check, ChevronRight, History } from 'lucide-react';
+import { ChevronRight, History } from 'lucide-react';
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import BuyerRationale from './BuyerRationale';
 import BuyerRationalePanel from './BuyerRationalePanel';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Buyer } from '../types/BuyerTypes';
+import SaveButton from './SaveButton';
 
 interface BuyerTableRowProps {
   buyer: Buyer;
@@ -16,6 +16,7 @@ interface BuyerTableRowProps {
   toggleRationale: (buyerId: string) => void;
   getMATrackRecordColor: (record: string) => string;
   isInTop100?: boolean;
+  index: number;
 }
 
 // Mock transaction data for M&A track record
@@ -96,7 +97,8 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
   isExpanded,
   toggleRationale,
   getMATrackRecordColor,
-  isInTop100 = true
+  isInTop100 = true,
+  index
 }) => {
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [maRecordSheetOpen, setMARecordSheetOpen] = React.useState(false);
@@ -104,6 +106,21 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
     getMockTransactions(buyer.maTrackRecord || 'Low'), 
     [buyer.maTrackRecord]
   );
+
+  // Generate a sample rationale for the first few rows
+  const getSampleRationale = () => {
+    if (index < 3) {
+      const rationales = [
+        "Strategic fit with their healthcare portfolio expansion goals and complementary to their existing solutions.",
+        "Direct alignment with their stated acquisition criteria focusing on data analytics and AI-powered healthcare platforms.",
+        "Their recent M&A activity suggests they're actively seeking innovative solutions in this specific vertical."
+      ];
+      return rationales[index];
+    }
+    return null;
+  };
+
+  const sampleRationale = getSampleRationale();
 
   return (
     <>
@@ -120,24 +137,6 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
               </div>
               <span className="text-xs font-medium text-blueknight-500">{buyer.matchingScore}%</span>
             </div>
-            
-            {/* Modern save button */}
-            <button
-              onClick={() => onAddToSaved(buyer.id)}
-              disabled={savedBuyers.includes(buyer.id)}
-              className={`flex items-center justify-center p-1.5 rounded-md ${
-                savedBuyers.includes(buyer.id)
-                  ? 'bg-green-100 text-green-600 cursor-not-allowed border border-green-200'
-                  : 'bg-blueknight-50 text-blueknight-600 hover:bg-blueknight-100 border border-blueknight-200'
-              }`}
-              title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-            >
-              {savedBuyers.includes(buyer.id) ? (
-                <Check className="h-3 w-3" />
-              ) : (
-                <span className="text-xs font-medium">Save</span>
-              )}
-            </button>
           </div>
         </TableCell>
         
@@ -171,13 +170,13 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
         {/* Short Description Column */}
         <TableCell className="text-xs">{buyer.description}</TableCell>
         
-        {/* Overall Rationale Column (replacing Offering) */}
+        {/* Overall Rationale Column */}
         <TableCell className="text-xs">
           {isInTop100 ? (
-            buyer.rationale?.overall || "No rationale available"
+            sampleRationale || buyer.rationale?.overall || "No rationale available"
           ) : (
             <span className="italic text-gray-400">
-              Not in top 100 results
+              N/A - Rationale available only for the top 100
             </span>
           )}
         </TableCell>
@@ -192,6 +191,16 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
             {buyer.maTrackRecord || 'N/A'}
             <History className="h-3 w-3 ml-1 opacity-80" />
           </button>
+        </TableCell>
+
+        {/* Save Button Column */}
+        <TableCell className="text-center">
+          <SaveButton 
+            id={buyer.id}
+            name={buyer.name}
+            isSaved={savedBuyers.includes(buyer.id)}
+            onSave={onAddToSaved}
+          />
         </TableCell>
       </TableRow>
 

@@ -38,7 +38,8 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
                   isExpanded={expandedRationales.includes(buyer.id)}
                   toggleRationale={toggleRationale}
                   getMATrackRecordColor={getMATrackRecordColor}
-                  isInTop100={index < 100} // Only the first 100 rows are considered top 100
+                  isInTop100={index < 100}
+                  index={index}
                 />
               ))}
             </TableBody>
