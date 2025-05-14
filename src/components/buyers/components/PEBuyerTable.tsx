@@ -26,11 +26,11 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
   expandedRationales, 
   onAddToSaved, 
   toggleRationale,
-  showDescription = false
+  showDescription = true // Changed default to true
 }) => {
   return (
     <div>
-      {/* Only show BlueKnightDescription if specifically requested */}
+      {/* Always show BlueKnightDescription at the top of the table */}
       {showDescription && <BlueKnightDescription />}
       
       <ScrollArea className="h-[600px] w-full mt-6" orientation="both">
