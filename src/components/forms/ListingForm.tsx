@@ -21,6 +21,19 @@ import {
 } from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
 
+// Add SectionContainer component
+const SectionContainer = ({ title, description, children }) => {
+  return (
+    <div className="space-y-6 animate-fade-in">
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+        <p className="text-sm text-gray-600">{description}</p>
+      </div>
+      {children}
+    </div>
+  );
+};
+
 // Step 1: Project Setup
 const ProjectSetupStep = ({ formData, setFormData, nextStep }) => {
   const [isValid, setIsValid] = useState(false);
