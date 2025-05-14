@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import BuyerRationale from './BuyerRationale';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import BuyerTableHeader from './BuyerTableHeader';
+import BuyerTableRow from './BuyerTableRow';
 
 interface BuyerTablesProps {
   activeTab: 'strategic' | 'pe';
@@ -36,6 +39,37 @@ const BuyerTables: React.FC<BuyerTablesProps> = ({
     buyer.name.toLowerCase().includes(companyNameSearch.toLowerCase())
   );
 
+  // Function to determine color based on M&A track record
+  const getMATrackRecordColor = (record: string): string => {
+    switch (record.toLowerCase()) {
+      case 'high':
+        return 'bg-green-100 text-green-800';
+      case 'medium':
+        return 'bg-amber-100 text-amber-800';
+      case 'low':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Format PE buyers to match the structure expected by BuyerTableRow if needed
+  const formattedBuyers = filteredBuyers.map(buyer => {
+    if (activeTab === 'pe') {
+      return {
+        ...buyer,
+        hq: buyer.location || buyer.hq, 
+        employees: buyer.aum || buyer.employees || 0,
+        revenue: typeof buyer.revenue === 'string' ? parseFloat(buyer.revenue.split(' - ')[0]) * 1000000 : buyer.revenue || 0,
+        cash: typeof buyer.ebitda === 'string' ? parseFloat(buyer.ebitda.split(' - ')[0]) * 1000000 : buyer.cash || 0,
+        reportedDate: buyer.reportedDate || new Date().toISOString().substring(0, 10),
+        isPEVCBacked: buyer.isPEVCBacked !== undefined ? buyer.isPEVCBacked : true,
+        isPublic: buyer.isPublic !== undefined ? buyer.isPublic : false,
+      };
+    }
+    return buyer;
+  });
+
   return (
     <>
       <div className="mb-4">
@@ -47,73 +81,28 @@ const BuyerTables: React.FC<BuyerTablesProps> = ({
         />
       </div>
       
-      <div className="overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Company</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>HQ</TableHead>
-              <TableHead>Employees</TableHead>
-              <TableHead>Revenue ($M)</TableHead>
-              <TableHead>Cash ($M)</TableHead>
-              <TableHead>Reported</TableHead>
-              <TableHead>PE/VC Backed</TableHead>
-              <TableHead>Public</TableHead>
-              <TableHead>Match %</TableHead>
-              <TableHead>Rationale</TableHead>
-              <TableHead></TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredBuyers.map((buyer) => (
-              <TableRow key={buyer.id}>
-                <TableCell className="font-medium">{buyer.name}</TableCell>
-                <TableCell>{buyer.description}</TableCell>
-                <TableCell>{buyer.hq}</TableCell>
-                <TableCell>{buyer.employees.toLocaleString()}</TableCell>
-                <TableCell>{buyer.revenue > 0 ? buyer.revenue.toLocaleString() : 'N/A'}</TableCell>
-                <TableCell>{buyer.cash > 0 ? buyer.cash.toLocaleString() : 'N/A'}</TableCell>
-                <TableCell>{buyer.reportedDate ? buyer.reportedDate.substring(0, 7) : 'N/A'}</TableCell>
-                <TableCell>{buyer.isPEVCBacked ? 'Yes' : 'No'}</TableCell>
-                <TableCell>{buyer.isPublic ? 'Yes' : 'No'}</TableCell>
-                <TableCell>
-                  <div className="flex items-center space-x-2">
-                    <span className="font-medium">{buyer.matchingScore}%</span>
-                    <div className="relative h-1.5 w-10 bg-gray-200 rounded-full">
-                      <div
-                        className="absolute top-0 left-0 h-full bg-blueknight-500 rounded-full"
-                        style={{ width: `${buyer.matchingScore}%` }}
-                      />
-                    </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <BuyerRationale 
-                    buyer={buyer} 
-                    expandedRationales={expandedRationales} 
-                    toggleRationale={toggleRationale} 
-                  />
-                </TableCell>
-                <TableCell>
-                  {!savedBuyers.includes(buyer.id) ? (
-                    <button
-                      onClick={() => handleAddToSaved(buyer.id)}
-                      className="px-3 py-1 text-xs font-medium text-blueknight-700 bg-blueknight-50 rounded-md hover:bg-blueknight-100"
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <span className="px-3 py-1 text-xs font-medium text-green-700 bg-green-50 rounded-md">
-                      Saved
-                    </span>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <ScrollArea className="h-[600px] w-full" orientation="both">
+        <div className="min-w-max">
+          <Table>
+            <BuyerTableHeader />
+            <TableBody>
+              {formattedBuyers.map((buyer, index) => (
+                <BuyerTableRow
+                  key={buyer.id}
+                  buyer={buyer}
+                  savedBuyers={savedBuyers}
+                  onAddToSaved={handleAddToSaved}
+                  isExpanded={expandedRationales.includes(buyer.id)}
+                  toggleRationale={toggleRationale}
+                  getMATrackRecordColor={getMATrackRecordColor}
+                  isInTop100={index < 100}
+                  index={index}
+                />
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </ScrollArea>
     </>
   );
 };

@@ -10,6 +10,7 @@ import {
 import BuyerTableHeader from './BuyerTableHeader';
 import BuyerTableRationaleRow from './BuyerTableRationaleRow';
 import BlueKnightDescription from '@/components/listings/BlueKnightDescription';
+import BuyerTableRow from './BuyerTableRow';
 
 interface PEBuyerTableProps {
   buyers: any[];
@@ -28,6 +29,32 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
   toggleRationale,
   showDescription = false
 }) => {
+  // Function to determine color based on M&A track record
+  const getMATrackRecordColor = (record: string): string => {
+    switch (record.toLowerCase()) {
+      case 'high':
+        return 'bg-green-100 text-green-800';
+      case 'medium':
+        return 'bg-amber-100 text-amber-800';
+      case 'low':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Convert PE buyers format to match the structure expected by BuyerTableRow
+  const formattedBuyers = buyers.map(buyer => ({
+    ...buyer,
+    hq: buyer.location, // Map location to hq for consistency
+    employees: buyer.aum || 0, // Use AUM as employee count for PE funds
+    revenue: parseFloat(buyer.revenue?.split(' - ')[0]) * 1000000 || 0, // Convert revenue range to number
+    cash: parseFloat(buyer.ebitda?.split(' - ')[0]) * 1000000 || 0, // Use EBITDA as cash for display
+    reportedDate: new Date().toISOString().substring(0, 10), // Add a placeholder date
+    isPEVCBacked: true,
+    isPublic: false,
+  }));
+
   return (
     <div>
       {/* Only show BlueKnightDescription if showDescription is true */}
@@ -36,82 +63,20 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
       <ScrollArea className="h-[600px] w-full mt-6" orientation="both">
         <div className="min-w-max">
           <Table>
-            <TableHeader>
-              <TableRow className="bg-blueknight-500">
-                <TableHead className="text-white font-medium w-[280px] sticky left-0 z-20 bg-blueknight-500">
-                  Fund Name
-                </TableHead>
-                <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
-                <TableHead className="text-white font-medium w-[200px]">Short Description</TableHead>
-                <TableHead className="text-white font-medium w-[180px]">Sectors</TableHead>
-                <TableHead className="text-white font-medium w-[250px]">Previous Acquisitions</TableHead>
-                <TableHead className="text-white font-medium w-[120px]">Match Score</TableHead>
-              </TableRow>
-            </TableHeader>
+            <BuyerTableHeader />
             <TableBody>
-              {buyers.map((buyer) => (
-                <React.Fragment key={buyer.id}>
-                  <TableRow className={`hover:bg-gray-50 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-                    <TableCell 
-                      className={`font-medium sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
-                    >
-                      <div>
-                        <div>{buyer.name}</div>
-                        <div className="flex items-center mt-1 gap-2">
-                          <Collapsible 
-                            open={expandedRationales.includes(buyer.id)}
-                            onOpenChange={() => toggleRationale(buyer.id)}
-                          >
-                            <CollapsibleTrigger className="flex items-center px-2 py-1 text-xs font-medium bg-blueknight-50 text-blueknight-500 rounded-md hover:bg-blueknight-100">
-                              Rationale
-                              {expandedRationales.includes(buyer.id) ? (
-                                <ChevronUp className="h-3 w-3 ml-1" />
-                              ) : (
-                                <ChevronDown className="h-3 w-3 ml-1" />
-                              )}
-                            </CollapsibleTrigger>
-                          </Collapsible>
-                          
-                          <button
-                            onClick={() => onAddToSaved(buyer.id)}
-                            disabled={savedBuyers.includes(buyer.id)}
-                            className={`flex items-center justify-center p-1 rounded-full ${
-                              savedBuyers.includes(buyer.id)
-                                ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                                : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
-                            }`}
-                            title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
-                          >
-                            {savedBuyers.includes(buyer.id) ? (
-                              <Check className="h-3.5 w-3.5" />
-                            ) : (
-                              <Plus className="h-3.5 w-3.5" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{buyer.location}</TableCell>
-                    <TableCell>{buyer.description}</TableCell>
-                    <TableCell>{buyer.sector}</TableCell>
-                    <TableCell>{buyer.previousAcquisitions}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center">
-                        <div className="w-10 bg-gray-200 rounded-full h-2 mr-2">
-                          <div
-                            className="bg-blueknight-500 h-2 rounded-full"
-                            style={{ width: `${buyer.matchingScore}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                  
-                  {expandedRationales.includes(buyer.id) && (
-                    <BuyerTableRationaleRow buyer={buyer} type="pe" />
-                  )}
-                </React.Fragment>
+              {formattedBuyers.map((buyer, index) => (
+                <BuyerTableRow
+                  key={buyer.id}
+                  buyer={buyer}
+                  savedBuyers={savedBuyers}
+                  onAddToSaved={onAddToSaved}
+                  isExpanded={expandedRationales.includes(buyer.id)}
+                  toggleRationale={toggleRationale}
+                  getMATrackRecordColor={getMATrackRecordColor}
+                  isInTop100={index < 100}
+                  index={index}
+                />
               ))}
             </TableBody>
           </Table>
