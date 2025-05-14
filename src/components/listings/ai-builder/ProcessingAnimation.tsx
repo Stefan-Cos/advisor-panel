@@ -28,29 +28,67 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
   // Function to render the current processing step icon
   const renderProcessingIcon = () => {
     const IconComponent = processingSteps[processingStep].icon;
-    return <IconComponent className="h-8 w-8 text-blueknight-600 animate-pulse" />;
+    return <IconComponent className="h-8 w-8 text-blue-600 animate-pulse" />;
   };
 
   return (
     <div className="p-8 flex flex-col items-center justify-center min-h-[500px] space-y-6">
-      <div className="w-full max-w-lg mx-auto bg-gradient-to-b from-gray-50 to-blue-50 rounded-xl shadow-lg p-8 border border-blue-100">
+      <div className="w-full max-w-lg mx-auto bg-gradient-to-b from-white to-blue-50 rounded-xl shadow-lg p-8 border border-blue-100">
         <div className="text-center mb-8">
           <h3 className="text-2xl font-bold text-blueknight-700 mb-2">AI Matching in Progress</h3>
           <p className="text-gray-600">Our AI is analyzing potential buyers based on your criteria</p>
         </div>
         
         <div className="relative mb-10">
-          <AspectRatio ratio={1/1} className="w-32 mx-auto">
+          <AspectRatio ratio={16/9} className="w-full mx-auto max-w-[320px]">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-full h-full border-4 border-blueknight-100 border-t-blueknight-600 rounded-full animate-spin"></div>
+              {/* Modern flowing lines animation */}
+              <svg className="w-full h-full" viewBox="0 0 400 225" xmlns="http://www.w3.org/2000/svg">
+                <path 
+                  className="animate-[dash_3s_ease-in-out_infinite]" 
+                  fill="none" 
+                  stroke="#E0E7FF" 
+                  strokeWidth="2"
+                  strokeDasharray="210" 
+                  strokeDashoffset="210" 
+                  d="M50,112 C100,80 150,144 200,112 C250,80 300,144 350,112"
+                />
+                <path 
+                  className="animate-[dash_3s_ease-in-out_infinite_0.5s]" 
+                  fill="none" 
+                  stroke="#C7D2FE" 
+                  strokeWidth="2" 
+                  strokeDasharray="240" 
+                  strokeDashoffset="240" 
+                  d="M50,112 C100,144 150,80 200,112 C250,144 300,80 350,112"
+                />
+                <circle 
+                  cx="200" 
+                  cy="112" 
+                  r="12" 
+                  fill="#4F46E5" 
+                  className="animate-pulse" 
+                />
+                <circle 
+                  cx="200" 
+                  cy="112" 
+                  r="24" 
+                  fill="none" 
+                  stroke="#6366F1" 
+                  strokeWidth="1" 
+                  opacity="0.7"
+                  className="animate-ping"
+                />
+              </svg>
+              
+              {/* Central icon with pulsing effect */}
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-3/4 h-3/4 border-4 border-blueknight-200 border-b-transparent rounded-full animate-spin animation-delay-200" style={{ animationDirection: 'reverse' }}></div>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-1/2 h-1/2 border-4 border-blueknight-300 border-l-transparent rounded-full animate-spin animation-delay-400"></div>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                {renderProcessingIcon()}
+                <div className="relative">
+                  <div className="absolute -inset-4 bg-blue-100 rounded-full opacity-30 animate-ping"></div>
+                  <div className="relative z-10 bg-white p-2.5 rounded-full shadow-md">
+                    {renderProcessingIcon()}
+                  </div>
+                </div>
               </div>
             </div>
           </AspectRatio>
@@ -62,7 +100,7 @@ const ProcessingAnimation: React.FC<ProcessingAnimationProps> = ({
             <span className="text-xs font-medium text-blueknight-600">{progressValue}%</span>
           </div>
           <Progress value={progressValue} className="h-2.5 bg-blue-100">
-            <div className="h-full bg-gradient-to-r from-blue-400 to-indigo-600 rounded-full" style={{ width: `${progressValue}%` }}></div>
+            <div className="h-full bg-gradient-to-r from-indigo-400 to-blue-600 rounded-full" style={{ width: `${progressValue}%` }}></div>
           </Progress>
         </div>
         
