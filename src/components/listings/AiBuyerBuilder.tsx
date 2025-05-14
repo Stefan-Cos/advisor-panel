@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from '@/lib/utils';
@@ -15,13 +14,18 @@ import {
   ChevronLeft,
   Search,
   Save,
-  Loader
+  Loader,
+  Sparkles,
+  Brain,
+  Zap
 } from 'lucide-react';
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import BuyerListNew from '../buyers/BuyerListNew';
 import FilterSidebar from './FilterSidebar';
 import SavedSearchTable from '../buyers/components/SavedSearchTable';
@@ -105,6 +109,8 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
   const [selectedSavedSearch, setSelectedSavedSearch] = useState<string | null>(null);
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
+  const [progressValue, setProgressValue] = useState<number>(0);
+  const [processingStep, setProcessingStep] = useState<number>(0);
   
   // Scoring configuration state
   const [scoringConfig, setScoringConfig] = useState({
@@ -179,16 +185,40 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
   // Apply scoring configuration
   const applyScoring = () => {
     setProcessing(true);
+    setProgressValue(0);
+    setProcessingStep(0);
     
-    // Simulate AI processing
-    setTimeout(() => {
-      setProcessing(false);
-      setShowMatches(true);
-      toast({
-        title: "Scoring Configuration Applied",
-        description: "Your buyer match scoring configuration has been applied."
+    // Simulate AI processing with multiple steps
+    const interval = setInterval(() => {
+      setProgressValue(prev => {
+        const newValue = prev + 10;
+        if (newValue >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            setProcessing(false);
+            setShowMatches(true);
+            toast({
+              title: "Scoring Configuration Applied",
+              description: "Your buyer match scoring has been applied successfully."
+            });
+          }, 500);
+          return 100;
+        }
+        
+        // Update processing step at certain thresholds
+        if (newValue >= 20 && processingStep < 1) {
+          setProcessingStep(1);
+        } else if (newValue >= 40 && processingStep < 2) {
+          setProcessingStep(2);
+        } else if (newValue >= 60 && processingStep < 3) {
+          setProcessingStep(3);
+        } else if (newValue >= 80 && processingStep < 4) {
+          setProcessingStep(4);
+        }
+        
+        return newValue;
       });
-    }, 10000); // 10 seconds processing time
+    }, 1000); // Update every second for a total of ~10 seconds
   };
 
   // Toggle filter sidebar
@@ -228,6 +258,15 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     return formatBuyerData(rawBuyers);
   };
 
+  // Processing steps messages
+  const processingSteps = [
+    { message: "Initializing AI matching engine...", icon: Brain },
+    { message: "Analyzing buyer preferences and scoring criteria...", icon: Target },
+    { message: "Matching with potential strategic buyers...", icon: Sparkles },
+    { message: "Calculating final compatibility scores...", icon: Zap },
+    { message: "Preparing results...", icon: Target }
+  ];
+
   return (
     <div className="bg-white shadow-sm rounded-lg border border-gray-200">
       <Tabs defaultValue="scoring" value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -250,7 +289,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
           {/* Floating Filter Sidebar Toggle - positioned to align with feedback item in sidebar */}
           <div 
             className={cn(
-              "fixed top-[200px] z-10 bg-[#001437] shadow-md rounded-r-md cursor-pointer transition-all duration-300",
+              "fixed top-[280px] z-10 bg-[#001437] shadow-md rounded-r-md cursor-pointer transition-all duration-300",
               filterVisible ? "left-[280px]" : "left-0"
             )}
             onClick={toggleFilterSidebar}
@@ -279,28 +318,71 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
           )}>
             <TabsContent value="scoring" className="p-0 m-0">
               {processing ? (
-                <div className="p-8 flex flex-col items-center justify-center min-h-[400px] space-y-6">
-                  <div className="relative">
-                    <div className="w-20 h-20 border-4 border-blueknight-300 border-t-blueknight-600 rounded-full animate-spin"></div>
-                    <Loader className="h-10 w-10 text-blueknight-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
-                  </div>
-                  <div className="text-center space-y-2">
-                    <h3 className="text-lg font-semibold text-blueknight-700">AI Matching in Progress</h3>
-                    <p className="text-sm text-gray-600">Our AI is analyzing potential buyers based on:</p>
-                    <div className="flex flex-wrap justify-center gap-2 py-2">
-                      {Object.entries(scoringConfig)
-                        .filter(([_, config]) => config.enabled)
-                        .map(([key]) => (
-                          <span key={key} className="px-2 py-1 bg-blueknight-50 text-blueknight-600 rounded-full text-xs font-medium">
-                            {key === 'problemSolved' ? 'Problem Solved' : 
-                             key === 'useCase' ? 'Use Case' : 
-                             key === 'customerBase' ? 'Customer Base' : 
-                             key === 'acquisitionHistory' ? 'Acquisition History' : 
-                             key.charAt(0).toUpperCase() + key.slice(1)}
-                          </span>
-                        ))}
+                <div className="p-8 flex flex-col items-center justify-center min-h-[500px] space-y-6">
+                  <div className="w-full max-w-lg mx-auto bg-gradient-to-b from-gray-50 to-blue-50 rounded-xl shadow-lg p-8 border border-blue-100">
+                    <div className="text-center mb-8">
+                      <h3 className="text-2xl font-bold text-blueknight-700 mb-2">AI Matching in Progress</h3>
+                      <p className="text-gray-600">Our AI is analyzing potential buyers based on your criteria</p>
                     </div>
-                    <p className="text-xs text-gray-500 animate-pulse mt-4">This may take a few moments...</p>
+                    
+                    <div className="relative mb-10">
+                      <AspectRatio ratio={1/1} className="w-32 mx-auto">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-full h-full border-4 border-blueknight-100 border-t-blueknight-600 rounded-full animate-spin"></div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-3/4 h-3/4 border-4 border-blueknight-200 border-b-transparent rounded-full animate-spin animation-delay-200" style={{ animationDirection: 'reverse' }}></div>
+                          </div>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <div className="w-1/2 h-1/2 border-4 border-blueknight-300 border-l-transparent rounded-full animate-spin animation-delay-400"></div>
+                          </div>
+                          {processingSteps[processingStep].icon && (
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              <processingSteps[processingStep].icon className="h-8 w-8 text-blueknight-600 animate-pulse" />
+                            </div>
+                          )}
+                        </div>
+                      </AspectRatio>
+                    </div>
+                    
+                    <div className="mb-8">
+                      <div className="flex justify-between mb-2">
+                        <span className="text-xs font-medium text-blueknight-600">Processing</span>
+                        <span className="text-xs font-medium text-blueknight-600">{progressValue}%</span>
+                      </div>
+                      <Progress value={progressValue} className="h-2.5 bg-blue-100">
+                        <div className="h-full bg-gradient-to-r from-blue-400 to-indigo-600 rounded-full" style={{ width: `${progressValue}%` }}></div>
+                      </Progress>
+                    </div>
+                    
+                    <div className="text-center space-y-2">
+                      <p className="text-sm font-medium text-blueknight-700">{processingSteps[processingStep].message}</p>
+                      
+                      <div className="flex flex-wrap justify-center gap-2 py-4">
+                        {Object.entries(scoringConfig)
+                          .filter(([_, config]) => config.enabled)
+                          .map(([key]) => (
+                            <span key={key} className={cn(
+                              "px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-300",
+                              processingStep >= 1 ? "bg-blueknight-100 text-blueknight-600" : "bg-gray-100 text-gray-500",
+                              processingStep >= 2 && key === Object.entries(scoringConfig).filter(([_, cfg]) => cfg.enabled)[0][0] ? "bg-blue-100 text-blue-700 border border-blue-200 shadow-sm scale-105" : "",
+                              processingStep >= 3 && key === Object.entries(scoringConfig).filter(([_, cfg]) => cfg.enabled)[1][0] ? "bg-blue-100 text-blue-700 border border-blue-200 shadow-sm scale-105" : ""
+                            )}>
+                              {key === 'problemSolved' ? 'Problem Solved' : 
+                               key === 'useCase' ? 'Use Case' : 
+                               key === 'customerBase' ? 'Customer Base' : 
+                               key === 'acquisitionHistory' ? 'Acquisition History' : 
+                               key.charAt(0).toUpperCase() + key.slice(1)}
+                            </span>
+                          ))}
+                      </div>
+                      
+                      <p className={cn(
+                        "text-xs text-gray-500 mt-4 transition-opacity duration-300",
+                        processingStep === 4 ? "opacity-100" : "opacity-60"
+                      )}>
+                        {processingStep === 4 ? "Almost done..." : "This may take a few moments..."}
+                      </p>
+                    </div>
                   </div>
                 </div>
               ) : showMatches ? (
