@@ -1,11 +1,9 @@
 
 import React, { useState } from 'react';
-import { toast } from "@/hooks/use-toast";
 import { Table, TableBody } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import BuyerTableHeader from './components/BuyerTableHeader';
 import BuyerTableRow from './components/BuyerTableRow';
-import BlueKnightDescription from '@/components/listings/BlueKnightDescription';
 import { Buyer } from './types/BuyerTypes';
 
 interface BlueKnightTableProps {
@@ -39,9 +37,6 @@ const BlueKnightTable: React.FC<BlueKnightTableProps> = ({
   
   return (
     <div>
-      {/* Always show BlueKnightDescription at the top of the table */}
-      <BlueKnightDescription />
-      
       <ScrollArea className="h-[600px] w-full mt-6" orientation="both">
         <div className="min-w-max">
           <Table>

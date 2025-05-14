@@ -23,11 +23,11 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
   onAddToSaved,
   toggleRationale,
   getMATrackRecordColor,
-  showDescription = true // Changed default to true
+  showDescription = false // Changed default to false
 }) => {
   return (
     <div>
-      {/* Always show BlueKnightDescription at the top of the table */}
+      {/* Only show BlueKnightDescription if showDescription is true */}
       {showDescription && <BlueKnightDescription />}
       
       <ScrollArea className="h-[600px] w-full mt-6" orientation="both">

@@ -1,15 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
-import BlueKnightTable from './BlueKnightTable';
-import { strategicBuyers } from './data/mockBuyers';
+import { strategicBuyers, peBuyers } from './data/mockBuyers';
 import { Buyer } from './types/BuyerTypes';
+import BuyerTabs from './components/BuyerTabs';
+import StrategicBuyerTable from './components/StrategicBuyerTable';
+import PEBuyerTable from './components/PEBuyerTable';
+import BlueKnightDescription from '../listings/BlueKnightDescription';
 
 interface BlueKnightListProps {
   listingId: string;
 }
 
 const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
+  const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
   const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
@@ -23,10 +27,13 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
       // In a real app, you would fetch this data from an API
       // using the listingId to get buyer data specific to this listing
       setTimeout(() => {
-        // Use strategicBuyers instead of mockBuyers
-        const filteredBuyers = strategicBuyers.filter(buyer => 
-          buyer.type === 'strategic' && buyer.matchingScore > 0
-        ).sort((a, b) => b.matchingScore - a.matchingScore);
+        const filteredBuyers = activeTab === 'strategic' 
+          ? strategicBuyers.filter(buyer => 
+              buyer.type === 'strategic' && buyer.matchingScore > 0
+            ).sort((a, b) => b.matchingScore - a.matchingScore)
+          : peBuyers.filter(buyer =>
+              buyer.type === 'pe' && buyer.matchingScore > 0
+            ).sort((a, b) => b.matchingScore - a.matchingScore);
         
         setBuyers(filteredBuyers);
         setIsLoading(false);
@@ -34,7 +41,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     };
     
     loadData();
-  }, [listingId]);
+  }, [listingId, activeTab]);
 
   // Toggle rationale expansion
   const toggleRationale = (buyerId: string) => {
@@ -57,19 +64,56 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     }
   };
 
+  // Function to determine color based on M&A track record
+  const getMATrackRecordColor = (record: string): string => {
+    switch (record.toLowerCase()) {
+      case 'high':
+        return 'bg-green-100 text-green-800';
+      case 'medium':
+        return 'bg-amber-100 text-amber-800';
+      case 'low':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
   if (isLoading) {
     return <div className="py-12 text-center">Loading buyer data...</div>;
   }
 
   return (
-    <div className="space-y-4">
-      <BlueKnightTable
-        buyers={buyers}
-        savedBuyers={savedBuyers}
-        expandedRationales={expandedRationales}
-        onAddToSaved={handleAddToSaved}
-        toggleRationale={toggleRationale}
-      />
+    <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+      <h2 className="text-xl font-semibold text-blueknight-800 mb-2">BlueKnight List</h2>
+      
+      <BlueKnightDescription />
+      
+      <div className="flex items-center justify-between mb-6">
+        <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      </div>
+      
+      <div className="space-y-4">
+        {activeTab === 'strategic' ? (
+          <StrategicBuyerTable
+            buyers={buyers}
+            savedBuyers={savedBuyers}
+            expandedRationales={expandedRationales}
+            onAddToSaved={handleAddToSaved}
+            toggleRationale={toggleRationale}
+            getMATrackRecordColor={getMATrackRecordColor}
+            showDescription={false}
+          />
+        ) : (
+          <PEBuyerTable
+            buyers={buyers}
+            savedBuyers={savedBuyers}
+            expandedRationales={expandedRationales}
+            onAddToSaved={handleAddToSaved}
+            toggleRationale={toggleRationale}
+            showDescription={false}
+          />
+        )}
+      </div>
     </div>
   );
 };
