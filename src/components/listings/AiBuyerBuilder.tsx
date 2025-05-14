@@ -23,7 +23,6 @@ import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import BuyerListNew from '../buyers/BuyerListNew';
-import SavedList from '../buyers/SavedList';
 import FilterSidebar from './FilterSidebar';
 
 interface AiBuyerBuilderProps {
@@ -140,7 +139,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
       <Tabs defaultValue="scoring" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="border-b border-gray-200">
           <div className="px-4 py-2">
-            <TabsList className="grid grid-cols-4 h-9">
+            <TabsList className="grid grid-cols-3 h-9">
               <TabsTrigger value="scoring" className="text-xs">
                 <Settings className="h-3 w-3 mr-1" />
                 Configure AI Scoring
@@ -148,10 +147,6 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
               <TabsTrigger value="matches" className="text-xs">
                 <Target className="h-3 w-3 mr-1" />
                 Buyer Matches
-              </TabsTrigger>
-              <TabsTrigger value="saved" className="text-xs">
-                <BookmarkCheck className="h-3 w-3 mr-1" />
-                Saved Buyers
               </TabsTrigger>
               <TabsTrigger value="searches" className="text-xs">
                 <Save className="h-3 w-3 mr-1" />
@@ -436,27 +431,6 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
               </div>
             </TabsContent>
             
-            <TabsContent value="saved" className="p-0 m-0">
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center">
-                    <BookmarkCheck className="h-4 w-4 mr-2 text-blueknight-600" />
-                    <h2 className="text-base font-medium text-blueknight-700">Saved Buyers</h2>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    className="text-xs"
-                    onClick={() => setActiveTab("scoring")}
-                  >
-                    <Settings className="h-3 w-3 mr-1" />
-                    Configure
-                  </Button>
-                </div>
-                <SavedList listingId={listingId} />
-              </div>
-            </TabsContent>
-
             <TabsContent value="searches" className="p-0 m-0">
               <div className="p-4">
                 <div className="flex items-center justify-between mb-4">
