@@ -1,11 +1,9 @@
-
 import React from 'react';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActiveProjectsTab from '../components/listings/ActiveProjectsTab';
 import ComingSoonTab from '../components/listings/ComingSoonTab';
-import BlueKnightDescription from '@/components/listings/BlueKnightDescription';
 
 // Mock data
 const mockListings = [
@@ -73,9 +71,6 @@ const Listings = () => {
           <div className="mb-4">
             <h1 className="text-2xl font-bold text-blueknight-800">All Projects ({mockListings.length})</h1>
           </div>
-          
-          {/* BlueKnight description appears at the top of the page */}
-          <BlueKnightDescription />
           
           <Tabs defaultValue="active-projects" className="w-full mt-6">
             <TabsList className="grid w-full grid-cols-3 mb-6">
