@@ -26,7 +26,6 @@ const ProjectSetupStep = ({ formData, setFormData, nextStep }) => {
   const [isValid, setIsValid] = useState(false);
   
   useEffect(() => {
-    // Validate form on initial render and when form data changes
     validateForm();
   }, [formData]);
   
@@ -154,107 +153,6 @@ const ProjectSetupStep = ({ formData, setFormData, nextStep }) => {
             required
           />
         </div>
-
-        {/* Company Overview Section */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <div className="space-y-2 mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Company Overview</h3>
-            <p className="text-sm text-gray-600">Review and edit the company overview information</p>
-          </div>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="description" className="flex items-center gap-1">
-                  Company Description <span className="text-red-500">*</span>
-                </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <InfoSection 
-                    title="Company Description" 
-                    example="Provider of sales coaching and performance improvement software to field-based commercial teams in the life sciences sector, intended to drive consistent coaching standards and elevate team effectiveness."
-                  />
-                </Popover>
-              </div>
-              <p className="text-xs text-gray-500">A structured 3-5 sentence description to the company</p>
-              <Textarea
-                id="description"
-                name="description"
-                value={formData.description || ""}
-                onChange={handleTextareaChange}
-                placeholder="Describe the company"
-                rows={4}
-                required
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="industry" className="flex items-center gap-1">
-                  Industry Category <span className="text-red-500">*</span>
-                </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <InfoSection 
-                    title="Industry Category" 
-                    example="Marketing Automation, Sales Enablement Software, Workforce Training Platforms, Compliance Management Tools, Healthcare IT, Cybersecurity Software, Cloud Infrastructure, etc."
-                  />
-                </Popover>
-              </div>
-              <p className="text-xs text-gray-500">The commercial category the company's offering fits into</p>
-              <Select 
-                value={formData.industry || ""} 
-                onValueChange={handleIndustryChange}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select industry" />
-                </SelectTrigger>
-                <SelectContent>
-                  {industries.map(industry => (
-                    <SelectItem key={industry} value={industry}>{industry}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="offering" className="flex items-center gap-1">
-                  Company Offering <span className="text-red-500">*</span>
-                </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <InfoSection 
-                    title="Company Offering" 
-                    example="Provides an intuitive platform for sales coaching, tailored to life sciences organizations."
-                  />
-                </Popover>
-              </div>
-              <p className="text-xs text-gray-500">The company's main product or service</p>
-              <Textarea
-                id="offering"
-                name="offering"
-                value={formData.offering || ""}
-                onChange={handleTextareaChange}
-                placeholder="Describe what the company offers"
-                rows={3}
-                required
-              />
-            </div>
-          </div>
-        </div>
       </div>
       
       <div className="flex justify-end pt-4">
@@ -271,49 +169,13 @@ const ProjectSetupStep = ({ formData, setFormData, nextStep }) => {
   );
 };
 
-// AI Company Profiling
+// Step 2: AI Company Profiling - Now only for website input and analysis
 const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) => {
   const [website, setWebsite] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [animatingFields, setAnimatingFields] = useState([]);
   const [analysisComplete, setAnalysisComplete] = useState(false);
-  const [inputValue, setInputValue] = useState({
-    productTags: "",
-    useCase: ""
-  });
-  
-  // Functions for Tags & Positioning section
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
-  
-  // Simple tag management for chip inputs
-  const handleAddTag = (field: string, tag: string) => {
-    if (!tag.trim()) return;
-    
-    setFormData(prev => ({
-      ...prev,
-      [field]: [...(prev[field] || []), tag.trim()]
-    }));
-    
-    // Reset the input value after adding a tag
-    setInputValue(prev => ({ ...prev, [field]: "" }));
-  };
-  
-  const handleRemoveTag = (field: string, index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
-    }));
-  };
-  
-  const handleKeyDown = (field: string, e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddTag(field, inputValue[field]);
-    }
-  };
   
   const handleWebsiteSubmit = (e) => {
     e.preventDefault();
@@ -380,23 +242,6 @@ const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) =
         }, 3000); // Show completion animation for 3 seconds before proceeding
       }
     }, 50); // Update frequently for smoother animation
-  };
-
-  // Delivery methods
-  const deliveryMethods = ["Cloud-based", "On-premise", "Mobile App", "API", "Hardware", "Hybrid"];
-  
-  // Supply chain roles
-  const supplyChainRoles = ["Software Provider", "Hardware Manufacturer", "Service Provider", "Distributor", "Reseller"];
-
-  const InfoSection = ({ title, example }) => {
-    return (
-      <PopoverContent className="w-80 p-4">
-        <div className="space-y-2">
-          <h4 className="font-medium text-sm">Example:</h4>
-          <p className="text-sm text-gray-700">{example}</p>
-        </div>
-      </PopoverContent>
-    );
   };
 
   return (
@@ -490,184 +335,7 @@ const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) =
             )}
           </div>
         </div>
-      ) : (
-        <div className="mt-10 pt-6 border-t border-gray-200">
-          <div className="space-y-2 mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Tags & Positioning</h3>
-            <p className="text-sm text-gray-600">Define the company's market position and key attributes</p>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Product/Service Keywords</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <InfoSection 
-                    title="Product Tags" 
-                    example="sales coaching platform, learning management system, compliance software, analytics dashboard, training automation tool"
-                  />
-                </Popover>
-              </div>
-              <p className="text-xs text-gray-500">Keywords that describe the company's key offerings</p>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {formData.productTags?.map((tag, index) => (
-                  <div 
-                    key={index} 
-                    className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-sm flex items-center gap-1"
-                  >
-                    {tag}
-                    <button 
-                      type="button" 
-                      onClick={() => handleRemoveTag("productTags", index)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  value={inputValue.productTags}
-                  onChange={(e) => setInputValue(prev => ({ ...prev, productTags: e.target.value }))}
-                  onKeyDown={(e) => handleKeyDown("productTags", e)}
-                  placeholder="Add product tags"
-                  className="flex-1"
-                />
-                <Button 
-                  type="button"
-                  size="sm"
-                  onClick={() => handleAddTag("productTags", inputValue.productTags)}
-                  disabled={!inputValue.productTags}
-                >
-                  Add
-                </Button>
-              </div>
-              <p className="text-xs text-gray-500">Press Enter to add</p>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="deliveryMethod">Go-To-Market/Delivery Method</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <InfoSection 
-                    title="Delivery Method" 
-                    example="How is the company's offering being delivered or brought to market"
-                  />
-                </Popover>
-              </div>
-              <p className="text-xs text-gray-500">How is the company's offering being delivered or brought to market</p>
-              <Select 
-                value={formData.deliveryMethod || ""} 
-                onValueChange={(value) => handleSelectChange("deliveryMethod", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select delivery method" />
-                </SelectTrigger>
-                <SelectContent>
-                  {deliveryMethods.map(method => (
-                    <SelectItem key={method} value={method}>{method}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="supplyChainRole">Company's Position in Supply Chain</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <InfoSection 
-                    title="Supply Chain Role" 
-                    example="Where does the company sit on the supply chain"
-                  />
-                </Popover>
-              </div>
-              <p className="text-xs text-gray-500">Where does the company sit on the supply chain</p>
-              <Select 
-                value={formData.supplyChainRole || ""} 
-                onValueChange={(value) => handleSelectChange("supplyChainRole", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select role in supply chain" />
-                </SelectTrigger>
-                <SelectContent>
-                  {supplyChainRoles.map(role => (
-                    <SelectItem key={role} value={role}>{role}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Functional Category</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <InfoSection 
-                    title="Functional Category" 
-                    example="What does the company build, deliver or enable - not the industry it serves"
-                  />
-                </Popover>
-              </div>
-              <p className="text-xs text-gray-500">What does the company build, deliver or enable - not the industry it serves</p>
-              <div className="flex flex-wrap gap-2 mb-2">
-                {formData.useCase?.map((tag, index) => (
-                  <div 
-                    key={index} 
-                    className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-sm flex items-center gap-1"
-                  >
-                    {tag}
-                    <button 
-                      type="button" 
-                      onClick={() => handleRemoveTag("useCase", index)}
-                      className="text-blue-500 hover:text-blue-700"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  value={inputValue.useCase}
-                  onChange={(e) => setInputValue(prev => ({ ...prev, useCase: e.target.value }))}
-                  onKeyDown={(e) => handleKeyDown("useCase", e)}
-                  placeholder="Add functional categories"
-                  className="flex-1"
-                />
-                <Button 
-                  type="button"
-                  size="sm"
-                  onClick={() => handleAddTag("useCase", inputValue.useCase)}
-                  disabled={!inputValue.useCase}
-                >
-                  Add
-                </Button>
-              </div>
-              <p className="text-xs text-gray-500">Press Enter to add</p>
-            </div>
-          </div>
-        </div>
-      )}
+      ) : null}
 
       <div className="flex justify-between pt-4">
         <Button 
@@ -693,25 +361,361 @@ const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) =
   );
 };
 
-// Base component for Company Profile sections
-const SectionContainer = ({ children, title, description }) => {
+// NEW Step 3: Company Profile - First section is Company Overview
+const CompanyProfileStep = ({ formData, setFormData, nextStep, prevStep }) => {
+  const [inputValue, setInputValue] = useState({
+    productTags: "",
+    useCase: ""
+  });
+  
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+  
+  const handleAddTag = (field: string, tag: string) => {
+    if (!tag.trim()) return;
+    
+    setFormData(prev => ({
+      ...prev,
+      [field]: [...(prev[field] || []), tag.trim()]
+    }));
+    
+    setInputValue(prev => ({ ...prev, [field]: "" }));
+  };
+  
+  const handleRemoveTag = (field: string, index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field].filter((_, i) => i !== index)
+    }));
+  };
+  
+  const handleKeyDown = (field: string, e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddTag(field, inputValue[field]);
+    }
+  };
+  
+  const deliveryMethods = ["Cloud-based", "On-premise", "Mobile App", "API", "Hardware", "Hybrid"];
+  
+  const supplyChainRoles = ["Software Provider", "Hardware Manufacturer", "Service Provider", "Distributor", "Reseller"];
+  
+  const industries = [
+    "Technology", "Healthcare", "Finance", "Manufacturing", "Retail", "Energy", 
+    "Real Estate", "Media", "Telecommunications", "Transportation", "Education"
+  ];
+
+  const InfoSection = ({ title, example }) => {
+    return (
+      <PopoverContent className="w-80 p-4">
+        <div className="space-y-2">
+          <h4 className="font-medium text-sm">Example:</h4>
+          <p className="text-sm text-gray-700">{example}</p>
+        </div>
+      </PopoverContent>
+    );
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="space-y-2">
-        <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
-        <p className="text-sm text-gray-600">{description}</p>
+        <h2 className="text-xl font-semibold text-gray-800">Company Profile</h2>
+        <p className="text-sm text-gray-600">Review and complete the company's profile information</p>
       </div>
       
-      <Card className="border-t-4 border-t-blueknight-500">
-        <CardContent className="pt-6">
-          {children}
-        </CardContent>
-      </Card>
+      {/* Company Overview Section */}
+      <div className="space-y-4">
+        <div className="space-y-2 mb-4">
+          <h3 className="text-lg font-semibold text-gray-800">Company Overview</h3>
+          <p className="text-sm text-gray-600">Provide essential information about the company</p>
+        </div>
+        
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="description" className="flex items-center gap-1">
+                Company Description <span className="text-red-500">*</span>
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <InfoSection 
+                  title="Company Description" 
+                  example="Provider of sales coaching and performance improvement software to field-based commercial teams in the life sciences sector, intended to drive consistent coaching standards and elevate team effectiveness."
+                />
+              </Popover>
+            </div>
+            <p className="text-xs text-gray-500">A structured 3-5 sentence description to the company</p>
+            <Textarea
+              id="description"
+              name="description"
+              value={formData.description || ""}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              placeholder="Describe the company"
+              rows={4}
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="industry" className="flex items-center gap-1">
+                Industry Category <span className="text-red-500">*</span>
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <InfoSection 
+                  title="Industry Category" 
+                  example="Marketing Automation, Sales Enablement Software, Workforce Training Platforms, Compliance Management Tools, Healthcare IT, Cybersecurity Software, Cloud Infrastructure, etc."
+                />
+              </Popover>
+            </div>
+            <p className="text-xs text-gray-500">The commercial category the company's offering fits into</p>
+            <Select 
+              value={formData.industry || ""} 
+              onValueChange={(value) => handleSelectChange("industry", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select industry" />
+              </SelectTrigger>
+              <SelectContent>
+                {industries.map(industry => (
+                  <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="offering" className="flex items-center gap-1">
+                Company Offering <span className="text-red-500">*</span>
+              </Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <InfoSection 
+                  title="Company Offering" 
+                  example="Provides an intuitive platform for sales coaching, tailored to life sciences organizations."
+                />
+              </Popover>
+            </div>
+            <p className="text-xs text-gray-500">The company's main product or service</p>
+            <Textarea
+              id="offering"
+              name="offering"
+              value={formData.offering || ""}
+              onChange={(e) => setFormData(prev => ({ ...prev, offering: e.target.value }))}
+              placeholder="Describe what the company offers"
+              rows={3}
+              required
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Product/Service Keywords</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <InfoSection 
+                  title="Product Tags" 
+                  example="sales coaching platform, learning management system, compliance software, analytics dashboard, training automation tool"
+                />
+              </Popover>
+            </div>
+            <p className="text-xs text-gray-500">Keywords that describe the company's key offerings</p>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.productTags?.map((tag, index) => (
+                <div 
+                  key={index} 
+                  className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                >
+                  {tag}
+                  <button 
+                    type="button" 
+                    onClick={() => handleRemoveTag("productTags", index)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={inputValue.productTags}
+                onChange={(e) => setInputValue(prev => ({ ...prev, productTags: e.target.value }))}
+                onKeyDown={(e) => handleKeyDown("productTags", e)}
+                placeholder="Add product tags"
+                className="flex-1"
+              />
+              <Button 
+                type="button"
+                size="sm"
+                onClick={() => handleAddTag("productTags", inputValue.productTags)}
+                disabled={!inputValue.productTags}
+              >
+                Add
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500">Press Enter to add</p>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="deliveryMethod">Go-To-Market/Delivery Method</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <InfoSection 
+                  title="Delivery Method" 
+                  example="How is the company's offering being delivered or brought to market"
+                />
+              </Popover>
+            </div>
+            <p className="text-xs text-gray-500">How is the company's offering being delivered or brought to market</p>
+            <Select 
+              value={formData.deliveryMethod || ""} 
+              onValueChange={(value) => handleSelectChange("deliveryMethod", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select delivery method" />
+              </SelectTrigger>
+              <SelectContent>
+                {deliveryMethods.map(method => (
+                  <SelectItem key={method} value={method}>{method}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="supplyChainRole">Company's Position in Supply Chain</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <InfoSection 
+                  title="Supply Chain Role" 
+                  example="Where does the company sit on the supply chain"
+                />
+              </Popover>
+            </div>
+            <p className="text-xs text-gray-500">Where does the company sit on the supply chain</p>
+            <Select 
+              value={formData.supplyChainRole || ""} 
+              onValueChange={(value) => handleSelectChange("supplyChainRole", value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select role in supply chain" />
+              </SelectTrigger>
+              <SelectContent>
+                {supplyChainRoles.map(role => (
+                  <SelectItem key={role} value={role}>{role}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Functional Category</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-6 w-6">
+                    <Info className="h-4 w-4" />
+                  </Button>
+                </PopoverTrigger>
+                <InfoSection 
+                  title="Functional Category" 
+                  example="What does the company build, deliver or enable - not the industry it serves"
+                />
+              </Popover>
+            </div>
+            <p className="text-xs text-gray-500">What does the company build, deliver or enable - not the industry it serves</p>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.useCase?.map((tag, index) => (
+                <div 
+                  key={index} 
+                  className="bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-sm flex items-center gap-1"
+                >
+                  {tag}
+                  <button 
+                    type="button" 
+                    onClick={() => handleRemoveTag("useCase", index)}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={inputValue.useCase}
+                onChange={(e) => setInputValue(prev => ({ ...prev, useCase: e.target.value }))}
+                onKeyDown={(e) => handleKeyDown("useCase", e)}
+                placeholder="Add functional categories"
+                className="flex-1"
+              />
+              <Button 
+                type="button"
+                size="sm"
+                onClick={() => handleAddTag("useCase", inputValue.useCase)}
+                disabled={!inputValue.useCase}
+              >
+                Add
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500">Press Enter to add</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex justify-between pt-4">
+        <Button 
+          onClick={prevStep}
+          variant="outline"
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+
+        <Button 
+          onClick={nextStep}
+          className="flex items-center gap-2"
+        >
+          Next Section
+          <ArrowRight className="h-4 w-4" />
+        </Button>
+      </div>
     </div>
   );
 };
 
-// Step 3: Problem & Use Case (was Step 4 before)
+// Now this becomes Step 4: Problem & Use Case
 const ProblemUseCaseSection = ({ formData, setFormData, nextStep, prevStep }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -809,7 +813,7 @@ const ProblemUseCaseSection = ({ formData, setFormData, nextStep, prevStep }) =>
   );
 };
 
-// Step 4: Competitive & Financials (was Step 5 before)
+// Now this becomes Step 5: Competitive & Financials
 const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevStep }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -928,7 +932,7 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
   );
 };
 
-// Step 5: Target Customer Profile (was Step 6 before)
+// Now this becomes Step 6: Target Customer Profile
 const TargetCustomerSection = ({ formData, setFormData, nextStep, prevStep }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -1118,7 +1122,7 @@ const TargetCustomerSection = ({ formData, setFormData, nextStep, prevStep }) =>
   );
 };
 
-// Step 6: Buyer Preferences (was Step 7 before)
+// Now this becomes Step 7: Buyer Preferences
 const BuyerPreferencesSection = ({ formData, setFormData, handleSubmit, prevStep }) => {
   const [includeGeography, setIncludeGeography] = useState(true);
   const [excludeGeography, setExcludeGeography] = useState(false);
@@ -1403,12 +1407,11 @@ const ListingForm = () => {
     country: '',
     employeeCount: '',
     website: '',
-    description: '', // Moved from section 2
-    industry: '', // Moved from section 2
-    offering: '', // Moved from section 2
+    description: '',
+    industry: '',
+    offering: '',
     includeGeographies: [],
     excludeGeographies: [],
-    // Additional fields will be added by the AI enrichment
   });
   
   const navigate = useNavigate();
@@ -1424,20 +1427,18 @@ const ListingForm = () => {
   };
   
   const handleSubmit = () => {
-    // Show confirmation screen instead of immediate redirect
     setShowConfirmation(true);
     toast({
       title: "Project created successfully",
     });
   };
 
-  // Progress indicators
   const renderStepIndicator = () => {
-    // Define all steps
     const steps = [
       { number: 1, label: "Project Setup" },
       { number: 2, label: "AI Company Profiling" },
-      { number: 3, label: "Complete Profile" }
+      { number: 3, label: "Company Profile" },
+      { number: 4, label: "Complete Profile" }
     ];
 
     return (
@@ -1467,18 +1468,18 @@ const ListingForm = () => {
         
         <div className="flex justify-between mt-1">
           <span className="text-xs font-medium">Project Setup</span>
-          <span className="text-xs font-medium">AI Company Profiling</span>
+          <span className="text-xs font-medium">AI Profiling</span>
+          <span className="text-xs font-medium">Company Profile</span>
           <span className="text-xs font-medium">Complete Profile</span>
         </div>
 
-        {/* Current section indicator for profile section steps */}
-        {currentStep > 2 && (
+        {currentStep > 3 && (
           <div className="mt-6 text-sm font-medium text-gray-600">
-            <span>Section {currentStep - 2} of 4: </span>
+            <span>Section {currentStep - 3} of 4: </span>
             <span className="text-blueknight-600 font-semibold">
-              {currentStep === 3 ? "Problem & Use Case" :
-               currentStep === 4 ? "Competitive & Financials" :
-               currentStep === 5 ? "Target Customer Profile" :
+              {currentStep === 4 ? "Problem & Use Case" :
+               currentStep === 5 ? "Competitive & Financials" :
+               currentStep === 6 ? "Target Customer Profile" :
                "Buyer Preferences"}
             </span>
           </div>
@@ -1487,7 +1488,6 @@ const ListingForm = () => {
     );
   };
 
-  // If showing confirmation, render that instead
   if (showConfirmation) {
     return <ConfirmationScreen navigate={navigate} />;
   }
@@ -1514,6 +1514,15 @@ const ListingForm = () => {
       )}
       
       {currentStep === 3 && (
+        <CompanyProfileStep
+          formData={formData}
+          setFormData={setFormData}
+          nextStep={nextStep}
+          prevStep={prevStep}
+        />
+      )}
+      
+      {currentStep === 4 && (
         <ProblemUseCaseSection 
           formData={formData}
           setFormData={setFormData}
@@ -1522,7 +1531,7 @@ const ListingForm = () => {
         />
       )}
 
-      {currentStep === 4 && (
+      {currentStep === 5 && (
         <CompetitiveFinancialsSection 
           formData={formData}
           setFormData={setFormData}
@@ -1531,7 +1540,7 @@ const ListingForm = () => {
         />
       )}
 
-      {currentStep === 5 && (
+      {currentStep === 6 && (
         <TargetCustomerSection 
           formData={formData}
           setFormData={setFormData}
@@ -1540,7 +1549,7 @@ const ListingForm = () => {
         />
       )}
 
-      {currentStep === 6 && (
+      {currentStep === 7 && (
         <BuyerPreferencesSection 
           formData={formData}
           setFormData={setFormData}
