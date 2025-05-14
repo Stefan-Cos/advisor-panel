@@ -95,7 +95,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
         toggleFilterSidebar={toggleFilterSidebar} 
       />
       
-      {/* Render the FilterSidebar when visible */}
+      {/* Filter Sidebar Content Injection */}
       {filterVisible && <FilterSidebar />}
       
       {/* Description component rendered outside the tab-switching area */}

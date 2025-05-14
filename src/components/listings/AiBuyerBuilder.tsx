@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from '@/lib/utils';
@@ -149,6 +148,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     setFilterVisible(!filterVisible);
   };
 
+  // Handle saving a search
   const handleSaveSearch = (searchName: string) => {
     toast({
       title: "Search Saved",
@@ -182,6 +182,15 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
 
   return (
     <div className="bg-white shadow-sm rounded-lg border border-gray-200">
+      {/* Filter Sidebar Toggle */}
+      <FilterSidebarToggle 
+        filterVisible={filterVisible} 
+        toggleFilterSidebar={toggleFilterSidebar} 
+      />
+      
+      {/* Filter Sidebar Content Injection */}
+      {filterVisible && <FilterSidebar />}
+      
       <Tabs defaultValue="scoring" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="border-b border-gray-200">
           <div className="px-4 py-2">
@@ -198,62 +207,51 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
           </div>
         </div>
 
-        <div className="flex relative">
-          {/* Filter Sidebar Toggle */}
-          <FilterSidebarToggle 
-            filterVisible={filterVisible} 
-            toggleFilterSidebar={toggleFilterSidebar} 
-          />
+        <div className={cn(
+          "transition-all duration-300",
+          filterVisible ? "ml-[280px]" : "ml-0"
+        )}>
+          <TabsContent value="scoring" className="p-0 m-0">
+            {processing ? (
+              <ProcessingAnimation 
+                progressValue={progressValue}
+                processingStep={processingStep}
+                scoringConfig={scoringConfig}
+              />
+            ) : showMatches ? (
+              <MatchedResults 
+                listingId={listingId}
+                handleSaveSearch={handleSaveSearch}
+                handleReconfigure={handleReconfigure}
+              />
+            ) : (
+              <ScoringConfiguration 
+                scoringConfig={scoringConfig}
+                handleConfigToggle={handleConfigToggle}
+                handleWeightChange={handleWeightChange}
+                applyScoring={applyScoring}
+              />
+            )}
+          </TabsContent>
           
-          <div className={cn(
-            "transition-all duration-300 flex-grow",
-            filterVisible ? "pl-[280px]" : "pl-0"
-          )}>
-            {/* Render the FilterSidebar inside the toggle component wrapper */}
-            {filterVisible && <FilterSidebar />}
-            
-            <TabsContent value="scoring" className="p-0 m-0">
-              {processing ? (
-                <ProcessingAnimation 
-                  progressValue={progressValue}
-                  processingStep={processingStep}
-                  scoringConfig={scoringConfig}
-                />
-              ) : showMatches ? (
-                <MatchedResults 
-                  listingId={listingId}
-                  handleSaveSearch={handleSaveSearch}
-                  handleReconfigure={handleReconfigure}
-                />
-              ) : (
-                <ScoringConfiguration 
-                  scoringConfig={scoringConfig}
-                  handleConfigToggle={handleConfigToggle}
-                  handleWeightChange={handleWeightChange}
-                  applyScoring={applyScoring}
-                />
-              )}
-            </TabsContent>
-            
-            <TabsContent value="searches" className="p-0 m-0">
-              {selectedSavedSearch ? (
-                <SavedSearchDetails 
-                  selectedSearch={savedSearches.find(s => s.id === selectedSavedSearch)!}
-                  buyers={getFormattedSavedSearchBuyers(selectedSavedSearch)}
-                  savedBuyers={savedBuyers}
-                  expandedRationales={expandedRationales}
-                  onBack={() => setSelectedSavedSearch(null)}
-                  onAddToSaved={handleAddToSaved}
-                  toggleRationale={toggleRationale}
-                />
-              ) : (
-                <SavedSearchesList 
-                  savedSearches={savedSearches}
-                  onSelectSearch={handleLoadSavedSearch}
-                />
-              )}
-            </TabsContent>
-          </div>
+          <TabsContent value="searches" className="p-0 m-0">
+            {selectedSavedSearch ? (
+              <SavedSearchDetails 
+                selectedSearch={savedSearches.find(s => s.id === selectedSavedSearch)!}
+                buyers={getFormattedSavedSearchBuyers(selectedSavedSearch)}
+                savedBuyers={savedBuyers}
+                expandedRationales={expandedRationales}
+                onBack={() => setSelectedSavedSearch(null)}
+                onAddToSaved={handleAddToSaved}
+                toggleRationale={toggleRationale}
+              />
+            ) : (
+              <SavedSearchesList 
+                savedSearches={savedSearches}
+                onSelectSearch={handleLoadSavedSearch}
+              />
+            )}
+          </TabsContent>
         </div>
       </Tabs>
     </div>

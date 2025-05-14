@@ -30,12 +30,13 @@ const FilterSidebarToggle: React.FC<FilterSidebarToggleProps> = ({
         </div>
       </div>
       
-      {/* Floating Filter Sidebar */}
+      {/* Floating Fixed Filter Sidebar */}
       <div className={cn(
-        "fixed top-[64px] bottom-0 left-0 transition-all duration-300 ease-in-out z-10",
+        "fixed top-[64px] left-0 bottom-0 w-[280px] bg-white border-r border-gray-200 shadow-md overflow-hidden transition-all duration-300 ease-in-out z-10",
         filterVisible ? "translate-x-0" : "-translate-x-[280px]"
       )}>
-        <div className="w-[280px] bg-white border-r border-gray-200 shadow-md h-full">
+        {/* Container for the sidebar content (child component will be injected here) */}
+        <div className="h-full">
           {/* FilterSidebar component is imported in the parent */}
         </div>
       </div>
