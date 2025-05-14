@@ -17,18 +17,18 @@ const FilterSidebarToggle: React.FC<FilterSidebarToggleProps> = ({
 }) => {
   return (
     <>
-      {/* Toggle button for the sidebar */}
+      {/* Toggle button for the sidebar - positioned below the main sidebar */}
       <div 
         className={cn(
-          "fixed top-[100px] left-0 flex items-center justify-center p-1 bg-white border border-gray-200 rounded-r-md shadow-sm cursor-pointer z-20 transition-all duration-300",
+          "fixed top-[180px] left-0 flex items-center justify-center p-1 bg-[#001437] border border-gray-200 rounded-r-md shadow-sm cursor-pointer z-20 transition-all duration-300",
           filterVisible ? "left-[300px]" : "left-0"
         )}
         onClick={toggleFilterSidebar}
       >
         {filterVisible ? (
-          <ChevronLeft className="h-5 w-5 text-gray-600" />
+          <ChevronLeft className="h-5 w-5 text-white" />
         ) : (
-          <ChevronRight className="h-5 w-5 text-gray-600" />
+          <ChevronRight className="h-5 w-5 text-white" />
         )}
       </div>
       
