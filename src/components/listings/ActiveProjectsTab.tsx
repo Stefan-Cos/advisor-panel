@@ -52,20 +52,20 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
       <div className="flex justify-start mb-4">
         <Link
           to="/add-listing"
-          className="btn-primary flex items-center bg-gradient-to-r from-blueknight-500 to-blue-500 hover:from-blueknight-600 hover:to-blue-600 text-white px-4 py-2 rounded-md transition-colors shadow-md hover:shadow-lg"
+          className="btn-primary flex items-center bg-blueknight-500 hover:bg-blueknight-600 text-white px-4 py-2 rounded-md transition-colors"
         >
           <Plus className="mr-2 h-5 w-5" />
           Add Project
         </Link>
       </div>
       
-      <div className="bg-white shadow-md rounded-lg border border-gray-200 overflow-hidden glass-effect">
+      <div className="bg-white shadow-sm rounded-lg border border-gray-200 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow className="bg-gradient-to-r from-blueknight-600 to-blue-700">
+            <TableRow className="bg-blueknight-500">
               <TableHead className="text-white font-medium">Company Name</TableHead>
               <TableHead className="text-white font-medium">Project Title</TableHead>
-              <TableHead className="text-white font-medium text-center">Date Created</TableHead>
+              <TableHead className="text-white font-medium text-center">Date</TableHead>
               <TableHead className="text-white font-medium text-center">Saved Buyers</TableHead>
               <TableHead className="text-white font-medium">Advisor</TableHead>
               <TableHead className="text-white font-medium text-center">Project Form</TableHead>
@@ -74,15 +74,11 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
           </TableHeader>
           <TableBody>
             {currentItems.map((listing) => (
-              <TableRow key={listing.id} className="hover:bg-gray-50/80 transition-colors duration-150">
-                <TableCell className="font-medium">{listing.companyName}</TableCell>
+              <TableRow key={listing.id} className="hover:bg-gray-50">
+                <TableCell>{listing.companyName}</TableCell>
                 <TableCell>{listing.projectTitle}</TableCell>
                 <TableCell className="text-center">{new Date(listing.date).toLocaleDateString()}</TableCell>
-                <TableCell className="text-center">
-                  <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-800 font-medium text-xs">
-                    {listing.savedBuyers}
-                  </span>
-                </TableCell>
+                <TableCell className="text-center">{listing.savedBuyers}</TableCell>
                 <TableCell>{listing.advisorCreated}</TableCell>
                 <TableCell className="text-center">
                   <Link 
@@ -96,7 +92,7 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
                 <TableCell className="text-center">
                   <Link
                     to={`/listings/${listing.id}`}
-                    className="px-3 py-1.5 bg-gradient-to-r from-blueknight-500 to-blue-500 hover:from-blueknight-600 hover:to-blue-600 text-white rounded-md text-sm font-medium transition-colors inline-block shadow-sm hover:shadow-md"
+                    className="px-3 py-1.5 bg-blueknight-500 hover:bg-blueknight-600 text-white rounded-md text-sm font-medium transition-colors inline-block"
                   >
                     Create Buyer Search
                   </Link>
@@ -107,7 +103,7 @@ const ActiveProjectsTab: React.FC<ActiveProjectsTabProps> = ({ listings }) => {
         </Table>
         
         {/* Pagination */}
-        <div className="p-4 border-t border-gray-200 bg-gray-50/50">
+        <div className="p-4 border-t border-gray-200">
           <Pagination>
             <PaginationContent>
               <PaginationItem>
