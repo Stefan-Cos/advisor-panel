@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
@@ -15,27 +16,22 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 const ProjectSetupStep = ({ formData, setFormData, nextStep }) => {
   const [isValid, setIsValid] = useState(false);
   
+  useEffect(() => {
+    // Validate form on initial render and when form data changes
+    validateForm();
+  }, [formData]);
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const updatedData = { ...formData, [name]: value };
-    setFormData(updatedData);
-    
-    // Validate form
-    const isFormValid = updatedData.projectName && 
-                       updatedData.companyName && 
-                       updatedData.country && 
-                       updatedData.employeeCount;
-    setIsValid(isFormValid);
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
   
   const handleCountryChange = (value: string) => {
     setFormData(prev => ({ ...prev, country: value }));
-    validateForm();
   };
 
   const handleEmployeeCountChange = (value: string) => {
     setFormData(prev => ({ ...prev, employeeCount: value }));
-    validateForm();
   };
 
   const validateForm = () => {
@@ -135,6 +131,7 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
   const [website, setWebsite] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [animatingFields, setAnimatingFields] = useState([]);
   
   const handleWebsiteSubmit = (e) => {
     e.preventDefault();
@@ -142,10 +139,29 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
     
     setIsAnalyzing(true);
     
-    // Simulate AI analysis with progress updates
+    // Simulate AI analysis with progress updates over 20 seconds
+    const totalDuration = 20000; // 20 seconds
     const interval = setInterval(() => {
       setProgress(prev => {
-        const newProgress = prev + 3;
+        const newProgress = prev + 1.67; // ~60 updates over 20 seconds
+        
+        // Animate fields flying in at different progress points
+        if (newProgress > 15 && !animatingFields.includes('description')) {
+          setAnimatingFields(prev => [...prev, 'description']);
+        }
+        if (newProgress > 30 && !animatingFields.includes('industry')) {
+          setAnimatingFields(prev => [...prev, 'industry']);
+        }
+        if (newProgress > 45 && !animatingFields.includes('productTags')) {
+          setAnimatingFields(prev => [...prev, 'productTags']);
+        }
+        if (newProgress > 60 && !animatingFields.includes('financials')) {
+          setAnimatingFields(prev => [...prev, 'financials']);
+        }
+        if (newProgress > 80 && !animatingFields.includes('customers')) {
+          setAnimatingFields(prev => [...prev, 'customers']);
+        }
+        
         if (newProgress >= 100) {
           clearInterval(interval);
           setTimeout(() => {
@@ -176,7 +192,7 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
         }
         return newProgress >= 100 ? 100 : newProgress;
       });
-    }, 100);
+    }, totalDuration / 60); // Update ~60 times over the duration
   };
 
   return (
@@ -201,6 +217,7 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
             <Button 
               type="submit" 
               disabled={!website || isAnalyzing}
+              className="bg-blueknight-600 hover:bg-blueknight-700"
             >
               Analyze
             </Button>
@@ -228,6 +245,40 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
               <p className="text-sm font-medium text-gray-500">Processing company data...</p>
             </div>
           </div>
+          
+          {/* Animated section for incoming data */}
+          <div className="space-y-4 mt-8">
+            {animatingFields.includes('description') && (
+              <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>Found company description</span>
+              </div>
+            )}
+            {animatingFields.includes('industry') && (
+              <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>Detected industry classification</span>
+              </div>
+            )}
+            {animatingFields.includes('productTags') && (
+              <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>Extracted product keywords</span>
+              </div>
+            )}
+            {animatingFields.includes('financials') && (
+              <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>Estimated financial metrics</span>
+              </div>
+            )}
+            {animatingFields.includes('customers') && (
+              <div className="animate-slide-in-right flex items-center gap-2 text-sm text-gray-600">
+                <Check className="h-4 w-4 text-green-500" />
+                <span>Identified target customer profile</span>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -244,7 +295,8 @@ const WebsiteEnrichmentStep = ({ formData, setFormData, nextStep, prevStep }) =>
         {!isAnalyzing && (
           <Button 
             onClick={nextStep}
-            className="flex items-center gap-2"
+            variant="outline"
+            className="flex items-center gap-2 text-gray-600 border-gray-300"
           >
             Proceed Without Analysis
             <ArrowRight className="h-4 w-4" />
@@ -1090,7 +1142,7 @@ const ListingForm = () => {
     // Define all steps
     const steps = [
       { number: 1, label: "Project Setup" },
-      { number: 2, label: "Website Enrichment" },
+      { number: 2, label: "AI Company Profiling" }, // Changed from "Website Enrichment"
       { number: 3, label: "Company Overview" },
       { number: 4, label: "Tags & Positioning" },
       { number: 5, label: "Problem & Use Case" },
@@ -1126,7 +1178,7 @@ const ListingForm = () => {
         
         <div className="flex justify-between mt-1">
           <span className="text-xs font-medium">Project Setup</span>
-          <span className="text-xs font-medium">Website Enrichment</span>
+          <span className="text-xs font-medium">AI Company Profiling</span> {/* Changed from "Website Enrichment" */}
           <span className="text-xs font-medium">Complete Profile</span>
         </div>
 
