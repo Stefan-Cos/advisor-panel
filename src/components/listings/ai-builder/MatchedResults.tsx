@@ -1,12 +1,22 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Target, Save, Settings } from 'lucide-react';
 import BuyerListNew from '../../buyers/BuyerListNew';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface MatchedResultsProps {
   listingId: string;
-  handleSaveSearch: () => void;
+  handleSaveSearch: (searchName: string) => void;
   handleReconfigure: () => void;
 }
 
@@ -15,6 +25,21 @@ const MatchedResults: React.FC<MatchedResultsProps> = ({
   handleSaveSearch,
   handleReconfigure
 }) => {
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  const [searchName, setSearchName] = useState('');
+
+  const handleOpenSaveDialog = () => {
+    const currentDate = new Date();
+    const defaultName = `Search ${currentDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+    setSearchName(defaultName);
+    setSaveDialogOpen(true);
+  };
+
+  const handleSaveConfirm = () => {
+    handleSaveSearch(searchName);
+    setSaveDialogOpen(false);
+  };
+
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
@@ -24,7 +49,7 @@ const MatchedResults: React.FC<MatchedResultsProps> = ({
         </div>
         <div className="flex gap-2">
           <Button 
-            onClick={handleSaveSearch}
+            onClick={handleOpenSaveDialog}
             variant="outline" 
             size="sm" 
             className="text-xs"
@@ -44,6 +69,36 @@ const MatchedResults: React.FC<MatchedResultsProps> = ({
         </div>
       </div>
       <BuyerListNew listingId={listingId} />
+
+      {/* Save Search Dialog */}
+      <Dialog open={saveDialogOpen} onOpenChange={setSaveDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Save Search</DialogTitle>
+            <DialogDescription>
+              Give your search a name to easily find it later.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value)}
+                className="col-span-3"
+                autoFocus
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setSaveDialogOpen(false)}>Cancel</Button>
+            <Button type="submit" onClick={handleSaveConfirm}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

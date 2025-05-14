@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, Save } from 'lucide-react';
-import SavedSearchTable from '../../buyers/components/SavedSearchTable';
+import { Search, ChevronLeft } from 'lucide-react';
+import BuyerTabs from '../../buyers/components/BuyerTabs';
+import BuyerTables from '../../buyers/components/BuyerTables';
 
 interface SavedSearch {
   id: string;
@@ -30,6 +31,14 @@ const SavedSearchDetails: React.FC<SavedSearchDetailsProps> = ({
   onAddToSaved,
   toggleRationale
 }) => {
+  const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
+  const [companyNameSearch, setCompanyNameSearch] = useState('');
+
+  // Filter buyers by type based on the active tab
+  const filteredBuyers = buyers.filter(buyer => 
+    buyer.type === activeTab
+  );
+
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
@@ -58,18 +67,24 @@ const SavedSearchDetails: React.FC<SavedSearchDetailsProps> = ({
               Saved on {selectedSearch.date}
             </p>
           </div>
-          <Button variant="outline" size="sm" className="text-xs">
-            <Save className="h-3 w-3 mr-1" />
-            Update Search
-          </Button>
         </div>
         
-        <SavedSearchTable
-          buyers={buyers}
-          savedBuyers={savedBuyers}
+        <div className="mb-4">
+          <BuyerTabs 
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+          />
+        </div>
+
+        <BuyerTables
+          activeTab={activeTab}
+          buyers={filteredBuyers}
+          companyNameSearch={companyNameSearch}
+          setCompanyNameSearch={setCompanyNameSearch}
           expandedRationales={expandedRationales}
-          onAddToSaved={onAddToSaved}
+          savedBuyers={savedBuyers}
           toggleRationale={toggleRationale}
+          handleAddToSaved={onAddToSaved}
         />
       </div>
     </div>

@@ -149,10 +149,10 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     setFilterVisible(!filterVisible);
   };
 
-  const handleSaveSearch = () => {
+  const handleSaveSearch = (searchName: string) => {
     toast({
       title: "Search Saved",
-      description: "Your current search has been saved successfully."
+      description: `"${searchName}" has been saved successfully.`
     });
   };
 
