@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from '@/lib/utils';
@@ -207,10 +208,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
           </div>
         </div>
 
-        <div className={cn(
-          "transition-all duration-300",
-          filterVisible ? "ml-[280px]" : "ml-0"
-        )}>
+        <div>
           <TabsContent value="scoring" className="p-0 m-0">
             {processing ? (
               <ProcessingAnimation 

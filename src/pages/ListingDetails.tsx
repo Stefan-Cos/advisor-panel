@@ -27,7 +27,7 @@ const ListingDetailsPage = () => {
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
         
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="flex-1 p-6 overflow-auto relative">
           <div className="w-full">
             <Routes>
               <Route path="/" element={<ListingDetails {...listingData} />} />

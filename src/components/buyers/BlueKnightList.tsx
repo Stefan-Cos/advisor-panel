@@ -9,7 +9,6 @@ import PEBuyerTable from './components/PEBuyerTable';
 import BlueKnightDescription from '../listings/BlueKnightDescription';
 import FilterSidebarToggle from '../listings/ai-builder/FilterSidebarToggle';
 import FilterSidebar from '../listings/FilterSidebar';
-import { cn } from '@/lib/utils';
 
 interface BlueKnightListProps {
   listingId: string;
@@ -101,10 +100,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
       {/* Description component rendered outside the tab-switching area */}
       <BlueKnightDescription />
       
-      <div className={cn(
-        "bg-white shadow-sm rounded-lg border border-gray-200 p-6 transition-all duration-300",
-        filterVisible ? "ml-[280px]" : "ml-0"
-      )}>
+      <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
           <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
