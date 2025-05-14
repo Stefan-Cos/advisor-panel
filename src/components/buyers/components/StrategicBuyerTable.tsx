@@ -24,8 +24,10 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
   getMATrackRecordColor
 }) => {
   return (
-    <div className="relative overflow-hidden">
+    <div className="relative">
+      {/* Make sure the BlueKnightDescription is prominently displayed */}
       <BlueKnightDescription />
+      
       <ScrollArea className="h-[600px] w-full" orientation="both">
         <div className="min-w-max">
           <Table>

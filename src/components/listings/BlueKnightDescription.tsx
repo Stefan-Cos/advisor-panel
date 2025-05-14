@@ -4,12 +4,11 @@ import { Zap } from 'lucide-react';
 
 const BlueKnightDescription: React.FC = () => {
   return (
-    <div className="mb-6 animate-fade-in">
-      <div className="flex items-center space-x-2 mb-3">
-        <Zap className="h-5 w-5 text-purple-500" />
-        <h2 className="text-lg font-medium text-blueknight-800">BlueKnight List</h2>
+    <div className="mb-8 animate-fade-in">
+      <div className="flex items-center mb-4">
+        <h2 className="text-xl font-semibold text-blueknight-800">BlueKnight List</h2>
       </div>
-      <div className="p-4 bg-gradient-to-r from-purple-50 to-white border-l-4 border-purple-500 rounded-md shadow-sm">
+      <div className="p-5 bg-white border border-gray-200 rounded-lg shadow-sm">
         <p className="text-sm leading-relaxed text-gray-700">
           Buyers are ranked using a proprietary M&A model trained on real acquisition behavior, deal rationale, and strategic fit.
           This list reflects real-world acquirer behavior and prioritizes those most likely to pursue companies like yours.

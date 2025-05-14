@@ -29,24 +29,26 @@ const SaveButton: React.FC<SaveButtonProps> = ({
   };
 
   return (
-    <Button
-      onClick={handleSave}
-      disabled={isSaved}
-      variant="ghost"
-      size="icon"
-      className={cn(
-        "flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300",
-        isSaved 
-          ? "bg-gradient-to-r from-green-100 to-green-50 text-green-600 shadow-sm ring-1 ring-green-200" 
-          : "bg-gradient-to-r from-blueknight-100 to-blueknight-50 text-blueknight-600 hover:bg-blueknight-100 hover:shadow-md hover:text-blueknight-700"
-      )}
-      title={isSaved ? "Already saved" : "Save this buyer"}
-    >
-      <Save className={cn(
-        "h-4 w-4",
-        isSaved ? "fill-green-100 stroke-green-600" : "stroke-blueknight-600 hover:stroke-blueknight-700"
-      )} />
-    </Button>
+    <div className="flex justify-center">
+      <Button
+        onClick={handleSave}
+        disabled={isSaved}
+        variant="ghost"
+        size="icon"
+        className={cn(
+          "flex items-center justify-center w-8 h-8 rounded-full transition-all duration-300",
+          isSaved 
+            ? "bg-white text-green-600 shadow-sm ring-1 ring-green-200" 
+            : "bg-white text-blueknight-600 hover:bg-blueknight-50 hover:shadow-md"
+        )}
+        title={isSaved ? "Already saved" : "Save this buyer"}
+      >
+        <Save className={cn(
+          "h-4 w-4",
+          isSaved ? "fill-green-50 stroke-green-600" : "stroke-blueknight-600"
+        )} />
+      </Button>
+    </div>
   );
 };
 
