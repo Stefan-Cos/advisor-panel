@@ -59,6 +59,29 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
       }
     }
     
+    // Ensure rationale properties are properly formatted for rendering
+    let formattedRationale = buyer.rationale;
+    if (formattedRationale) {
+      // Make sure all nested objects with text/score are properly handled
+      const processRationaleField = (field: any) => {
+        if (field && typeof field === 'object' && 'text' in field && 'score' in field) {
+          return {
+            ...field,
+            text: field.text?.toString() || '', // Ensure text is a string
+          };
+        }
+        return field;
+      };
+      
+      formattedRationale = {
+        ...formattedRationale,
+        sectors: processRationaleField(formattedRationale.sectors),
+        previousTransactions: processRationaleField(formattedRationale.previousTransactions),
+        financialStrength: processRationaleField(formattedRationale.financialStrength),
+        overall: processRationaleField(formattedRationale.overall),
+      };
+    }
+    
     return {
       ...buyer,
       hq: buyer.location || buyer.hq, // Map location to hq for consistency
@@ -68,6 +91,7 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
       reportedDate: buyer.reportedDate || new Date().toISOString().substring(0, 10), // Add a placeholder date
       isPEVCBacked: buyer.isPEVCBacked !== undefined ? buyer.isPEVCBacked : true,
       isPublic: buyer.isPublic !== undefined ? buyer.isPublic : false,
+      rationale: formattedRationale,
     };
   });
 
