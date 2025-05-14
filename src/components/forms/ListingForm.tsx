@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
@@ -493,6 +492,108 @@ const AICompanyProfilingStep = ({ formData, setFormData, nextStep, prevStep }) =
         </div>
       ) : (
         <>
+          {/* Company Overview Section - MOVED TO BE FIRST */}
+          <div className="mt-10 pt-6 border-t border-gray-200">
+            <div className="space-y-2 mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">Company Overview</h3>
+              <p className="text-sm text-gray-600">Review and edit the company overview information</p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="description" className="flex items-center gap-1">
+                    Company Description <span className="text-red-500">*</span>
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6">
+                        <Info className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <InfoSection 
+                      title="Company Description" 
+                      example="Provider of sales coaching and performance improvement software to field-based commercial teams in the life sciences sector, intended to drive consistent coaching standards and elevate team effectiveness."
+                    />
+                  </Popover>
+                </div>
+                <p className="text-xs text-gray-500">A structured 3-5 sentence description to the company</p>
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={formData.description || ""}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Describe the company"
+                  rows={4}
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="industry" className="flex items-center gap-1">
+                    Industry Category <span className="text-red-500">*</span>
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6">
+                        <Info className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <InfoSection 
+                      title="Industry Category" 
+                      example="Marketing Automation, Sales Enablement Software, Workforce Training Platforms, Compliance Management Tools, Healthcare IT, Cybersecurity Software, Cloud Infrastructure, etc."
+                    />
+                  </Popover>
+                </div>
+                <p className="text-xs text-gray-500">The commercial category the company's offering fits into</p>
+                <Select 
+                  value={formData.industry || ""} 
+                  onValueChange={handleSelectChange("industry")}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {industries.map(industry => (
+                      <SelectItem key={industry} value={industry}>{industry}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="offering" className="flex items-center gap-1">
+                    Company Offering <span className="text-red-500">*</span>
+                  </Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6">
+                        <Info className="h-4 w-4" />
+                      </Button>
+                    </PopoverTrigger>
+                    <InfoSection 
+                      title="Company Offering" 
+                      example="Provides an intuitive platform for sales coaching, tailored to life sciences organizations."
+                    />
+                  </Popover>
+                </div>
+                <p className="text-xs text-gray-500">The company's main product or service</p>
+                <Textarea
+                  id="offering"
+                  name="offering"
+                  value={formData.offering || ""}
+                  onChange={(e) => setFormData(prev => ({ ...prev, offering: e.target.value }))}
+                  placeholder="Describe what the company offers"
+                  rows={3}
+                  required
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Tags & Positioning Section - MOVED TO BE SECOND */}
           <div className="mt-10 pt-6 border-t border-gray-200">
             <div className="space-y-2 mb-4">
               <h3 className="text-lg font-semibold text-gray-800">Tags & Positioning</h3>
