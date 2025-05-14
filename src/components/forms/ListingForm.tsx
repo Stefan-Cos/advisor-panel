@@ -61,13 +61,11 @@ const ProjectSetupStep = ({ formData, setFormData, nextStep }) => {
   };
 
   const validateForm = () => {
+    // Only check the four main fields: projectName, companyName, country, employeeCount
     const isFormValid = !!formData.projectName && 
                        !!formData.companyName && 
                        !!formData.country && 
-                       !!formData.employeeCount && 
-                       !!formData.description &&
-                       !!formData.industry &&
-                       !!formData.offering;
+                       !!formData.employeeCount;
     setIsValid(isFormValid);
   };
 
