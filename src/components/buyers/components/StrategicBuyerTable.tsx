@@ -29,7 +29,7 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
           <Table>
             <BuyerTableHeader />
             <TableBody>
-              {buyers.map((buyer) => (
+              {buyers.map((buyer, index) => (
                 <BuyerTableRow
                   key={buyer.id}
                   buyer={buyer}
@@ -38,6 +38,7 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
                   isExpanded={expandedRationales.includes(buyer.id)}
                   toggleRationale={toggleRationale}
                   getMATrackRecordColor={getMATrackRecordColor}
+                  isInTop100={index < 100} // Only the first 100 rows are considered top 100
                 />
               ))}
             </TableBody>

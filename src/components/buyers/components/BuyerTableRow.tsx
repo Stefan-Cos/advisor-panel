@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Check, Plus, ChevronRight, History } from 'lucide-react';
+import { Check, ChevronRight, History } from 'lucide-react';
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import BuyerRationale from './BuyerRationale';
@@ -15,6 +15,7 @@ interface BuyerTableRowProps {
   isExpanded: boolean;
   toggleRationale: (buyerId: string) => void;
   getMATrackRecordColor: (record: string) => string;
+  isInTop100?: boolean;
 }
 
 // Mock transaction data for M&A track record
@@ -94,7 +95,8 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
   onAddToSaved,
   isExpanded,
   toggleRationale,
-  getMATrackRecordColor
+  getMATrackRecordColor,
+  isInTop100 = true
 }) => {
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [maRecordSheetOpen, setMARecordSheetOpen] = React.useState(false);
@@ -106,50 +108,81 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
   return (
     <>
       <TableRow className={`hover:bg-gray-50 text-xs ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : ''}`}>
-        <TableCell 
-          className={`font-medium text-xs sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
-          style={{position: 'sticky', left: 0}}
-        >
-          <div className="flex items-center">
+        {/* Match Score Column - Now first */}
+        <TableCell className="text-xs">
+          <div className="flex items-center flex-col space-y-2">
+            <div className="flex items-center">
+              <div className="w-8 bg-gray-200 rounded-full h-1.5 mr-2">
+                <div
+                  className="bg-blueknight-500 h-1.5 rounded-full"
+                  style={{ width: `${buyer.matchingScore}%` }}
+                />
+              </div>
+              <span className="text-xs font-medium text-blueknight-500">{buyer.matchingScore}%</span>
+            </div>
+            
+            {/* Modern save button */}
             <button
               onClick={() => onAddToSaved(buyer.id)}
               disabled={savedBuyers.includes(buyer.id)}
-              className={`flex items-center justify-center p-1 rounded-full mr-3 self-center ${
+              className={`flex items-center justify-center p-1.5 rounded-md ${
                 savedBuyers.includes(buyer.id)
-                  ? 'bg-green-100 text-green-600 cursor-not-allowed'
-                  : 'bg-blueknight-100 text-blueknight-600 hover:bg-blueknight-200'
+                  ? 'bg-green-100 text-green-600 cursor-not-allowed border border-green-200'
+                  : 'bg-blueknight-50 text-blueknight-600 hover:bg-blueknight-100 border border-blueknight-200'
               }`}
               title={savedBuyers.includes(buyer.id) ? "Already saved" : "Save buyer"}
             >
               {savedBuyers.includes(buyer.id) ? (
-                <Check className="h-3.5 w-3.5" />
+                <Check className="h-3 w-3" />
               ) : (
-                <Plus className="h-3.5 w-3.5" />
+                <span className="text-xs font-medium">Save</span>
               )}
             </button>
-            
-            <div>
-              <div className="flex items-center gap-2">
-                <span>{buyer.name}</span>
-              </div>
-              <div className="flex items-center mt-1">
-                <button 
-                  onClick={() => setSheetOpen(true)} 
-                  className="inline-flex items-center text-xs text-blueknight-600 hover:underline"
-                >
-                  View rationale
-                  <ChevronRight className="h-3 w-3 ml-0.5" />
-                </button>
-              </div>
+          </div>
+        </TableCell>
+        
+        {/* Company Name Column */}
+        <TableCell 
+          className={`font-medium text-xs sticky left-0 z-10 ${savedBuyers.includes(buyer.id) ? 'bg-green-50' : 'bg-white'}`}
+          style={{position: 'sticky', left: 0}}
+        >
+          <div>
+            <div className="flex items-center gap-2">
+              <span>{buyer.name}</span>
+            </div>
+            <div className="flex items-center mt-1">
+              <button 
+                onClick={() => setSheetOpen(true)} 
+                className="inline-flex items-center text-xs text-blueknight-600 hover:underline"
+              >
+                View rationale
+                <ChevronRight className="h-3 w-3 ml-0.5" />
+              </button>
             </div>
           </div>
         </TableCell>
+        
+        {/* HQ Column */}
         <TableCell className="text-xs">{buyer.location || buyer.hq}</TableCell>
+        
+        {/* Employees Column */}
         <TableCell className="text-xs">{buyer.employees.toLocaleString()}</TableCell>
+        
+        {/* Short Description Column */}
         <TableCell className="text-xs">{buyer.description}</TableCell>
-        <TableCell className="text-xs">{buyer.offering || ''}</TableCell>
-        <TableCell className="text-xs">{buyer.sector || (buyer.sectors ? buyer.sectors.join(', ') : '')}</TableCell>
-        <TableCell className="text-xs">{buyer.customers || ''}</TableCell>
+        
+        {/* Overall Rationale Column (replacing Offering) */}
+        <TableCell className="text-xs">
+          {isInTop100 ? (
+            buyer.rationale?.overall?.text || "No rationale available"
+          ) : (
+            <span className="italic text-gray-400">
+              Not in top 100 results
+            </span>
+          )}
+        </TableCell>
+        
+        {/* M&A Track Record Column */}
         <TableCell className="text-xs">
           <button 
             onClick={() => setMARecordSheetOpen(true)}
@@ -160,20 +193,9 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
             <History className="h-3 w-3 ml-1 opacity-80" />
           </button>
         </TableCell>
-        <TableCell className="text-xs">
-          <div className="flex items-center">
-            <div className="w-8 bg-gray-200 rounded-full h-1.5 mr-2">
-              <div
-                className="bg-blueknight-500 h-1.5 rounded-full"
-                style={{ width: `${buyer.matchingScore}%` }}
-              />
-            </div>
-            <span className="text-xs font-medium text-blueknight-500">{buyer.matchingScore}%</span>
-          </div>
-        </TableCell>
       </TableRow>
 
-      {/* Side Panel for Buyer Rationale - Updated to be even wider */}
+      {/* Side Panel for Buyer Rationale */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent className="w-[500px] sm:w-[700px] md:w-[900px] lg:max-w-[1200px] overflow-hidden">
           <SheetHeader>
