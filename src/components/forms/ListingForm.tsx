@@ -450,14 +450,14 @@ const CompanyProfileStep = ({ formData, setFormData, nextStep, prevStep }) => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="space-y-2 mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">Section 1 of 5: Company Overview</h3>
-        <p className="text-sm text-gray-600">Provide essential information about the company</p>
+      <div className="space-y-2">
+        <h2 className="text-xl font-semibold text-gray-800">Company Profile</h2>
+        <p className="text-sm text-gray-600">Review and complete the company's profile information</p>
       </div>
       
       {/* Company Overview Section */}
       <div className="space-y-4">
-        <div className="space-y-2">
+        <div className="space-y-2 mb-4">
           <h3 className="text-lg font-semibold text-gray-800">Company Overview</h3>
           <p className="text-sm text-gray-600">Provide essential information about the company</p>
         </div>
@@ -761,7 +761,7 @@ const ProblemUseCaseSection = ({ formData, setFormData, nextStep, prevStep }) =>
 
   return (
     <SectionContainer 
-      title="Section 2 of 5: Problem & Use Case" 
+      title="Problem & Use Case" 
       description="Describe the problem solved and typical use cases"
     >
       <div className="space-y-4">
@@ -886,7 +886,7 @@ const CompetitiveFinancialsSection = ({ formData, setFormData, nextStep, prevSte
 
   return (
     <SectionContainer 
-      title="Section 3 of 5: Financials" 
+      title="Financials" 
       description="Enter financial details"
     >
       <div className="space-y-8">
@@ -1059,7 +1059,7 @@ const TargetCustomerSection = ({ formData, setFormData, nextStep, prevStep }) =>
 
   return (
     <SectionContainer 
-      title="Section 4 of 5: Target Customer Profile" 
+      title="Target Customer Profile" 
       description="Define the ideal customer profile for this company"
     >
       <div className="space-y-4">
@@ -1255,7 +1255,7 @@ const BuyerPreferencesSection = ({ formData, setFormData, handleSubmit, prevStep
 
   return (
     <SectionContainer 
-      title="Section 5 of 5: Buyer Preferences" 
+      title="Buyer Preferences" 
       description="Define preferences for potential buyers of this company"
     >
       <div className="space-y-6">
@@ -1538,6 +1538,19 @@ const ListingForm = () => {
           <span className="text-xs font-medium">AI Profiling</span>
           <span className="text-xs font-medium">Company Profile</span>
         </div>
+
+        {currentStep > 3 && (
+          <div className="mt-6 text-sm font-medium text-gray-600">
+            <span>Section {currentStep - 2} of 5: </span>
+            <span className="text-blueknight-600 font-semibold">
+              {currentStep === 3 ? "Company Overview" :
+               currentStep === 4 ? "Problem & Use Case" :
+               currentStep === 5 ? "Financials" :
+               currentStep === 6 ? "Target Customer Profile" :
+               "Buyer Preferences"}
+            </span>
+          </div>
+        )}
       </div>
     );
   };
