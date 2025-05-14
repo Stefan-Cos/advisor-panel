@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/collapsible";
 import BuyerTableHeader from './BuyerTableHeader';
 import BuyerTableRationaleRow from './BuyerTableRationaleRow';
+import BlueKnightDescription from '@/components/listings/BlueKnightDescription';
 
 interface PEBuyerTableProps {
   buyers: any[];
@@ -26,8 +27,11 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
   toggleRationale 
 }) => {
   return (
-    <div className="relative overflow-hidden">
-      <ScrollArea className="h-[600px] w-full" orientation="both">
+    <div>
+      {/* BlueKnightDescription displayed prominently at the top */}
+      <BlueKnightDescription />
+      
+      <ScrollArea className="h-[600px] w-full mt-4" orientation="both">
         <div className="min-w-max">
           <Table>
             <TableHeader>

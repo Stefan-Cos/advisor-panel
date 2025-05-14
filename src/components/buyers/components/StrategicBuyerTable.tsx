@@ -11,7 +11,7 @@ interface StrategicBuyerTableProps {
   savedBuyers: string[];
   expandedRationales: string[];
   onAddToSaved: (id: string) => void;
-  toggleRationale: (id: string) => void;
+  toggleRationale: (buyerId: string) => void;
   getMATrackRecordColor: (record: string) => string;
 }
 
@@ -24,11 +24,11 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
   getMATrackRecordColor
 }) => {
   return (
-    <div className="relative">
-      {/* Make sure the BlueKnightDescription is prominently displayed */}
+    <div>
+      {/* BlueKnightDescription displayed prominently at the top */}
       <BlueKnightDescription />
       
-      <ScrollArea className="h-[600px] w-full" orientation="both">
+      <ScrollArea className="h-[600px] w-full mt-4" orientation="both">
         <div className="min-w-max">
           <Table>
             <BuyerTableHeader />
