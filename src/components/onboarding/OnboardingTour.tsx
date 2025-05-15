@@ -1,13 +1,12 @@
-
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import tourService from '@/services/TourService';
 import 'shepherd.js/dist/css/shepherd.css';
 import { Button } from "@/components/ui/button";
 
-// Custom CSS for our tour styling
+// Custom CSS for tour styling using regular style element
 const TourStyles = () => (
-  <style jsx="true">{`
+  <style>{`
     .shepherd-element {
       border-radius: 0.5rem;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);

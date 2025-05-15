@@ -2,6 +2,24 @@
 import Shepherd from 'shepherd.js';
 import { toast } from "@/hooks/use-toast";
 
+// Define proper types for Step objects based on Shepherd.js
+type PopperPlacement = 
+  | 'auto'
+  | 'auto-start'
+  | 'auto-end'
+  | 'top'
+  | 'top-start'
+  | 'top-end'
+  | 'bottom'
+  | 'bottom-start'
+  | 'bottom-end'
+  | 'right'
+  | 'right-start'
+  | 'right-end'
+  | 'left'
+  | 'left-start'
+  | 'left-end';
+
 // Tour steps configuration
 const tourSteps = [
   {
@@ -10,7 +28,7 @@ const tourSteps = [
     text: 'We help M&A advisors accelerate buyer discovery using our M&A-grade AI. Our system matches your deals to the right strategic and PE buyers using data-driven analysis.',
     attachTo: {
       element: 'body',
-      on: 'bottom'
+      on: 'bottom' as PopperPlacement
     },
     buttons: [
       {
@@ -35,7 +53,7 @@ const tourSteps = [
     text: 'This is your command center. Track your projects, access insights, and begin your buyer searches directly from here.',
     attachTo: {
       element: '.premium-card',
-      on: 'bottom'
+      on: 'bottom' as PopperPlacement
     },
     buttons: [
       {
@@ -60,7 +78,7 @@ const tourSteps = [
     text: 'Start by creating a buyer search. We use AI to prefill your search based on your mandate criteria, saving you time and improving precision.',
     attachTo: {
       element: 'a[href="/add-listing"]',
-      on: 'bottom'
+      on: 'bottom' as PopperPlacement
     },
     buttons: [
       {
@@ -85,7 +103,7 @@ const tourSteps = [
     text: 'All your active mandates live here. Select a project to continue your search or refine existing buyer lists.',
     attachTo: {
       element: 'a[href="/listings"]',
-      on: 'right'
+      on: 'right' as PopperPlacement
     },
     buttons: [
       {
@@ -110,7 +128,7 @@ const tourSteps = [
     text: 'Our AI is analyzing your mandate to score buyers based on offering, positioning, use case, acquisition history, and more.',
     attachTo: {
       element: '.process-animation-placeholder',
-      on: 'bottom'
+      on: 'bottom' as PopperPlacement
     },
     buttons: [
       {
@@ -129,7 +147,7 @@ const tourSteps = [
     ],
     arrow: true,
     beforeShowPromise: function() {
-      return new Promise((resolve) => {
+      return new Promise<void>((resolve) => {
         // We'll add an animation placeholder in the BlueKnightList component
         resolve();
       });
@@ -141,7 +159,7 @@ const tourSteps = [
     text: 'This is our pre-generated list of top-fit buyers based on your criteria. Think of it as your AI-powered short list.',
     attachTo: {
       element: '#blueknight-list-section',
-      on: 'bottom'
+      on: 'bottom' as PopperPlacement
     },
     buttons: [
       {
@@ -166,7 +184,7 @@ const tourSteps = [
     text: 'Our most powerful tool. Configure multiple buyer list strategies — geographic expansion, product adjacencies, roll-ups, and more — to generate bespoke buyer lists.',
     attachTo: {
       element: '#ai-buyer-builder-section',
-      on: 'bottom'
+      on: 'bottom' as PopperPlacement
     },
     buttons: [
       {
@@ -191,7 +209,7 @@ const tourSteps = [
     text: 'You\'re ready to accelerate your dealmaking. Create your first search or explore your active projects.',
     attachTo: {
       element: 'body',
-      on: 'bottom'
+      on: 'bottom' as PopperPlacement
     },
     buttons: [
       {
