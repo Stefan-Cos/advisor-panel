@@ -29,7 +29,7 @@ const SidebarSettings = () => {
       <CollapsibleTrigger className={cn(
         "nav-link group w-full text-left",
         isSettingsOpen || location.pathname.includes('/settings')
-          ? "bg-blueknight-500 text-white" 
+          ? "bg-[#001437] text-white" 
           : "text-gray-600 hover:bg-gray-100"
       )}>
         <Settings className={cn(
@@ -46,23 +46,33 @@ const SidebarSettings = () => {
           className={cn(
             "nav-link w-full text-left",
             location.pathname.includes('/settings') && (!location.hash || location.hash === '#account')
-              ? "bg-gray-100 text-blueknight-600" 
+              ? "bg-[#001437] text-white" 
               : "text-gray-600 hover:bg-gray-100"
           )}
         >
           <Users className={cn(
             "h-4 w-4", 
             location.pathname.includes('/settings') && (!location.hash || location.hash === '#account')
-              ? "text-blueknight-600"
+              ? "text-white"
               : "text-gray-500"
           )} />
           <span>Account</span>
         </Link>
         <Link
           to="/settings#analytics" 
-          className="nav-link w-full text-left text-gray-600 hover:bg-gray-100"
+          className={cn(
+            "nav-link w-full text-left",
+            location.pathname.includes('/settings') && location.hash === '#analytics'
+              ? "bg-[#001437] text-white"
+              : "text-gray-600 hover:bg-gray-100"
+          )}
         >
-          <BarChart className="h-4 w-4 text-gray-500" />
+          <BarChart className={cn(
+            "h-4 w-4",
+            location.pathname.includes('/settings') && location.hash === '#analytics'
+              ? "text-white"
+              : "text-gray-500"
+          )} />
           <span>Analytics</span>
         </Link>
       </CollapsibleContent>

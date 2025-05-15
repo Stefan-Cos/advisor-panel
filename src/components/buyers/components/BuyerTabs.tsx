@@ -20,7 +20,7 @@ const BuyerTabs: React.FC<BuyerTabsProps> = ({
         <button
           className={`px-4 py-2 text-sm font-medium rounded-md ${
             activeTab === 'strategic'
-              ? 'bg-blueknight-500 text-white'
+              ? 'bg-[#001437] text-white'
               : 'bg-transparent hover:bg-gray-100'
           }`}
           onClick={() => setActiveTab('strategic')}
@@ -30,7 +30,7 @@ const BuyerTabs: React.FC<BuyerTabsProps> = ({
         <button
           className={`px-4 py-2 text-sm font-medium rounded-md ${
             activeTab === 'pe'
-              ? 'bg-blueknight-500 text-white'
+              ? 'bg-[#001437] text-white'
               : 'bg-transparent hover:bg-gray-100'
           }`}
           onClick={() => setActiveTab('pe')}

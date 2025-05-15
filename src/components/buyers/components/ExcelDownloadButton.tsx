@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Download } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { FileDown } from 'lucide-react';
 import { Buyer } from '../types/BuyerTypes';
 
 interface ExcelDownloadButtonProps {
@@ -10,70 +9,60 @@ interface ExcelDownloadButtonProps {
 }
 
 const ExcelDownloadButton: React.FC<ExcelDownloadButtonProps> = ({ buyers, buyerType }) => {
+  // We'll only download the first 50 results
+  const buyersToDownload = buyers.slice(0, 50);
+
   const handleDownload = () => {
-    // Only take the first 50 results
-    const limitedBuyers = buyers.slice(0, 50);
-    
-    // Define column headers based on the table
+    // Define the headers for the CSV file
     const headers = [
-      'Match Score',
-      'Company Name', 
-      'HQ', 
-      'Employees', 
-      'Short Description', 
-      'Overall Rationale',
-      'M&A Track Record'
+      'Company Name',
+      'Type',
+      'Location',
+      'Industry',
+      'Revenue Range',
+      'Match Score'
     ];
-    
-    // Create rows from the buyers data
-    const rows = limitedBuyers.map(buyer => {
-      // Extract overall rationale text safely
-      const rationaleText = buyer.rationale?.overall?.text || 
-                           buyer.rationale?.overall || 
-                           '';
-      
+
+    // Map buyer data to CSV rows
+    const csvRows = buyersToDownload.map(buyer => {
       return [
-        buyer.matchingScore.toString(),
-        buyer.name,
-        buyer.location || buyer.hq || '',
-        buyer.employees?.toString() || '0',
-        buyer.description || '',
-        typeof rationaleText === 'string' ? rationaleText : '',
-        buyer.maTrackRecord || 'N/A'
+        buyer.companyName,
+        buyer.type,
+        buyer.location,
+        buyer.industry,
+        buyer.revenueRange,
+        buyer.matchScore.toString()
       ];
     });
-    
+
     // Combine headers and rows
     const csvContent = [
       headers.join(','),
-      ...rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      ...csvRows.map(row => row.join(','))
     ].join('\n');
-    
-    // Create a Blob and download
+
+    // Create a Blob with the CSV content
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
+    
+    // Create a download link and trigger the download
     const link = document.createElement('a');
-    
-    // Set link properties
-    link.setAttribute('href', url);
+    const url = URL.createObjectURL(blob);
+    link.href = url;
     link.setAttribute('download', `${buyerType === 'strategic' ? 'Strategic_Buyers' : 'PE_Funds'}_Top50.csv`);
-    
-    // Append to body, trigger download, and clean up
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
   return (
-    <Button 
+    <button
       onClick={handleDownload}
-      size="sm" 
-      variant="outline" 
-      className="flex items-center gap-1"
+      className="ml-auto flex items-center space-x-1 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+      title="Download as Excel"
     >
-      <Download className="h-4 w-4" />
-      <span>Export Top 50</span>
-    </Button>
+      <FileDown className="h-4 w-4" />
+      <span>Export CSV</span>
+    </button>
   );
 };
 

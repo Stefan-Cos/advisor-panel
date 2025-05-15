@@ -23,7 +23,7 @@ const SettingsNavigation: React.FC<SettingsNavigationProps> = ({ activeSection }
           className={cn(
             "flex items-center px-3 py-2 text-sm font-medium rounded-md",
             activeSection === item.id
-              ? "bg-blueknight-500 text-white"
+              ? "bg-[#001437] text-white"
               : "text-gray-600 hover:bg-gray-100"
           )}
         >

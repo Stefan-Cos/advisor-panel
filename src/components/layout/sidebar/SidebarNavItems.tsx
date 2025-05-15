@@ -6,8 +6,7 @@ import {
   LayoutGrid, 
   FileText, 
   MessageSquare, 
-  Settings,
-  Users
+  Settings
 } from 'lucide-react';
 import { useSidebarState } from '@/hooks/useSidebarState';
 import { cn } from '@/lib/utils';
@@ -48,11 +47,6 @@ const SidebarNavItems: React.FC<SidebarNavItemsProps> = ({ collapsed = false }) 
       title: 'Settings',
       path: '/settings',
       icon: <Settings className="w-5 h-5" />
-    },
-    {
-      title: 'CRM',
-      path: '/crm',
-      icon: <Users className="w-5 h-5" />
     }
   ];
   
@@ -72,7 +66,7 @@ const SidebarNavItems: React.FC<SidebarNavItemsProps> = ({ collapsed = false }) 
                 to={item.path}
                 className={cn(
                   "flex items-center p-2 rounded-md transition-colors",
-                  isActive ? "bg-blueknight-100 text-blueknight-800" : "text-gray-600 hover:bg-gray-100",
+                  isActive ? "bg-[#001437] text-white" : "text-gray-600 hover:bg-gray-100",
                   collapsed ? "justify-center w-10 h-10" : "space-x-3"
                 )}
                 title={collapsed ? item.title : undefined}
