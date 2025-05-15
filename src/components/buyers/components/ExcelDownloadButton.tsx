@@ -83,7 +83,7 @@ const ExcelDownloadButton: React.FC<ExcelDownloadButtonProps> = ({ buyers, buyer
   return (
     <Button 
       onClick={handleDownload}
-      className="ml-2"
+      className="ml-auto"
       variant="outline"
       size="sm"
     >

@@ -18,19 +18,16 @@ const Sidebar = () => {
       <div className="flex-1 overflow-y-auto p-4">
         <SidebarNavItems collapsed={collapsed} />
         
-        {!collapsed && (
-          <>
-            <SidebarSettings />
-            <FeedbackDialog />
-          </>
-        )}
+        {/* Always render these components but conditionally show them based on collapsed state */}
+        <div className={collapsed ? 'hidden' : ''}>
+          <SidebarSettings />
+          <FeedbackDialog />
+        </div>
       </div>
       
-      {!collapsed && (
-        <div className="p-4 border-t border-gray-200">
-          <LogoutButton />
-        </div>
-      )}
+      <div className={`p-4 border-t border-gray-200 ${collapsed ? 'hidden' : ''}`}>
+        <LogoutButton />
+      </div>
       
       {/* Moved toggle button to below feedback dialog */}
       <div className="p-2 flex justify-center mb-4">

@@ -32,17 +32,22 @@ const FilterSidebarToggle: React.FC<FilterSidebarToggleProps> = ({
         )}
       </div>
       
-      {/* Sidebar container - now on the right side */}
+      {/* 
+        Instead of fixed positioned sidebar, we'll make it an absolutely positioned element 
+        that appears at the top of the content area, pushing content down when visible
+      */}
       <div className={cn(
-        "fixed top-[64px] right-0 bottom-0 w-[300px] bg-white border-l border-gray-200 shadow-md overflow-hidden transition-all duration-300 ease-in-out z-10",
-        filterVisible ? "translate-x-0" : "translate-x-[300px]"
+        "absolute top-0 right-0 w-full bg-white border-b border-gray-200 shadow-md overflow-hidden transition-all duration-300 ease-in-out z-10",
+        filterVisible ? "max-h-[600px]" : "max-h-0"
       )}>
         {/* Container for the sidebar content with BuyerFilter directly embedded */}
         {filterVisible && (
-          <BuyerFilter
-            onFilterApply={onFilterApply}
-            onClose={toggleFilterSidebar}
-          />
+          <div className="p-4">
+            <BuyerFilter
+              onFilterApply={onFilterApply}
+              onClose={toggleFilterSidebar}
+            />
+          </div>
         )}
       </div>
     </>
