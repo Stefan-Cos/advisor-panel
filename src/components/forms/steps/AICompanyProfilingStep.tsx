@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, ArrowRight, BarChart3, Globe, Brain, Check } from 'lucide-react';
+import { ArrowLeft, BarChart3, Globe, Brain, Check } from 'lucide-react';
 import FormNavigation from '../components/FormNavigation';
 
 interface AICompanyProfilingStepProps {
@@ -183,7 +183,7 @@ const AICompanyProfilingStep: React.FC<AICompanyProfilingStepProps> = ({ formDat
 
       <FormNavigation 
         prevStep={prevStep}
-        nextStep={!isAnalyzing ? nextStep : undefined}
+        nextStep={null} // Removed the Next Section button completely
       />
     </div>
   );
