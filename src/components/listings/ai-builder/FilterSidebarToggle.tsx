@@ -8,43 +8,64 @@ interface FilterSidebarToggleProps {
   filterVisible: boolean;
   toggleFilterSidebar: () => void;
   onFilterApply: () => void;
+  position?: 'left' | 'right';
 }
 
 const FilterSidebarToggle: React.FC<FilterSidebarToggleProps> = ({
   filterVisible,
   toggleFilterSidebar,
-  onFilterApply
+  onFilterApply,
+  position = 'left'
 }) => {
+  const isRightSide = position === 'right';
+  
   return (
     <>
-      {/* Toggle button for the sidebar - positioned on the left side */}
+      {/* Toggle button for the sidebar */}
       <div 
         className={cn(
-          "fixed top-[180px] left-0 flex items-center justify-center p-1 bg-[#001437] border border-gray-200 rounded-r-md shadow-sm cursor-pointer z-20 transition-all duration-300",
-          filterVisible ? "left-[300px]" : "left-0"
+          "fixed top-[180px] flex items-center justify-center p-1 bg-[#001437] border border-gray-200 rounded-md shadow-sm cursor-pointer z-20 transition-all duration-300",
+          filterVisible 
+            ? isRightSide 
+              ? "right-[300px]" 
+              : "left-[300px]"
+            : isRightSide 
+              ? "right-0 rounded-r-none rounded-l-md" 
+              : "left-0 rounded-l-none rounded-r-md",
         )}
         onClick={toggleFilterSidebar}
       >
         {filterVisible ? (
-          <ChevronLeft className="h-5 w-5 text-white" />
+          isRightSide ? (
+            <ChevronRight className="h-5 w-5 text-white" />
+          ) : (
+            <ChevronLeft className="h-5 w-5 text-white" />
+          )
         ) : (
-          <ChevronRight className="h-5 w-5 text-white" />
+          isRightSide ? (
+            <ChevronLeft className="h-5 w-5 text-white" />
+          ) : (
+            <ChevronRight className="h-5 w-5 text-white" />
+          )
         )}
       </div>
       
-      {/* Filter sidebar that pushes content down when visible */}
+      {/* Sidebar container */}
       <div className={cn(
-        "absolute top-0 left-0 w-full bg-white border-b border-gray-200 shadow-md overflow-hidden transition-all duration-300 ease-in-out z-10",
-        filterVisible ? "max-h-[600px]" : "max-h-0"
+        "fixed top-[64px] bottom-0 w-[300px] bg-white border-gray-200 shadow-md overflow-hidden transition-all duration-300 ease-in-out z-10",
+        isRightSide ? "right-0 border-l" : "left-0 border-r",
+        filterVisible 
+          ? "translate-x-0" 
+          : isRightSide 
+            ? "translate-x-[300px]"
+            : "-translate-x-[300px]"
       )}>
         {/* Container for the sidebar content with BuyerFilter directly embedded */}
         {filterVisible && (
-          <div className="p-4">
-            <BuyerFilter
-              onFilterApply={onFilterApply}
-              onClose={toggleFilterSidebar}
-            />
-          </div>
+          <BuyerFilter
+            onFilterApply={onFilterApply}
+            onClose={toggleFilterSidebar}
+          />
         )}
       </div>
     </>

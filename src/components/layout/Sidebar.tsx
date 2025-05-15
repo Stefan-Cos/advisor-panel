@@ -18,32 +18,33 @@ const Sidebar = () => {
       <div className="flex-1 overflow-y-auto p-4">
         <SidebarNavItems collapsed={collapsed} />
         
-        {/* Always render these components but conditionally show them based on collapsed state */}
-        <div className={collapsed ? 'hidden' : ''}>
-          <SidebarSettings />
-          <FeedbackDialog />
-        </div>
+        {!collapsed && (
+          <>
+            <SidebarSettings />
+            <FeedbackDialog />
+          </>
+        )}
       </div>
       
-      {/* Moved LogoutButton and toggle button higher in the sidebar structure */}
-      <div className="border-t border-gray-200 p-4">
-        <div className={collapsed ? 'hidden' : ''}>
+      {!collapsed && (
+        <div className="p-4 border-t border-gray-200">
           <LogoutButton />
         </div>
-        
-        <div className="mt-2 flex justify-center">
-          <button 
-            onClick={toggleCollapse}
-            className="p-1 rounded-md bg-blueknight-500 hover:bg-blueknight-600"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {collapsed ? (
-              <PanelLeftOpen className="h-5 w-5 text-white" />
-            ) : (
-              <PanelLeftClose className="h-5 w-5 text-white" />
-            )}
-          </button>
-        </div>
+      )}
+      
+      {/* Moved toggle button to below feedback dialog */}
+      <div className="p-2 flex justify-center mb-4">
+        <button 
+          onClick={toggleCollapse}
+          className="p-1 rounded-md bg-blueknight-500 hover:bg-blueknight-600"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? (
+            <PanelLeftOpen className="h-5 w-5 text-white" />
+          ) : (
+            <PanelLeftClose className="h-5 w-5 text-white" />
+          )}
+        </button>
       </div>
     </div>
   );
