@@ -2,93 +2,82 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  Home, 
-  LayoutGrid, 
-  FileText, 
+  LayoutDashboard, 
+  ListFilter, 
   MessageSquare, 
-  Settings,
-  Users
+  Building,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
-import { useSidebarState } from '@/hooks/useSidebarState';
 import { cn } from '@/lib/utils';
+import { toast } from "@/hooks/use-toast";
+import { useSidebarState } from '@/hooks/useSidebarState';
 import ProjectSubItems from './ProjectSubItems';
 
-interface SidebarNavItemsProps {
-  collapsed?: boolean;
-}
+type NavItem = {
+  path: string;
+  label: string;
+  icon: React.ReactNode;
+};
 
-const SidebarNavItems: React.FC<SidebarNavItemsProps> = ({ collapsed = false }) => {
-  const { isListingDetailsPage, listingId } = useSidebarState();
+const SidebarNavItems = () => {
   const location = useLocation();
-  const pathname = location.pathname;
+  const { isListingDetailsPage, listingId } = useSidebarState();
   
-  const navItems = [
-    {
-      title: 'Overview',
-      path: '/dashboard',
-      icon: <Home className="w-5 h-5" />
-    },
-    {
-      title: 'Projects',
-      path: '/listings',
-      icon: <LayoutGrid className="w-5 h-5" />,
-      hasSubItems: true
-    },
-    {
-      title: 'Buyer Mandates',
-      path: '/buyer-mandates',
-      icon: <FileText className="w-5 h-5" />
-    },
-    {
-      title: 'Messages',
-      path: '/messages',
-      icon: <MessageSquare className="w-5 h-5" />
-    },
-    {
-      title: 'Settings',
-      path: '/settings',
-      icon: <Settings className="w-5 h-5" />
-    },
-    {
-      title: 'CRM',
-      path: '/crm',
-      icon: <Users className="w-5 h-5" />
-    }
+  const navItems: NavItem[] = [
+    { path: '/dashboard', label: 'Overview', icon: <LayoutDashboard className="h-5 w-5" /> },
+    { path: '/listings', label: 'Projects', icon: <ListFilter className="h-5 w-5" /> },
+    { path: '/buyer-mandates', label: 'Active Buyer Mandates', icon: <Building className="h-5 w-5" /> },
+    { path: '/messages', label: 'Messages', icon: <MessageSquare className="h-5 w-5" /> },
   ];
-  
+
+  const handleMessagesClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (location.pathname !== '/messages') {
+      e.preventDefault();
+      toast({
+        title: "Messaging features coming soon"
+      });
+    }
+  };
+
   return (
-    <div className="space-y-6">
-      {/* Navigation Items */}
-      <ul className={cn(
-        "space-y-2",
-        collapsed ? "flex flex-col items-center" : ""
-      )}>
-        {navItems.map((item, index) => {
-          const isActive = pathname.startsWith(item.path);
-          
-          return (
-            <li key={index} className="relative">
-              <Link
-                to={item.path}
-                className={cn(
-                  "flex items-center p-2 rounded-md transition-colors",
-                  isActive ? "bg-blueknight-100 text-blueknight-800" : "text-gray-600 hover:bg-gray-100",
-                  collapsed ? "justify-center w-10 h-10" : "space-x-3"
-                )}
-                title={collapsed ? item.title : undefined}
-              >
-                {item.icon}
-                {!collapsed && <span>{item.title}</span>}
-              </Link>
+    <div className="space-y-1">
+      {navItems.map((item, index) => {
+        const isActive = 
+          item.path === '/listings'
+            ? (location.pathname === '/listings' || location.pathname.includes('/listings/'))
+            : location.pathname === item.path;
               
-              {/* Only show project subitems when not collapsed and for the Projects nav item */}
-              {!collapsed && item.hasSubItems && isActive && isListingDetailsPage && (
-                <ProjectSubItems listingId={listingId} />
+        return (
+          <React.Fragment key={item.path}>
+            <Link
+              to={item.path}
+              className={cn(
+                "nav-link group",
+                isActive 
+                  ? "bg-blueknight-500 text-white" 
+                  : "text-gray-600 hover:bg-gray-100"
               )}
-            </li>
-          );
-        })}
-      </ul>
+              onClick={item.path === '/messages' ? handleMessagesClick : undefined}
+            >
+              {React.cloneElement(item.icon as React.ReactElement, {
+                className: cn(
+                  "h-5 w-5",
+                  isActive 
+                    ? "text-white" 
+                    : "text-gray-500 group-hover:text-gray-600"
+                )
+              })}
+              <span>{item.label}</span>
+            </Link>
+            
+            {/* Add Project Subsections immediately after Projects nav item */}
+            {index === 1 && isListingDetailsPage && (
+              <ProjectSubItems listingId={listingId} />
+            )}
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 };

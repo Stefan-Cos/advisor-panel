@@ -16,10 +16,13 @@ const Sidebar = () => {
   return (
     <div className={`${collapsed ? 'w-16' : 'w-64'} h-screen bg-white border-r border-gray-200 flex flex-col animate-fade-in transition-width duration-300`}>
       <div className="flex-1 overflow-y-auto p-4">
-        <SidebarNavItems collapsed={collapsed} />
-        
-        {!collapsed && (
+        {collapsed ? (
+          <div className="flex flex-col items-center space-y-6 pt-4">
+            <SidebarNavItems />
+          </div>
+        ) : (
           <>
+            <SidebarNavItems />
             <SidebarSettings />
             <FeedbackDialog />
           </>
