@@ -4,6 +4,7 @@ import { toast } from "@/hooks/use-toast";
 
 // Import types from Shepherd.js
 import type Step from 'shepherd.js/src/types/step';
+import type { Step as ShepherdStep } from 'shepherd.js';
 
 // Use the correct PopperPlacement type from Shepherd.js
 type PopperPlacement = Step.PopperPlacement;
@@ -111,6 +112,31 @@ const tourSteps = [
     arrow: true
   },
   {
+    id: 'project-subitems',
+    title: 'Project Sections',
+    text: 'Navigate between different sections of your project including BlueKnight List, AI Buyer Builder, Saved Lists and CRM.',
+    attachTo: {
+      element: '.ml-5.space-y-1.mt-1.mb-2',
+      on: 'right' as PopperPlacement
+    },
+    buttons: [
+      {
+        action: function() {
+          return this.back();
+        },
+        classes: 'shepherd-button-secondary',
+        text: 'Back'
+      },
+      {
+        action: function() {
+          return this.next();
+        },
+        text: 'Next'
+      }
+    ],
+    arrow: true
+  },
+  {
     id: 'matching-in-progress',
     title: 'AI Matching in Progress',
     text: 'Our AI is analyzing your mandate to score buyers based on offering, positioning, use case, acquisition history, and more.',
@@ -148,31 +174,6 @@ const tourSteps = [
     attachTo: {
       element: '#blueknight-list-section',
       on: 'bottom' as PopperPlacement
-    },
-    buttons: [
-      {
-        action: function() {
-          return this.back();
-        },
-        classes: 'shepherd-button-secondary',
-        text: 'Back'
-      },
-      {
-        action: function() {
-          return this.next();
-        },
-        text: 'Next'
-      }
-    ],
-    arrow: true
-  },
-  {
-    id: 'project-subitems',
-    title: 'Project Sections',
-    text: 'Navigate between different sections of your project including BlueKnight List, AI Buyer Builder, Saved Lists and CRM.',
-    attachTo: {
-      element: '.ml-5.space-y-1.mt-1.mb-2',
-      on: 'right' as PopperPlacement
     },
     buttons: [
       {

@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import tourService from '@/services/TourService';
 import 'shepherd.js/dist/css/shepherd.css';
@@ -101,12 +101,22 @@ interface OnboardingTourProps {
 
 const OnboardingTour: React.FC<OnboardingTourProps> = ({ autoStart = true }) => {
   const location = useLocation();
+  const [tourInitialized, setTourInitialized] = useState(false);
+  
+  // Force reset tour status for debugging
+  useEffect(() => {
+    // Uncomment the line below to force the tour to show again
+    // localStorage.removeItem('blueknight_tour_completed');
+  }, []);
   
   useEffect(() => {
     // Only start the tour automatically on the dashboard
-    if (autoStart && location.pathname === '/dashboard' && tourService.shouldShowTour()) {
+    if (autoStart && location.pathname === '/dashboard') {
       setTimeout(() => {
-        tourService.startTour();
+        if (tourService.shouldShowTour()) {
+          tourService.startTour();
+        }
+        setTourInitialized(true);
       }, 1000); // Delay to allow the page to fully render
     }
   }, [autoStart, location.pathname]);
@@ -125,6 +135,8 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ autoStart = true }) => 
 // Separate component for manual restart button
 export const RestartTourButton: React.FC = () => {
   const handleRestartTour = () => {
+    // Force reset tour status and restart it
+    localStorage.removeItem('blueknight_tour_completed');
     tourService.restartTour();
   };
 

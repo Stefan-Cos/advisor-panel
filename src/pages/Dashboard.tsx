@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Users, Plus, ArrowRight, BarChart3, Brain, Sparkles } from 'lucide-react';
@@ -9,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { RestartTourButton } from '../components/onboarding/OnboardingTour';
 
 const Dashboard = () => {
   // Mock data
@@ -28,6 +28,7 @@ const Dashboard = () => {
                 Dashboard
               </span>
             </h1>
+            <RestartTourButton />
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
