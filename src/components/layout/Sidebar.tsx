@@ -25,23 +25,25 @@ const Sidebar = () => {
         </div>
       </div>
       
-      <div className={`p-4 border-t border-gray-200 ${collapsed ? 'hidden' : ''}`}>
-        <LogoutButton />
-      </div>
-      
-      {/* Moved toggle button to below feedback dialog */}
-      <div className="p-2 flex justify-center mb-4">
-        <button 
-          onClick={toggleCollapse}
-          className="p-1 rounded-md bg-blueknight-500 hover:bg-blueknight-600"
-          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-        >
-          {collapsed ? (
-            <PanelLeftOpen className="h-5 w-5 text-white" />
-          ) : (
-            <PanelLeftClose className="h-5 w-5 text-white" />
-          )}
-        </button>
+      {/* Moved LogoutButton and toggle button higher in the sidebar structure */}
+      <div className="border-t border-gray-200 p-4">
+        <div className={collapsed ? 'hidden' : ''}>
+          <LogoutButton />
+        </div>
+        
+        <div className="mt-2 flex justify-center">
+          <button 
+            onClick={toggleCollapse}
+            className="p-1 rounded-md bg-blueknight-500 hover:bg-blueknight-600"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            {collapsed ? (
+              <PanelLeftOpen className="h-5 w-5 text-white" />
+            ) : (
+              <PanelLeftClose className="h-5 w-5 text-white" />
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
