@@ -1,24 +1,11 @@
-
 import Shepherd from 'shepherd.js';
 import { toast } from "@/hooks/use-toast";
 
-// Define proper types for Step objects based on Shepherd.js
-type PopperPlacement = 
-  | 'auto'
-  | 'auto-start'
-  | 'auto-end'
-  | 'top'
-  | 'top-start'
-  | 'top-end'
-  | 'bottom'
-  | 'bottom-start'
-  | 'bottom-end'
-  | 'right'
-  | 'right-start'
-  | 'right-end'
-  | 'left'
-  | 'left-start'
-  | 'left-end';
+// Import types from Shepherd.js
+import type Step from 'shepherd.js/src/types/step';
+
+// Use the correct PopperPlacement type from Shepherd.js
+type PopperPlacement = Step.PopperPlacement;
 
 // Tour steps configuration
 const tourSteps = [
@@ -259,7 +246,7 @@ class TourService {
 
     // Add steps to the tour
     tourSteps.forEach(step => {
-      this.tour.addStep(step);
+      this.tour.addStep(step as Step.StepOptions);
     });
 
     // Set up tour completion event
