@@ -1,3 +1,4 @@
+
 import Shepherd from 'shepherd.js';
 import { toast } from "@/hooks/use-toast";
 
@@ -147,6 +148,31 @@ const tourSteps = [
     attachTo: {
       element: '#blueknight-list-section',
       on: 'bottom' as PopperPlacement
+    },
+    buttons: [
+      {
+        action: function() {
+          return this.back();
+        },
+        classes: 'shepherd-button-secondary',
+        text: 'Back'
+      },
+      {
+        action: function() {
+          return this.next();
+        },
+        text: 'Next'
+      }
+    ],
+    arrow: true
+  },
+  {
+    id: 'project-subitems',
+    title: 'Project Sections',
+    text: 'Navigate between different sections of your project including BlueKnight List, AI Buyer Builder, Saved Lists and CRM.',
+    attachTo: {
+      element: '.ml-5.space-y-1.mt-1.mb-2',
+      on: 'right' as PopperPlacement
     },
     buttons: [
       {

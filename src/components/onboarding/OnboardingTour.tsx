@@ -1,12 +1,14 @@
+
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import tourService from '@/services/TourService';
 import 'shepherd.js/dist/css/shepherd.css';
 import { Button } from "@/components/ui/button";
 
-// Custom CSS for tour styling using regular style element
-const TourStyles = () => (
-  <style>{`
+// Custom CSS for tour styling
+const TourStyles: React.FC = () => (
+  <style>
+    {`
     .shepherd-element {
       border-radius: 0.5rem;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -85,7 +87,12 @@ const TourStyles = () => (
     .shepherd-arrow::before {
       background-color: white;
     }
-  `}</style>
+    
+    .shepherd-arrow[data-popper-placement^="top"]::before {
+      background-color: #001437;
+    }
+    `}
+  </style>
 );
 
 interface OnboardingTourProps {

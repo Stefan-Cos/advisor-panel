@@ -22,6 +22,31 @@ globalStyles.innerHTML = `
   .shepherd-element {
     z-index: 10000 !important;
   }
+  
+  .shepherd-header {
+    background-color: #001437 !important;
+  }
+  
+  .shepherd-title {
+    color: white !important;
+  }
+  
+  .shepherd-cancel-icon {
+    color: white !important;
+  }
+  
+  .shepherd-button:not(.shepherd-button-secondary) {
+    background-color: #001437 !important;
+    color: white !important;
+  }
+  
+  .shepherd-button:not(.shepherd-button-secondary):hover {
+    background-color: #00204f !important;
+  }
+  
+  .shepherd-arrow[data-popper-placement^="top"]::before {
+    background-color: #001437 !important;
+  }
 `
 document.head.appendChild(globalStyles)
 
