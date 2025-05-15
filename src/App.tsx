@@ -13,6 +13,7 @@ import ListingDetails from "./pages/ListingDetails";
 import BuyerMandates from "./pages/BuyerMandates";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import OnboardingTour from "./components/onboarding/OnboardingTour";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <OnboardingTour />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/dashboard" element={<Dashboard />} />

@@ -15,6 +15,11 @@ const Index = () => {
         description: "You have been automatically logged in",
       });
       
+      // Set initial tour state for first-time users
+      if (!localStorage.getItem('blueknight_tour_completed')) {
+        localStorage.setItem('blueknight_first_login', 'true');
+      }
+      
       navigate('/dashboard');
     };
     

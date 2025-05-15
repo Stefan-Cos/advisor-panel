@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
@@ -188,7 +187,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
   }, [activeTab]);
 
   return (
-    <div className="bg-white shadow-sm rounded-lg border border-gray-200">
+    <div className="bg-white shadow-sm rounded-lg border border-gray-200" id="ai-buyer-builder-section">
       {/* Filter Sidebar Toggle with BuyerFilter component directly embedded */}
       <FilterSidebarToggle 
         filterVisible={filterVisible} 

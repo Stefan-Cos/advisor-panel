@@ -11,6 +11,20 @@ const root = createRoot(document.getElementById("root")!)
 document.body.style.opacity = '0'
 document.body.style.transition = 'opacity 0.5s ease-in-out'
 
+// Inject global styles for Shepherd tour
+const globalStyles = document.createElement('style')
+globalStyles.innerHTML = `
+  .shepherd-modal-overlay-container {
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+  }
+  
+  .shepherd-element {
+    z-index: 10000 !important;
+  }
+`
+document.head.appendChild(globalStyles)
+
 // Render the App component
 root.render(
   <StrictMode>

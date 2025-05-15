@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { strategicBuyers, peBuyers } from './data/mockBuyers';
@@ -169,10 +168,10 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" id="blueknight-list-section">
       {/* If it's the first visit, show the processing animation */}
       {isFirstVisit ? (
-        <div className="bg-white shadow-sm rounded-lg border border-gray-200">
+        <div className="bg-white shadow-sm rounded-lg border border-gray-200 process-animation-placeholder">
           <ProcessingAnimation 
             progressValue={progressValue}
             processingStep={processingStep}
