@@ -6,13 +6,15 @@ import {
   ListFilter, 
   MessageSquare, 
   Building,
-  PanelLeftClose,
-  PanelLeftOpen
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from "@/hooks/use-toast";
 import { useSidebarState } from '@/hooks/useSidebarState';
 import ProjectSubItems from './ProjectSubItems';
+
+interface SidebarNavItemsProps {
+  collapsed?: boolean;
+}
 
 type NavItem = {
   path: string;
@@ -20,7 +22,7 @@ type NavItem = {
   icon: React.ReactNode;
 };
 
-const SidebarNavItems = () => {
+const SidebarNavItems: React.FC<SidebarNavItemsProps> = ({ collapsed = false }) => {
   const location = useLocation();
   const { isListingDetailsPage, listingId } = useSidebarState();
   
@@ -53,10 +55,11 @@ const SidebarNavItems = () => {
             <Link
               to={item.path}
               className={cn(
-                "nav-link group",
+                "nav-link group flex items-center p-2 rounded-md",
                 isActive 
                   ? "bg-blueknight-500 text-white" 
-                  : "text-gray-600 hover:bg-gray-100"
+                  : "text-gray-600 hover:bg-gray-100",
+                collapsed ? "justify-center" : ""
               )}
               onClick={item.path === '/messages' ? handleMessagesClick : undefined}
             >
@@ -68,11 +71,11 @@ const SidebarNavItems = () => {
                     : "text-gray-500 group-hover:text-gray-600"
                 )
               })}
-              <span>{item.label}</span>
+              {!collapsed && <span className="ml-3">{item.label}</span>}
             </Link>
             
             {/* Add Project Subsections immediately after Projects nav item */}
-            {index === 1 && isListingDetailsPage && (
+            {index === 1 && isListingDetailsPage && !collapsed && (
               <ProjectSubItems listingId={listingId} />
             )}
           </React.Fragment>

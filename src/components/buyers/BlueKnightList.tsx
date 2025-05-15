@@ -8,6 +8,7 @@ import StrategicBuyerTable from './components/StrategicBuyerTable';
 import PEBuyerTable from './components/PEBuyerTable';
 import BlueKnightDescription from '../listings/BlueKnightDescription';
 import FilterSidebarToggle from '../listings/ai-builder/FilterSidebarToggle';
+import ExcelDownloadButton from './components/ExcelDownloadButton';
 
 // Import the ProcessingAnimation component
 import ProcessingAnimation from '../listings/ai-builder/ProcessingAnimation';
@@ -193,7 +194,10 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
           
           <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-6">
-              <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+              <div className="flex items-center">
+                <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+                <ExcelDownloadButton buyers={buyers} buyerType={activeTab} />
+              </div>
             </div>
             
             {isLoading ? (
