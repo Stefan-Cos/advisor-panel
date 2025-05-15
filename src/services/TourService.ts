@@ -1,10 +1,8 @@
-
 import Shepherd from 'shepherd.js';
 import { toast } from "@/hooks/use-toast";
 
 // Import types from Shepherd.js
 import type Step from 'shepherd.js/src/types/step';
-import type { Step as ShepherdStep } from 'shepherd.js';
 
 // Use the correct PopperPlacement type from Shepherd.js
 type PopperPlacement = Step.PopperPlacement;
