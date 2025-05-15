@@ -181,19 +181,24 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
         </div>
       ) : (
         <>
-          {/* Filter Sidebar Toggle with BuyerFilter component directly embedded */}
+          {/* Filter Sidebar Toggle moved to the right */}
           <FilterSidebarToggle 
             filterVisible={filterVisible} 
             toggleFilterSidebar={toggleFilterSidebar}
             onFilterApply={handleFilterApply}
+            position="right"
           />
           
           {/* Description component rendered outside the tab-switching area */}
           <BlueKnightDescription />
           
           <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <BuyerTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+            <div className="mb-6">
+              <BuyerTabs 
+                activeTab={activeTab} 
+                setActiveTab={setActiveTab}
+                buyers={buyers}
+              />
             </div>
             
             {isLoading ? (
