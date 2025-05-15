@@ -26,12 +26,12 @@ const ExcelDownloadButton: React.FC<ExcelDownloadButtonProps> = ({ buyers, buyer
     // Map buyer data to CSV rows
     const csvRows = buyersToDownload.map(buyer => {
       return [
-        buyer.companyName,
+        buyer.name,                        // Changed from companyName to name
         buyer.type,
-        buyer.location,
-        buyer.industry,
-        buyer.revenueRange,
-        buyer.matchScore.toString()
+        buyer.hq || buyer.location || '',  // Using hq or location as fallback
+        buyer.sector || (buyer.sectors && buyer.sectors.join(', ')) || '',  // Changed from industry to sector/sectors
+        buyer.revenue ? `$${(buyer.revenue / 1000000).toFixed(2)}M` : 'N/A', // Format revenue as millions
+        buyer.matchingScore.toString()     // Changed from matchScore to matchingScore
       ];
     });
 
