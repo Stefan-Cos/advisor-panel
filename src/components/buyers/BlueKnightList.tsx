@@ -180,12 +180,12 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
         </div>
       ) : (
         <>
-          {/* Filter Sidebar Toggle moved to the right */}
+          {/* Filter Sidebar Toggle - moved to the left side */}
           <FilterSidebarToggle 
             filterVisible={filterVisible} 
             toggleFilterSidebar={toggleFilterSidebar}
             onFilterApply={handleFilterApply}
-            position="right"
+            position="left"
           />
           
           {/* Description component rendered outside the tab-switching area */}
