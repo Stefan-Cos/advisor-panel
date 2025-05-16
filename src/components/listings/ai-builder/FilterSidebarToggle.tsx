@@ -24,7 +24,7 @@ const FilterSidebarToggle: React.FC<FilterSidebarToggleProps> = ({
       {/* Toggle button for the sidebar - positioned lower on the page */}
       <div 
         className={cn(
-          "fixed top-[380px] flex items-center justify-center p-1 bg-[#001437] border border-gray-200 rounded-md shadow-sm cursor-pointer z-20 transition-all duration-300",
+          "fixed top-[600px] flex items-center justify-center p-1 bg-[#001437] border border-gray-200 rounded-md shadow-sm cursor-pointer z-20 transition-all duration-300",
           filterVisible 
             ? isLeftSide 
               ? "left-[300px]" 
