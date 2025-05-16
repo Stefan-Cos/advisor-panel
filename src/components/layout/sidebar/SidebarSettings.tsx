@@ -9,6 +9,8 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+// This component is no longer used in the main sidebar
+// It's kept for reference or future use
 const SidebarSettings = () => {
   const location = useLocation();
   const [isSettingsOpen, setIsSettingsOpen] = React.useState(false);

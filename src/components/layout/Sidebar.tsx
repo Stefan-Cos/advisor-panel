@@ -15,7 +15,7 @@ const Sidebar = () => {
 
   return (
     <div className={`${collapsed ? 'w-16' : 'w-64'} h-screen bg-white border-r border-gray-200 flex flex-col animate-fade-in transition-width duration-300 relative`}>
-      {/* Toggle button moved to left side */}
+      {/* Toggle button moved back to right side */}
       <div className="absolute -right-5 top-4 z-10">
         <button 
           onClick={toggleCollapse}
@@ -35,7 +35,6 @@ const Sidebar = () => {
         
         {!collapsed && (
           <>
-            <SidebarSettings />
             <FeedbackDialog />
           </>
         )}

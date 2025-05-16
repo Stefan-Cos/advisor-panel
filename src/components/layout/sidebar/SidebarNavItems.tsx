@@ -5,7 +5,8 @@ import {
   Home, 
   LayoutGrid, 
   FileText, 
-  MessageSquare
+  MessageSquare,
+  Settings
 } from 'lucide-react';
 import { useSidebarState } from '@/hooks/useSidebarState';
 import { cn } from '@/lib/utils';
@@ -41,8 +42,12 @@ const SidebarNavItems: React.FC<SidebarNavItemsProps> = ({ collapsed = false }) 
       title: 'Messages',
       path: '/messages',
       icon: <MessageSquare className="w-5 h-5" />
+    },
+    {
+      title: 'Settings',
+      path: '/settings',
+      icon: <Settings className="w-5 h-5" />
     }
-    // Removed the Settings entry from here as it's handled by SidebarSettings
   ];
   
   return (
