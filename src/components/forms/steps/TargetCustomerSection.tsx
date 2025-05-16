@@ -56,7 +56,7 @@ const TargetCustomerSection: React.FC<TargetCustomerSectionProps> = ({ formData,
       <div className="space-y-4">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <Label htmlFor="targetCustomers">Target Customers Description</Label>
+            <Label htmlFor="targetCustomers">Target Customer Description</Label>
             <InfoPopover example="Who uses the company's offering. What is the general user segment/department, what is their specific role and their operational purpose" />
           </div>
           <p className="text-xs text-gray-500">Who uses the company's offering, their role and purpose</p>

@@ -58,10 +58,10 @@ const CompetitiveFinancialsSection: React.FC<CompetitiveFinancialsSectionProps> 
       <div className="space-y-8">
         {/* Last Year Row */}
         <div className="bg-gray-50 p-4 rounded-lg border border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-700 mb-4">Last Year</h3>
+          <h3 className="text-lg font-semibold text-gray-700 mb-4">Previous Year</h3>
           <div className="flex flex-col md:flex-row md:items-end gap-6">
             <div className="md:w-1/3">
-              <Label htmlFor="lastYearPeriod">Period (MMM-YY)</Label>
+              <Label htmlFor="lastYearPeriod">Year-End Date (MMM-YY)</Label>
               <Input
                 id="lastYearPeriod"
                 name="lastYearPeriod"
@@ -97,10 +97,10 @@ const CompetitiveFinancialsSection: React.FC<CompetitiveFinancialsSectionProps> 
         
         {/* This Year Row */}
         <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-          <h3 className="text-lg font-semibold text-blue-700 mb-4">This Year</h3>
+          <h3 className="text-lg font-semibold text-blue-700 mb-4">Current Year</h3>
           <div className="flex flex-col md:flex-row md:items-end gap-6">
             <div className="md:w-1/3">
-              <Label htmlFor="thisYearPeriod">Period (MMM-YY)</Label>
+              <Label htmlFor="thisYearPeriod">Year-End Period (MMM-YY)</Label>
               <Input
                 id="thisYearPeriod"
                 name="thisYearPeriod"

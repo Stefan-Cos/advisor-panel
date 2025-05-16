@@ -112,7 +112,7 @@ const AICompanyProfilingStep: React.FC<AICompanyProfilingStepProps> = ({ formDat
               disabled={!website || isAnalyzing}
               className="bg-blueknight-600 hover:bg-blueknight-700"
             >
-              Analyze
+              Analyse
             </Button>
           </div>
         </div>
@@ -123,7 +123,7 @@ const AICompanyProfilingStep: React.FC<AICompanyProfilingStepProps> = ({ formDat
           <div className="flex items-center gap-3 text-blueknight-600">
             <Globe className="animate-pulse h-5 w-5" />
             <p className="text-sm font-medium">
-              We're now analyzing the website with AI to pre-fill the company profile for buyer targeting...
+              We're now analysing the website with AI to pre-fill the company profile for buyer targeting...
             </p>
           </div>
           
