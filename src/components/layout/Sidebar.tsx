@@ -1,8 +1,6 @@
 
 import React, { useState } from 'react';
 import SidebarNavItems from './sidebar/SidebarNavItems';
-import SidebarSettings from './sidebar/SidebarSettings';
-import FeedbackDialog from './sidebar/FeedbackDialog';
 import LogoutButton from './sidebar/LogoutButton';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 
@@ -15,7 +13,7 @@ const Sidebar = () => {
 
   return (
     <div className={`${collapsed ? 'w-16' : 'w-64'} h-screen bg-white border-r border-gray-200 flex flex-col animate-fade-in transition-width duration-300 relative`}>
-      {/* Toggle button moved back to right side */}
+      {/* Toggle button kept on right side */}
       <div className="absolute -right-5 top-4 z-10">
         <button 
           onClick={toggleCollapse}
@@ -32,12 +30,6 @@ const Sidebar = () => {
       
       <div className="flex-1 overflow-y-auto p-4">
         <SidebarNavItems collapsed={collapsed} />
-        
-        {!collapsed && (
-          <>
-            <FeedbackDialog />
-          </>
-        )}
       </div>
       
       {!collapsed && (

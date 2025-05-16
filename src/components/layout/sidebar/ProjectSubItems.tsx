@@ -16,13 +16,14 @@ const ProjectSubItems = ({ listingId }: ProjectSubItemProps) => {
     { path: `/listings/${listingId}`, label: 'BlueKnight List', icon: <List className="h-4 w-4" /> },
     { path: `/listings/${listingId}/ai-buyer`, label: 'AI Buyer Builder', icon: <List className="h-4 w-4" /> },
     { path: `/listings/${listingId}/saved`, label: 'Saved List', icon: <BookmarkCheck className="h-4 w-4" /> },
-    { path: `/listings/${listingId}/crm`, label: 'CRM', icon: <Users2 className="h-4 w-4" /> },
+    { path: `/listings/${listingId}/crm`, label: 'CRM', icon: <Users2 className="h-4 w-4" />, comingSoon: true },
   ];
 
   const handleCRMClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     toast({
-      title: "CRM features coming soon"
+      title: "Coming soon",
+      description: "CRM features will be available in an upcoming update."
     });
   };
 
@@ -54,7 +55,7 @@ const ProjectSubItems = ({ listingId }: ProjectSubItemProps) => {
             <Link
               key={subItem.label}
               to={subItem.path}
-              onClick={subItem.label === 'CRM' ? handleCRMClick : undefined}
+              onClick={subItem.comingSoon ? handleCRMClick : undefined}
               className={cn(
                 "flex items-center py-1.5 px-2 rounded-md text-sm",
                 isSubActive
