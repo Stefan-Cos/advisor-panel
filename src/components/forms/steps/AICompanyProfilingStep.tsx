@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,15 +27,14 @@ const AICompanyProfilingStep: React.FC<AICompanyProfilingStepProps> = ({ formDat
     setIsAnalyzing(true);
     
     try {
-      // Make POST request to the API with correct schema
+      // Make POST request to the API with only URL
       const response = await fetch('http://167.71.130.151/process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          url: website,
-          prompts: ["string"]
+          url: website
         })
       });
       
