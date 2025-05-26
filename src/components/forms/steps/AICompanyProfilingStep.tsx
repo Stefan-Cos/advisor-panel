@@ -21,13 +21,37 @@ const AICompanyProfilingStep: React.FC<AICompanyProfilingStepProps> = ({ formDat
   const [animatingFields, setAnimatingFields] = useState<string[]>([]);
   const [analysisComplete, setAnalysisComplete] = useState(false);
   
-  const handleWebsiteSubmit = (e: React.FormEvent) => {
+  const handleWebsiteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!website) return;
     
     setIsAnalyzing(true);
     
-    // Simulate AI analysis with continuous progress over 20 seconds
+    try {
+      // Make POST request to the API
+      const response = await fetch('http://167.71.130.151/process', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          website: website
+        })
+      });
+      
+      console.log('API Response status:', response.status);
+      
+      if (response.ok) {
+        const apiData = await response.json();
+        console.log('API Response data:', apiData);
+      } else {
+        console.error('API request failed:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error making API request:', error);
+    }
+    
+    // Continue with the existing simulation animation
     const totalDuration = 20000; // 20 seconds
     const startTime = Date.now();
     
