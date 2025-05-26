@@ -1,7 +1,7 @@
 
 export const analyzeCompanyWebsite = async (website: string): Promise<any> => {
   try {
-    const response = await fetch('https://167.71.130.151/process', {
+    const response = await fetch('http://167.71.130.151/process', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
