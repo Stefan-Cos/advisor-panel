@@ -28,14 +28,15 @@ const AICompanyProfilingStep: React.FC<AICompanyProfilingStepProps> = ({ formDat
     setIsAnalyzing(true);
     
     try {
-      // Make POST request to the API
+      // Make POST request to the API with correct schema
       const response = await fetch('http://167.71.130.151/process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          website: website
+          url: website,
+          prompts: ["string"]
         })
       });
       
