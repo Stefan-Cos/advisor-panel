@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
-import { strategicBuyers, peBuyers } from './data/mockBuyers';
+import { getBuyersByType, transformDatabaseBuyerToComponentFormat } from '@/services/buyersService';
 import { Buyer } from './types/BuyerTypes';
 import BuyerTabs from './components/BuyerTabs';
 import StrategicBuyerTable from './components/StrategicBuyerTable';
@@ -83,22 +83,24 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
   }, [listingId]); // Re-run when listingId changes
 
   // Move the data loading logic to a separate function
-  const loadBuyerData = () => {
+  const loadBuyerData = async () => {
     setIsLoading(true);
     
-    // In a real app, you would fetch this data from an API
-    setTimeout(() => {
-      const filteredBuyers = activeTab === 'strategic' 
-        ? strategicBuyers.filter(buyer => 
-            buyer.type === 'strategic' && buyer.matchingScore > 0
-          ).sort((a, b) => b.matchingScore - a.matchingScore)
-        : peBuyers.filter(buyer =>
-            buyer.type === 'pe' && buyer.matchingScore > 0
-          ).sort((a, b) => b.matchingScore - a.matchingScore);
-      
-      setBuyers(filteredBuyers);
+    try {
+      const databaseBuyers = await getBuyersByType(activeTab);
+      const transformedBuyers = databaseBuyers.map(transformDatabaseBuyerToComponentFormat);
+      setBuyers(transformedBuyers);
+    } catch (error) {
+      console.error('Error loading buyers:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load buyer data. Please try again.",
+        variant: "destructive"
+      });
+      setBuyers([]);
+    } finally {
       setIsLoading(false);
-    }, 300);
+    }
   };
 
   // When tab changes, refresh the data
