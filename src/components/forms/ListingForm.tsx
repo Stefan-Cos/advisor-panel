@@ -71,16 +71,47 @@ const ListingForm = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
+    // Project Setup fields
     projectName: '',
     companyName: '',
     country: '',
     employeeCount: '',
     website: '',
+    
+    // Company Profile fields
     description: '',
     industry: [],
     offering: '',
+    productTags: [],
+    deliveryMethod: [],
+    supplyChainRole: [],
+    useCase: [],
+    
+    // Geography fields
     includeGeographies: [],
     excludeGeographies: [],
+    
+    // Problem & Use Case fields
+    problemSolved: '',
+    useCases: '',
+    
+    // Financial fields
+    competitors: [],
+    lastYearPeriod: '',
+    revenueLastYear: '',
+    ebitdaLastYear: '',
+    thisYearPeriod: '',
+    revenueThisYear: '',
+    ebitdaThisYear: '',
+    
+    // Target Customer fields
+    targetCustomers: '',
+    customerType: [],
+    customerIndustries: [],
+    
+    // Buyer Preferences fields
+    acquisitionReason: '',
+    minEmployees: ''
   });
   
   const navigate = useNavigate();
