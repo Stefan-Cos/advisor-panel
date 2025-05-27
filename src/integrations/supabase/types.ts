@@ -9,6 +9,82 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      buyer_search_configs: {
+        Row: {
+          created_at: string
+          filters: Json
+          id: string
+          name: string
+          project_id: string
+          scoring_config: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          name: string
+          project_id: string
+          scoring_config?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          filters?: Json
+          id?: string
+          name?: string
+          project_id?: string
+          scoring_config?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buyer_search_configs_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      buyer_search_results: {
+        Row: {
+          buyer_data: Json
+          created_at: string
+          id: string
+          is_saved: boolean | null
+          match_score: number | null
+          rationale: Json | null
+          saved_search_id: string
+        }
+        Insert: {
+          buyer_data: Json
+          created_at?: string
+          id?: string
+          is_saved?: boolean | null
+          match_score?: number | null
+          rationale?: Json | null
+          saved_search_id: string
+        }
+        Update: {
+          buyer_data?: Json
+          created_at?: string
+          id?: string
+          is_saved?: boolean | null
+          match_score?: number | null
+          rationale?: Json | null
+          saved_search_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "buyer_search_results_saved_search_id_fkey"
+            columns: ["saved_search_id"]
+            isOneToOne: false
+            referencedRelation: "saved_buyer_searches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           acquisition_reason: string | null
@@ -130,6 +206,95 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_buyer_searches: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          project_id: string
+          results_count: number | null
+          search_config_id: string | null
+          search_criteria: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          project_id: string
+          results_count?: number | null
+          search_config_id?: string | null
+          search_criteria?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          project_id?: string
+          results_count?: number | null
+          search_config_id?: string | null
+          search_criteria?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_buyer_searches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "saved_buyer_searches_search_config_id_fkey"
+            columns: ["search_config_id"]
+            isOneToOne: false
+            referencedRelation: "buyer_search_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      saved_buyers: {
+        Row: {
+          buyer_data: Json
+          buyer_id: string
+          id: string
+          notes: string | null
+          project_id: string
+          saved_at: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          buyer_data: Json
+          buyer_id: string
+          id?: string
+          notes?: string | null
+          project_id: string
+          saved_at?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          buyer_data?: Json
+          buyer_id?: string
+          id?: string
+          notes?: string | null
+          project_id?: string
+          saved_at?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "saved_buyers_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
             referencedColumns: ["id"]
           },
         ]

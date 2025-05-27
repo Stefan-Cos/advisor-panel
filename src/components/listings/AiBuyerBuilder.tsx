@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
@@ -11,11 +12,16 @@ import SavedSearchesList from './ai-builder/SavedSearchesList';
 import SavedSearchDetails from './ai-builder/SavedSearchDetails';
 import FilterSidebarToggle from './ai-builder/FilterSidebarToggle';
 
-// Import saved search service
+// Import services
 import { 
-  savedSearches, 
-  getFormattedSavedSearchBuyers 
-} from './ai-builder/savedSearchService';
+  createBuyerSearchConfig,
+  createSavedBuyerSearch,
+  getSavedBuyerSearches,
+  getBuyerSearchResults,
+  saveBuyer,
+  getSavedBuyers,
+  BuyerSearchConfig
+} from '@/services/buyerSearchService';
 
 interface AiBuyerBuilderProps {
   listingId: string;
@@ -31,6 +37,8 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [progressValue, setProgressValue] = useState<number>(0);
   const [processingStep, setProcessingStep] = useState<number>(0);
+  const [savedSearches, setSavedSearches] = useState<any[]>([]);
+  const [savedSearchResults, setSavedSearchResults] = useState<any[]>([]);
   
   // Scoring configuration state
   const [scoringConfig, setScoringConfig] = useState({
@@ -60,14 +68,65 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     },
   });
 
+  // Load saved searches and saved buyers on component mount
+  useEffect(() => {
+    loadSavedSearches();
+    loadSavedBuyers();
+  }, [listingId]);
+
+  const loadSavedSearches = async () => {
+    try {
+      const searches = await getSavedBuyerSearches(listingId);
+      setSavedSearches(searches.map(search => ({
+        id: search.id,
+        name: search.name,
+        date: new Date(search.created_at).toLocaleDateString(),
+        filters: search.search_criteria
+      })));
+    } catch (error) {
+      console.error('Error loading saved searches:', error);
+    }
+  };
+
+  const loadSavedBuyers = async () => {
+    try {
+      const buyers = await getSavedBuyers(listingId);
+      setSavedBuyers(buyers.map(buyer => buyer.buyer_id));
+    } catch (error) {
+      console.error('Error loading saved buyers:', error);
+    }
+  };
+
   // Handle saving a buyer
-  const handleAddToSaved = (buyerId: string) => {
+  const handleAddToSaved = async (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
-      setSavedBuyers(prev => [...prev, buyerId]);
-      toast({
-        title: "Buyer Saved",
-        description: "This buyer has been added to your saved list."
-      });
+      try {
+        // Create a mock buyer data structure for now
+        const buyerData = {
+          id: buyerId,
+          name: `Buyer ${buyerId}`,
+          // Add other mock data as needed
+        };
+
+        await saveBuyer({
+          project_id: listingId,
+          buyer_id: buyerId,
+          buyer_data: buyerData
+        });
+
+        setSavedBuyers(prev => [...prev, buyerId]);
+        toast({
+          title: "Buyer Saved",
+          description: "This buyer has been added to your saved list."
+        });
+      } catch (error) {
+        console.error('Error saving buyer:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save buyer. Please try again.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -103,10 +162,24 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
   };
 
   // Apply scoring configuration
-  const applyScoring = () => {
+  const applyScoring = async () => {
     setProcessing(true);
     setProgressValue(0);
     setProcessingStep(0);
+    
+    try {
+      // Save the scoring configuration
+      const configName = `Config ${new Date().toISOString()}`;
+      await createBuyerSearchConfig({
+        project_id: listingId,
+        name: configName,
+        scoring_config: scoringConfig
+      });
+
+      console.log('Scoring configuration saved:', scoringConfig);
+    } catch (error) {
+      console.error('Error saving scoring configuration:', error);
+    }
     
     // Simulate AI processing with multiple steps
     const interval = setInterval(() => {
@@ -155,21 +228,52 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
   };
 
   // Handle saving a search
-  const handleSaveSearch = (searchName: string) => {
-    toast({
-      title: "Search Saved",
-      description: `"${searchName}" has been saved successfully.`
-    });
+  const handleSaveSearch = async (searchName: string) => {
+    try {
+      await createSavedBuyerSearch({
+        project_id: listingId,
+        name: searchName,
+        search_criteria: { scoringConfig }
+      });
+
+      await loadSavedSearches(); // Reload the list
+      
+      toast({
+        title: "Search Saved",
+        description: `"${searchName}" has been saved successfully.`
+      });
+    } catch (error) {
+      console.error('Error saving search:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save search. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Handle clicking on a saved search
-  const handleLoadSavedSearch = (id: string) => {
-    setSelectedSavedSearch(id);
-    
-    toast({
-      title: "Saved Search Loaded",
-      description: `Loaded search: ${savedSearches.find(s => s.id === id)?.name}`
-    });
+  const handleLoadSavedSearch = async (id: string) => {
+    try {
+      setSelectedSavedSearch(id);
+      
+      // Load search results
+      const results = await getBuyerSearchResults(id);
+      setSavedSearchResults(results.map(result => result.buyer_data));
+      
+      const selectedSearch = savedSearches.find(s => s.id === id);
+      toast({
+        title: "Saved Search Loaded",
+        description: `Loaded search: ${selectedSearch?.name}`
+      });
+    } catch (error) {
+      console.error('Error loading saved search:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load saved search.",
+        variant: "destructive"
+      });
+    }
   };
 
   // Handle reconfiguring the AI settings
@@ -239,7 +343,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
             {selectedSavedSearch ? (
               <SavedSearchDetails 
                 selectedSearch={savedSearches.find(s => s.id === selectedSavedSearch)!}
-                buyers={getFormattedSavedSearchBuyers(selectedSavedSearch)}
+                buyers={savedSearchResults}
                 savedBuyers={savedBuyers}
                 expandedRationales={expandedRationales}
                 onBack={() => setSelectedSavedSearch(null)}
