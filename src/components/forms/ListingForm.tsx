@@ -16,14 +16,14 @@ import BuyerPreferencesSection from './steps/BuyerPreferencesSection';
 
 // New Component: Confirmation Screen with improved AI visual
 const ConfirmationScreen = ({ navigate }) => {
-  const [countdown, setCountdown] = useState(5);
+  const [countdown, setCountdown] = useState(3);
   
   React.useEffect(() => {
     const timer = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
           clearInterval(timer);
-          navigate('/listings');
+          navigate('/dashboard');
           return 0;
         }
         return prev - 1;
@@ -54,10 +54,10 @@ const ConfirmationScreen = ({ navigate }) => {
       
       <div className="flex flex-col items-center">
         <p className="text-sm text-gray-500 mb-2">
-          Redirecting to your project listings in {countdown}...
+          Redirecting to dashboard in {countdown}...
         </p>
         <Progress 
-          value={(5 - countdown) * 20} 
+          value={(3 - countdown) * 33.33} 
           className="h-1 w-32 bg-gray-200"
         />
       </div>
@@ -130,6 +130,8 @@ const ListingForm = () => {
     setIsSubmitting(true);
     
     try {
+      console.log('Starting project creation with form data:', formData);
+      
       // Transform form data to match database schema
       const projectData = {
         project_name: formData.projectName,
@@ -171,13 +173,17 @@ const ListingForm = () => {
         }
       };
 
-      await createProject(projectData);
+      console.log('Transformed project data:', projectData);
+
+      const createdProject = await createProject(projectData);
+      console.log('Project created successfully:', createdProject);
       
-      setShowConfirmation(true);
       toast({
         title: "Project created successfully",
-        description: "Your project has been saved to the database.",
+        description: "Your project has been saved and you'll be redirected to the dashboard.",
       });
+
+      setShowConfirmation(true);
     } catch (error) {
       console.error('Error creating project:', error);
       toast({

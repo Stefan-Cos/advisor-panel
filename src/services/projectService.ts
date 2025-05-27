@@ -39,10 +39,11 @@ export interface ProjectData {
 export const createProject = async (projectData: ProjectData) => {
   const { data: { user } } = await supabase.auth.getUser();
   
-  // For demo purposes, create a mock user ID if no authenticated user
-  const userId = user?.id || 'demo-user-' + Date.now();
+  // For demo purposes, create a dummy authenticated user ID
+  const userId = user?.id || 'dummy-auth-user-12345';
   
   console.log('Creating project with user ID:', userId);
+  console.log('Project data being saved:', projectData);
 
   const { data, error } = await supabase
     .from('projects')
@@ -61,6 +62,7 @@ export const createProject = async (projectData: ProjectData) => {
     throw error;
   }
 
+  console.log('Project created successfully:', data);
   return data;
 };
 
