@@ -85,6 +85,129 @@ export type Database = {
           },
         ]
       }
+      buyers: {
+        Row: {
+          aum: number | null
+          cash: number | null
+          created_at: string
+          customers: string | null
+          description: string | null
+          ebitda: string | null
+          employees: number | null
+          external_id: string
+          geography: string[] | null
+          hq: string | null
+          id: string
+          industry_focus: string | null
+          industry_preferences: string[] | null
+          investment_size: string | null
+          investment_type: string[] | null
+          investments: string | null
+          is_pe_vc_backed: boolean | null
+          is_public: boolean | null
+          keywords: string[] | null
+          location: string | null
+          long_description: string | null
+          ma_track_record: string | null
+          matching_score: number | null
+          name: string
+          offering: string | null
+          parent_company: string | null
+          previous_acquisitions: string | null
+          primary_industries: string[] | null
+          rationale: Json | null
+          reported_date: string | null
+          revenue: number | null
+          sector: string | null
+          sectors: string[] | null
+          status: string | null
+          target_customer_types: string[] | null
+          type: string
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          aum?: number | null
+          cash?: number | null
+          created_at?: string
+          customers?: string | null
+          description?: string | null
+          ebitda?: string | null
+          employees?: number | null
+          external_id: string
+          geography?: string[] | null
+          hq?: string | null
+          id?: string
+          industry_focus?: string | null
+          industry_preferences?: string[] | null
+          investment_size?: string | null
+          investment_type?: string[] | null
+          investments?: string | null
+          is_pe_vc_backed?: boolean | null
+          is_public?: boolean | null
+          keywords?: string[] | null
+          location?: string | null
+          long_description?: string | null
+          ma_track_record?: string | null
+          matching_score?: number | null
+          name: string
+          offering?: string | null
+          parent_company?: string | null
+          previous_acquisitions?: string | null
+          primary_industries?: string[] | null
+          rationale?: Json | null
+          reported_date?: string | null
+          revenue?: number | null
+          sector?: string | null
+          sectors?: string[] | null
+          status?: string | null
+          target_customer_types?: string[] | null
+          type: string
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          aum?: number | null
+          cash?: number | null
+          created_at?: string
+          customers?: string | null
+          description?: string | null
+          ebitda?: string | null
+          employees?: number | null
+          external_id?: string
+          geography?: string[] | null
+          hq?: string | null
+          id?: string
+          industry_focus?: string | null
+          industry_preferences?: string[] | null
+          investment_size?: string | null
+          investment_type?: string[] | null
+          investments?: string | null
+          is_pe_vc_backed?: boolean | null
+          is_public?: boolean | null
+          keywords?: string[] | null
+          location?: string | null
+          long_description?: string | null
+          ma_track_record?: string | null
+          matching_score?: number | null
+          name?: string
+          offering?: string | null
+          parent_company?: string | null
+          previous_acquisitions?: string | null
+          primary_industries?: string[] | null
+          rationale?: Json | null
+          reported_date?: string | null
+          revenue?: number | null
+          sector?: string | null
+          sectors?: string[] | null
+          status?: string | null
+          target_customer_types?: string[] | null
+          type?: string
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           acquisition_reason: string | null

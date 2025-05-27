@@ -60,6 +60,17 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
   // Get the overall rationale text safely
   const overallRationaleText = buyer.rationale?.overall ? getRationaleText(buyer.rationale.overall) : '';
 
+  // Safely handle employees field
+  const getEmployeesDisplay = (employees: any): string => {
+    if (employees === null || employees === undefined) return '0';
+    if (typeof employees === 'number') return employees.toLocaleString();
+    if (typeof employees === 'string') {
+      const parsed = parseInt(employees, 10);
+      return isNaN(parsed) ? '0' : parsed.toLocaleString();
+    }
+    return '0';
+  };
+
   return (
     <>
       <TableRow className={`hover:bg-gray-50 text-xs ${isSaved ? 'bg-green-50' : ''}`}>
@@ -74,13 +85,13 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
         />
         
         {/* HQ Column */}
-        <TableCell className="text-xs">{buyer.location || buyer.hq}</TableCell>
+        <TableCell className="text-xs">{buyer.location || buyer.hq || 'N/A'}</TableCell>
         
         {/* Employees Column */}
-        <TableCell className="text-xs">{buyer.employees.toLocaleString()}</TableCell>
+        <TableCell className="text-xs">{getEmployeesDisplay(buyer.employees)}</TableCell>
         
         {/* Short Description Column */}
-        <TableCell className="text-xs">{buyer.description}</TableCell>
+        <TableCell className="text-xs">{buyer.description || 'N/A'}</TableCell>
         
         {/* Overall Rationale Column */}
         <RationaleCell 

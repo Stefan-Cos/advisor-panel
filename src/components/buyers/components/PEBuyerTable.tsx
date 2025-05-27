@@ -59,6 +59,15 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
       }
     }
     
+    // Handle employees field safely - ensure it's always a number
+    let employeesValue = 0;
+    if (buyer.employees) {
+      employeesValue = typeof buyer.employees === 'number' ? buyer.employees : 0;
+    } else if (buyer.aum) {
+      // For PE funds, use AUM as employee count if available
+      employeesValue = typeof buyer.aum === 'number' ? buyer.aum : 0;
+    }
+    
     // Ensure rationale properties are properly formatted for rendering
     let formattedRationale = buyer.rationale;
     if (formattedRationale) {
@@ -84,14 +93,16 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
     
     return {
       ...buyer,
-      hq: buyer.location || buyer.hq, // Map location to hq for consistency
-      employees: buyer.aum || buyer.employees || 0, // Use AUM as employee count for PE funds
+      hq: buyer.location || buyer.hq || '', // Map location to hq for consistency
+      employees: employeesValue, // Ensure this is always a number
       revenue: revenueValue,
       cash: ebitdaValue,
       reportedDate: buyer.reportedDate || new Date().toISOString().substring(0, 10), // Add a placeholder date
       isPEVCBacked: buyer.isPEVCBacked !== undefined ? buyer.isPEVCBacked : true,
       isPublic: buyer.isPublic !== undefined ? buyer.isPublic : false,
       rationale: formattedRationale,
+      description: buyer.description || '', // Ensure description is always a string
+      maTrackRecord: buyer.maTrackRecord || buyer.ma_track_record || 'N/A', // Handle both field names
     };
   });
 
