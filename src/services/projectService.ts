@@ -39,8 +39,8 @@ export interface ProjectData {
 export const createProject = async (projectData: ProjectData) => {
   const { data: { user } } = await supabase.auth.getUser();
   
-  // For demo purposes, create a dummy authenticated user ID
-  const userId = user?.id || 'dummy-auth-user-12345';
+  // For demo purposes, use a proper UUID format for dummy user
+  const userId = user?.id || '00000000-0000-0000-0000-000000000001';
   
   console.log('Creating project with user ID:', userId);
   console.log('Project data being saved:', projectData);
