@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '../components/layout/Navbar';
 import Sidebar from '../components/layout/Sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActiveProjectsTab from '../components/listings/ActiveProjectsTab';
 import ComingSoonTab from '../components/listings/ComingSoonTab';
+import { getProjects } from '../services/projectService';
 
 // Mock data
 const mockListings = [
@@ -60,6 +61,108 @@ const mockListings = [
 ];
 
 const Listings = () => {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const projectsData = await getProjects();
+        
+        // Transform projects data to match the expected format
+        const transformedProjects = projectsData.map(project => ({
+          id: project.id,
+          companyName: project.company_name,
+          projectTitle: project.project_name,
+          date: project.created_at,
+          status: 'active' as const,
+          notifications: 0,
+          savedBuyers: 0,
+          advisorCreated: 'Admin'
+        }));
+        
+        setProjects(transformedProjects);
+      } catch (error) {
+        console.error('Error loading projects:', error);
+        // Keep mock data as fallback if there's an error
+        setProjects([
+          {
+            id: '229',
+            companyName: 'Stefan Ltd',
+            projectTitle: 'Stefan',
+            date: '2024-06-15',
+            status: 'inactive' as const,
+            notifications: 0,
+            savedBuyers: 3,
+            advisorCreated: 'John Smith'
+          },
+          {
+            id: '228',
+            companyName: 'sdsdvscxz',
+            projectTitle: '22esass',
+            date: '2024-06-15',
+            status: 'inactive' as const,
+            notifications: 0,
+            savedBuyers: 0,
+            advisorCreated: 'Jane Doe'
+          },
+          {
+            id: '227',
+            companyName: 'jsdsds',
+            projectTitle: 'susdsh',
+            date: '2024-06-15',
+            status: 'inactive' as const,
+            notifications: 0,
+            savedBuyers: 2,
+            advisorCreated: 'Adam Johnson'
+          },
+          {
+            id: '225',
+            companyName: '12345sss',
+            projectTitle: 'nosa',
+            date: '2024-06-15',
+            status: 'inactive' as const,
+            notifications: 0,
+            savedBuyers: 0,
+            advisorCreated: 'Sarah Williams'
+          },
+          {
+            id: '224',
+            companyName: 'exam',
+            projectTitle: 'exam',
+            date: '2024-06-15',
+            status: 'inactive' as const,
+            notifications: 0,
+            savedBuyers: 1,
+            advisorCreated: 'Michael Brown'
+          }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProjects();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        
+        <div className="flex flex-1">
+          <Sidebar />
+          
+          <main className="flex-1 p-6">
+            <div className="mb-4">
+              <h1 className="text-2xl font-bold text-blueknight-800">Loading Projects...</h1>
+            </div>
+          </main>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />
@@ -69,7 +172,7 @@ const Listings = () => {
         
         <main className="flex-1 p-6">
           <div className="mb-4">
-            <h1 className="text-2xl font-bold text-blueknight-800">All Projects ({mockListings.length})</h1>
+            <h1 className="text-2xl font-bold text-blueknight-800">All Projects ({projects.length})</h1>
           </div>
           
           <Tabs defaultValue="active-projects" className="w-full mt-6">
@@ -95,7 +198,7 @@ const Listings = () => {
             </TabsList>
             
             <TabsContent value="active-projects" className="animate-fade-in">
-              <ActiveProjectsTab listings={mockListings} />
+              <ActiveProjectsTab listings={projects} />
             </TabsContent>
             
             <TabsContent value="buyer-pitches">

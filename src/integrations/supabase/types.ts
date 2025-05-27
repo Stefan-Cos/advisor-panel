@@ -9,7 +9,123 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      projects: {
+        Row: {
+          acquisition_reason: string | null
+          buyer_countries: Json | null
+          buyer_industries: Json | null
+          buyer_keywords: Json | null
+          company_name: string
+          competitors: string[] | null
+          country: string
+          created_at: string
+          customer_industries: string[] | null
+          customer_type: string[] | null
+          delivery_method: string[] | null
+          description: string | null
+          ebitda_last_year: string | null
+          ebitda_this_year: string | null
+          employee_count: number | null
+          end_user_sectors: Json | null
+          exclude_geographies: string[] | null
+          id: string
+          include_geographies: string[] | null
+          industry: string[] | null
+          last_year_period: string | null
+          offering: string | null
+          problem_solved: string | null
+          product_tags: string[] | null
+          project_name: string
+          revenue_last_year: string | null
+          revenue_this_year: string | null
+          shareholder_preference: Json | null
+          supply_chain_role: string[] | null
+          target_customers: string | null
+          this_year_period: string | null
+          updated_at: string
+          use_case: string[] | null
+          use_cases: string | null
+          user_id: string
+          website: string | null
+        }
+        Insert: {
+          acquisition_reason?: string | null
+          buyer_countries?: Json | null
+          buyer_industries?: Json | null
+          buyer_keywords?: Json | null
+          company_name: string
+          competitors?: string[] | null
+          country: string
+          created_at?: string
+          customer_industries?: string[] | null
+          customer_type?: string[] | null
+          delivery_method?: string[] | null
+          description?: string | null
+          ebitda_last_year?: string | null
+          ebitda_this_year?: string | null
+          employee_count?: number | null
+          end_user_sectors?: Json | null
+          exclude_geographies?: string[] | null
+          id?: string
+          include_geographies?: string[] | null
+          industry?: string[] | null
+          last_year_period?: string | null
+          offering?: string | null
+          problem_solved?: string | null
+          product_tags?: string[] | null
+          project_name: string
+          revenue_last_year?: string | null
+          revenue_this_year?: string | null
+          shareholder_preference?: Json | null
+          supply_chain_role?: string[] | null
+          target_customers?: string | null
+          this_year_period?: string | null
+          updated_at?: string
+          use_case?: string[] | null
+          use_cases?: string | null
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          acquisition_reason?: string | null
+          buyer_countries?: Json | null
+          buyer_industries?: Json | null
+          buyer_keywords?: Json | null
+          company_name?: string
+          competitors?: string[] | null
+          country?: string
+          created_at?: string
+          customer_industries?: string[] | null
+          customer_type?: string[] | null
+          delivery_method?: string[] | null
+          description?: string | null
+          ebitda_last_year?: string | null
+          ebitda_this_year?: string | null
+          employee_count?: number | null
+          end_user_sectors?: Json | null
+          exclude_geographies?: string[] | null
+          id?: string
+          include_geographies?: string[] | null
+          industry?: string[] | null
+          last_year_period?: string | null
+          offering?: string | null
+          problem_solved?: string | null
+          product_tags?: string[] | null
+          project_name?: string
+          revenue_last_year?: string | null
+          revenue_this_year?: string | null
+          shareholder_preference?: Json | null
+          supply_chain_role?: string[] | null
+          target_customers?: string | null
+          this_year_period?: string | null
+          updated_at?: string
+          use_case?: string[] | null
+          use_cases?: string | null
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

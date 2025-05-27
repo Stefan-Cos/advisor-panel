@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,9 +11,16 @@ interface BuyerPreferencesSectionProps {
   setFormData: (data: any) => void;
   handleSubmit: () => void;
   prevStep: () => void;
+  isSubmitting?: boolean;
 }
 
-const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ formData, setFormData, handleSubmit, prevStep }) => {
+const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ 
+  formData, 
+  setFormData, 
+  handleSubmit, 
+  prevStep,
+  isSubmitting = false
+}) => {
   const [includeGeography, setIncludeGeography] = useState(true);
   const [excludeGeography, setExcludeGeography] = useState(false);
   const [includeGeo, setIncludeGeo] = useState("");
@@ -203,11 +209,24 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({ formD
         </div>
       </div>
 
-      <FormNavigation 
-        prevStep={prevStep}
-        isLastStep={true}
-        handleSubmit={handleSubmit}
-      />
+      <div className="flex justify-between pt-8">
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={prevStep}
+          disabled={isSubmitting}
+        >
+          Previous
+        </Button>
+        <Button 
+          type="button" 
+          onClick={handleSubmit}
+          disabled={isSubmitting}
+          className="bg-blueknight-600 hover:bg-blueknight-700"
+        >
+          {isSubmitting ? "Creating Project..." : "Create Project"}
+        </Button>
+      </div>
     </SectionContainer>
   );
 };

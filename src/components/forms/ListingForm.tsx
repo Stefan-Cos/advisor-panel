@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { Brain } from 'lucide-react';
+import { createProject } from '@/services/projectService';
 
 // Import the steps
 import ProjectSetupStep from './steps/ProjectSetupStep';
@@ -69,6 +69,7 @@ const ConfirmationScreen = ({ navigate }) => {
 const ListingForm = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     projectName: '',
     companyName: '',
@@ -94,11 +95,68 @@ const ListingForm = () => {
     window.scrollTo(0, 0);
   };
   
-  const handleSubmit = () => {
-    setShowConfirmation(true);
-    toast({
-      title: "Project created successfully",
-    });
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      // Transform form data to match database schema
+      const projectData = {
+        project_name: formData.projectName,
+        company_name: formData.companyName,
+        country: formData.country,
+        employee_count: formData.employeeCount ? parseInt(formData.employeeCount) : undefined,
+        website: formData.website,
+        description: formData.description,
+        industry: formData.industry,
+        offering: formData.offering,
+        include_geographies: formData.includeGeographies,
+        exclude_geographies: formData.excludeGeographies,
+        product_tags: formData.productTags,
+        delivery_method: formData.deliveryMethod,
+        supply_chain_role: formData.supplyChainRole,
+        use_case: formData.useCase,
+        problem_solved: formData.problemSolved,
+        use_cases: formData.useCases,
+        competitors: formData.competitors,
+        last_year_period: formData.lastYearPeriod,
+        revenue_last_year: formData.revenueLastYear,
+        ebitda_last_year: formData.ebitdaLastYear,
+        this_year_period: formData.thisYearPeriod,
+        revenue_this_year: formData.revenueThisYear,
+        ebitda_this_year: formData.ebitdaThisYear,
+        target_customers: formData.targetCustomers,
+        customer_type: formData.customerType,
+        customer_industries: formData.customerIndustries,
+        acquisition_reason: formData.acquisitionReason,
+        buyer_countries: formData.includeGeographies?.map(geo => ({ name: geo, importance: 'N/A' })),
+        buyer_industries: formData.industry?.map(ind => ({ name: ind, importance: 'N/A' })),
+        end_user_sectors: formData.customerIndustries?.map(sector => ({ name: sector, importance: 'N/A' })),
+        buyer_keywords: formData.productTags?.map(tag => ({ name: tag, importance: 'N/A' })),
+        shareholder_preference: {
+          privateEquity: false,
+          peBacked: false,
+          strategicTrade: false,
+          noPreference: true
+        }
+      };
+
+      await createProject(projectData);
+      
+      setShowConfirmation(true);
+      toast({
+        title: "Project created successfully",
+        description: "Your project has been saved to the database.",
+      });
+    } catch (error) {
+      console.error('Error creating project:', error);
+      toast({
+        title: "Error creating project",
+        description: "There was an error saving your project. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderStepIndicator = () => {
@@ -223,6 +281,7 @@ const ListingForm = () => {
           setFormData={setFormData}
           handleSubmit={handleSubmit}
           prevStep={prevStep}
+          isSubmitting={isSubmitting}
         />
       )}
     </>
