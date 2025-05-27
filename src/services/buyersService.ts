@@ -44,29 +44,18 @@ export interface DatabaseBuyer {
 
 export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<DatabaseBuyer[]> => {
   try {
-    // Use raw SQL query since TypeScript types haven't been updated yet
-    const { data, error } = await supabase.rpc('exec_sql', {
-      sql: `SELECT * FROM buyers WHERE type = $1 ORDER BY matching_score DESC NULLS LAST`,
-      params: [type]
-    });
-
+    // Use direct table access with type assertion as workaround
+    const { data, error } = await (supabase as any)
+      .from('buyers')
+      .select('*')
+      .eq('type', type)
+      .order('matching_score', { ascending: false });
+    
     if (error) {
       console.error('Error fetching buyers by type:', error);
-      // Fallback to direct table access with type assertion
-      const { data: fallbackData, error: fallbackError } = await (supabase as any)
-        .from('buyers')
-        .select('*')
-        .eq('type', type)
-        .order('matching_score', { ascending: false });
-      
-      if (fallbackError) {
-        console.error('Fallback query also failed:', fallbackError);
-        throw fallbackError;
-      }
-      
-      return fallbackData || [];
+      throw error;
     }
-
+    
     return data || [];
   } catch (error) {
     console.error('Error in getBuyersByType:', error);
