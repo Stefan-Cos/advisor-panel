@@ -20,7 +20,13 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
     setIsAnalyzing(true);
     
     try {
-      await analyzeCompanyWebsite(website);
+      console.log('Analyzing website:', website);
+      const scrapedData = await analyzeCompanyWebsite(website);
+      
+      if (scrapedData?.textContent) {
+        console.log('Website content scraped successfully');
+        console.log('First 400 words:', scrapedData.textContent);
+      }
     } catch (error) {
       console.error('Analysis failed:', error);
     }
