@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
@@ -325,7 +324,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     });
   };
 
-  // Handle saving a search - now also saves results to buyer_search_results
+  // Handle saving a search - now saves flattened data to individual columns
   const handleSaveSearch = async (searchName: string) => {
     console.log('=== SAVE SEARCH BUTTON CLICKED ===');
     console.log('Search Name:', searchName);
@@ -355,7 +354,45 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
         const buyerResults = currentMatchedBuyers.map(buyer => {
           const result = {
             saved_search_id: savedSearch.id!,
-            buyer_data: buyer, // This is now flattened data, not nested JSONB
+            buyer_external_id: buyer.external_id || buyer.id,
+            buyer_name: buyer.name,
+            buyer_type: buyer.buyer_type,
+            hq: buyer.hq,
+            location: buyer.location,
+            website: buyer.website,
+            employees: buyer.employees,
+            revenue: buyer.revenue,
+            cash: buyer.cash,
+            aum: buyer.aum,
+            ebitda: buyer.ebitda,
+            description: buyer.description,
+            long_description: buyer.long_description,
+            offering: buyer.offering,
+            sector: buyer.sector,
+            industry_focus: buyer.industry_focus,
+            customers: buyer.customers,
+            target_customer_types: buyer.target_customer_types,
+            primary_industries: buyer.primary_industries,
+            sectors: buyer.sectors,
+            keywords: buyer.keywords,
+            ma_track_record: buyer.ma_track_record,
+            previous_acquisitions: buyer.previous_acquisitions,
+            investments: buyer.investments,
+            investment_size: buyer.investment_size,
+            investment_type: buyer.investment_type,
+            geography: buyer.geography,
+            industry_preferences: buyer.industry_preferences,
+            parent_company: buyer.parent_company,
+            is_public: buyer.is_public,
+            is_pe_vc_backed: buyer.is_pe_vc_backed,
+            reported_date: buyer.reported_date,
+            matching_score: buyer.matching_score,
+            overall_rationale: buyer.overall_rationale,
+            offering_rationale: buyer.offering_rationale,
+            customers_rationale: buyer.customers_rationale,
+            financial_rationale: buyer.financial_rationale,
+            transactions_rationale: buyer.transactions_rationale,
+            status: buyer.status,
             match_score: buyer.matching_score,
             rationale: {
               overall: buyer.overall_rationale,
@@ -366,11 +403,11 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
             },
             is_saved: savedBuyers.includes(buyer.id)
           };
-          console.log('Individual Buyer Result:', result);
+          console.log('Individual Buyer Result (Flattened):', result);
           return result;
         });
 
-        console.log('All Buyer Results to be saved:', buyerResults);
+        console.log('All Buyer Results to be saved (Flattened):', buyerResults);
         const buyerResultsResponse = await createBuyerSearchResults(buyerResults);
         console.log('Buyer Results Save Response:', buyerResultsResponse);
       } else {

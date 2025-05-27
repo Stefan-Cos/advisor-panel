@@ -49,31 +49,148 @@ export type Database = {
       }
       buyer_search_results: {
         Row: {
-          buyer_data: Json
+          aum: number | null
+          buyer_data: Json | null
+          buyer_external_id: string | null
+          buyer_name: string | null
+          buyer_type: string | null
+          cash: number | null
           created_at: string
+          customers: string | null
+          customers_rationale: string | null
+          description: string | null
+          ebitda: string | null
+          employees: number | null
+          financial_rationale: string | null
+          geography: string | null
+          hq: string | null
           id: string
+          industry_focus: string | null
+          industry_preferences: string | null
+          investment_size: string | null
+          investment_type: string | null
+          investments: string | null
+          is_pe_vc_backed: boolean | null
+          is_public: boolean | null
           is_saved: boolean | null
+          keywords: string | null
+          location: string | null
+          long_description: string | null
+          ma_track_record: string | null
           match_score: number | null
+          matching_score: number | null
+          offering: string | null
+          offering_rationale: string | null
+          overall_rationale: string | null
+          parent_company: string | null
+          previous_acquisitions: string | null
+          primary_industries: string | null
           rationale: Json | null
+          reported_date: string | null
+          revenue: number | null
           saved_search_id: string
+          sector: string | null
+          sectors: string | null
+          status: string | null
+          target_customer_types: string | null
+          transactions_rationale: string | null
+          website: string | null
         }
         Insert: {
-          buyer_data: Json
+          aum?: number | null
+          buyer_data?: Json | null
+          buyer_external_id?: string | null
+          buyer_name?: string | null
+          buyer_type?: string | null
+          cash?: number | null
           created_at?: string
+          customers?: string | null
+          customers_rationale?: string | null
+          description?: string | null
+          ebitda?: string | null
+          employees?: number | null
+          financial_rationale?: string | null
+          geography?: string | null
+          hq?: string | null
           id?: string
+          industry_focus?: string | null
+          industry_preferences?: string | null
+          investment_size?: string | null
+          investment_type?: string | null
+          investments?: string | null
+          is_pe_vc_backed?: boolean | null
+          is_public?: boolean | null
           is_saved?: boolean | null
+          keywords?: string | null
+          location?: string | null
+          long_description?: string | null
+          ma_track_record?: string | null
           match_score?: number | null
+          matching_score?: number | null
+          offering?: string | null
+          offering_rationale?: string | null
+          overall_rationale?: string | null
+          parent_company?: string | null
+          previous_acquisitions?: string | null
+          primary_industries?: string | null
           rationale?: Json | null
+          reported_date?: string | null
+          revenue?: number | null
           saved_search_id: string
+          sector?: string | null
+          sectors?: string | null
+          status?: string | null
+          target_customer_types?: string | null
+          transactions_rationale?: string | null
+          website?: string | null
         }
         Update: {
-          buyer_data?: Json
+          aum?: number | null
+          buyer_data?: Json | null
+          buyer_external_id?: string | null
+          buyer_name?: string | null
+          buyer_type?: string | null
+          cash?: number | null
           created_at?: string
+          customers?: string | null
+          customers_rationale?: string | null
+          description?: string | null
+          ebitda?: string | null
+          employees?: number | null
+          financial_rationale?: string | null
+          geography?: string | null
+          hq?: string | null
           id?: string
+          industry_focus?: string | null
+          industry_preferences?: string | null
+          investment_size?: string | null
+          investment_type?: string | null
+          investments?: string | null
+          is_pe_vc_backed?: boolean | null
+          is_public?: boolean | null
           is_saved?: boolean | null
+          keywords?: string | null
+          location?: string | null
+          long_description?: string | null
+          ma_track_record?: string | null
           match_score?: number | null
+          matching_score?: number | null
+          offering?: string | null
+          offering_rationale?: string | null
+          overall_rationale?: string | null
+          parent_company?: string | null
+          previous_acquisitions?: string | null
+          primary_industries?: string | null
           rationale?: Json | null
+          reported_date?: string | null
+          revenue?: number | null
           saved_search_id?: string
+          sector?: string | null
+          sectors?: string | null
+          status?: string | null
+          target_customer_types?: string | null
+          transactions_rationale?: string | null
+          website?: string | null
         }
         Relationships: [
           {
