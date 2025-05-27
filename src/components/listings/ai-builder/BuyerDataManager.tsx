@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, Download, FileSpreadsheet, AlertCircle, Info, Table } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
-import { createBuyerSearchResults } from '@/services/buyerSearchService';
+import { createBuyerSearchResults, createSavedBuyerSearch } from '@/services/buyerSearchService';
 
 interface BuyerDataManagerProps {
   listingId: string;
@@ -169,10 +169,10 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
   };
 
   const handleFileUpload = async () => {
-    if (!uploadFile || !savedSearchId) {
+    if (!uploadFile) {
       toast({
         title: "Error",
-        description: "Please select a file and ensure you have a saved search selected.",
+        description: "Please select a file to upload.",
         variant: "destructive"
       });
       return;
@@ -181,6 +181,24 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     setUploading(true);
 
     try {
+      let currentSavedSearchId = savedSearchId;
+
+      // If no saved search is selected, create a default one
+      if (!currentSavedSearchId) {
+        const defaultSearchName = `Data Upload - ${new Date().toLocaleDateString()}`;
+        const defaultSearch = await createSavedBuyerSearch({
+          project_id: listingId,
+          name: defaultSearchName,
+          search_criteria: { uploadType: selectedTable }
+        });
+        currentSavedSearchId = defaultSearch.id!;
+        
+        toast({
+          title: "Search Created",
+          description: `Created "${defaultSearchName}" for your data upload.`
+        });
+      }
+
       const fileContent = await uploadFile.text();
       const lines = fileContent.split('\n').filter(line => line.trim());
       
@@ -204,7 +222,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       const buyerResults = dataRows.map((line, index) => {
         const values = parseCSVLine(line);
         const buyerData: any = {
-          saved_search_id: savedSearchId,
+          saved_search_id: currentSavedSearchId,
           buyer_external_id: `upload_${Date.now()}_${index}`,
         };
 
@@ -363,10 +381,10 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
         </CardHeader>
         <CardContent className="space-y-4">
           {!savedSearchId && (
-            <div className="flex items-center p-3 bg-amber-50 border border-amber-200 rounded-md">
-              <AlertCircle className="h-4 w-4 text-amber-600 mr-2" />
-              <span className="text-xs text-amber-700">
-                Please save a search first before uploading data
+            <div className="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <Info className="h-4 w-4 text-blue-600 mr-2" />
+              <span className="text-xs text-blue-700">
+                No saved search selected. A new search will be created automatically for your upload.
               </span>
             </div>
           )}
@@ -378,7 +396,6 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
               type="file"
               accept=".csv"
               onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
-              disabled={!savedSearchId}
             />
             <div className="text-xs text-gray-500">
               Supports all {selectedConfig.headers.length} fields for {selectedConfig.name}
@@ -387,7 +404,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
 
           <Button 
             onClick={handleFileUpload}
-            disabled={!uploadFile || uploading || !savedSearchId}
+            disabled={!uploadFile || uploading}
             className="w-full"
           >
             {uploading ? `Uploading to ${selectedConfig.name}...` : `Upload Data to ${selectedConfig.name}`}
