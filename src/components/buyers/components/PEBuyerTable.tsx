@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Table, TableBody } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -110,9 +111,6 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
 
   return (
     <div>
-      {/* Only show BlueKnightDescription if showDescription is true */}
-      {showDescription && <BlueKnightDescription />}
-      
       <ScrollArea className="h-[600px] w-full mt-6" orientation="both">
         <div className="min-w-max">
           <Table>

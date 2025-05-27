@@ -41,7 +41,10 @@ export const saveBuyerToList = async (request: SaveBuyerRequest): Promise<SavedB
       throw error;
     }
 
-    return data;
+    return {
+      ...data,
+      buyer_type: data.buyer_type as 'strategic' | 'pe'
+    } as SavedBuyer;
   } catch (error) {
     console.error('Error in saveBuyerToList:', error);
     throw error;
@@ -61,7 +64,10 @@ export const getSavedBuyersList = async (project_id: string): Promise<SavedBuyer
       throw error;
     }
 
-    return data || [];
+    return (data || []).map(item => ({
+      ...item,
+      buyer_type: item.buyer_type as 'strategic' | 'pe'
+    })) as SavedBuyer[];
   } catch (error) {
     console.error('Error in getSavedBuyersList:', error);
     return [];
