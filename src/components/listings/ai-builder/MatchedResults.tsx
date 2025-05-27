@@ -68,6 +68,8 @@ const MatchedResults: React.FC<MatchedResultsProps> = ({
           </Button>
         </div>
       </div>
+      
+      {/* Use the updated BuyerListNew component */}
       <BuyerListNew listingId={listingId} />
 
       {/* Save Search Dialog */}
