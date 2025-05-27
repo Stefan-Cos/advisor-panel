@@ -1,27 +1,27 @@
-
 import React from 'react';
 import { Table, TableBody } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import BuyerTableHeader from './BuyerTableHeader';
 import BuyerTableRow from './BuyerTableRow';
-import BlueKnightDescription from '@/components/listings/BlueKnightDescription';
 
 interface PEBuyerTableProps {
   buyers: any[];
   savedBuyers: string[];
   expandedRationales: string[];
   onAddToSaved: (id: string) => void;
-  toggleRationale: (id: string) => void;
+  toggleRationale: (buyerId: string) => void;
   showDescription?: boolean;
+  listingId?: string;
 }
 
-const PEBuyerTable: React.FC<PEBuyerTableProps> = ({ 
-  buyers, 
-  savedBuyers, 
-  expandedRationales, 
-  onAddToSaved, 
+const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
+  buyers,
+  savedBuyers,
+  expandedRationales,
+  onAddToSaved,
   toggleRationale,
-  showDescription = false
+  showDescription = true,
+  listingId
 }) => {
   // Function to determine color based on M&A track record
   const getMATrackRecordColor = (record: string): string => {
@@ -37,7 +37,7 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
     }
   };
 
-  // Convert PE buyers format to match the structure expected by BuyerTableRow
+  // Format PE buyers to match the structure expected by BuyerTableRow
   const formattedBuyers = buyers.map(buyer => {
     // Handle revenue safely - check if it's a string before using split
     let revenueValue = 0;
@@ -49,14 +49,16 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
       }
     }
     
-    // Similarly handle EBITDA safely
-    let ebitdaValue = 0;
+    // Handle EBITDA safely - check if it's a string before using split
+    let cashValue = 0;
     if (buyer.ebitda) {
       if (typeof buyer.ebitda === 'string' && buyer.ebitda.includes(' - ')) {
-        ebitdaValue = parseFloat(buyer.ebitda.split(' - ')[0]) * 1000000;
-      } else if (typeof buyer.ebitda === 'number') {
-        ebitdaValue = buyer.ebitda;
+        cashValue = parseFloat(buyer.ebitda.split(' - ')[0]) * 1000000;
+      } else if (buyer.cash && typeof buyer.cash === 'number') {
+        cashValue = buyer.cash;
       }
+    } else if (buyer.cash && typeof buyer.cash === 'number') {
+      cashValue = buyer.cash;
     }
     
     // Handle employees field safely - ensure it's always a number
@@ -96,7 +98,7 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
       hq: buyer.location || buyer.hq || '', // Map location to hq for consistency
       employees: employeesValue, // Ensure this is always a number
       revenue: revenueValue,
-      cash: ebitdaValue,
+      cash: cashValue,
       reportedDate: buyer.reportedDate || new Date().toISOString().substring(0, 10), // Add a placeholder date
       isPEVCBacked: buyer.isPEVCBacked !== undefined ? buyer.isPEVCBacked : true,
       isPublic: buyer.isPublic !== undefined ? buyer.isPublic : false,
@@ -127,6 +129,7 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
                   getMATrackRecordColor={getMATrackRecordColor}
                   isInTop100={index < 100}
                   index={index}
+                  listingId={listingId}
                 />
               ))}
             </TableBody>

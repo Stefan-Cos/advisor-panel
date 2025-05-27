@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { getBuyersByType, transformDatabaseBuyerToComponentFormat } from '@/services/buyersService';
@@ -111,6 +110,7 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
                 toggleRationale={toggleRationale}
                 getMATrackRecordColor={getMATrackRecordColor}
                 showDescription={false}
+                listingId={listingId}
               />
             ) : (
               <PEBuyerTable
@@ -120,6 +120,7 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
                 onAddToSaved={handleAddToSaved}
                 toggleRationale={toggleRationale}
                 showDescription={false}
+                listingId={listingId}
               />
             )}
           </div>

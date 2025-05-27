@@ -4,7 +4,6 @@ import { Table, TableBody } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import BuyerTableHeader from './BuyerTableHeader';
 import BuyerTableRow from './BuyerTableRow';
-import BlueKnightDescription from '@/components/listings/BlueKnightDescription';
 
 interface StrategicBuyerTableProps {
   buyers: any[];
@@ -14,6 +13,7 @@ interface StrategicBuyerTableProps {
   toggleRationale: (buyerId: string) => void;
   getMATrackRecordColor: (record: string) => string;
   showDescription?: boolean;
+  listingId?: string;
 }
 
 const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
@@ -23,13 +23,11 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
   onAddToSaved,
   toggleRationale,
   getMATrackRecordColor,
-  showDescription = false // Changed default to false
+  showDescription = true,
+  listingId
 }) => {
   return (
     <div>
-      {/* Only show BlueKnightDescription if showDescription is true */}
-      {showDescription && <BlueKnightDescription />}
-      
       <ScrollArea className="h-[600px] w-full mt-6" orientation="both">
         <div className="min-w-max">
           <Table>
@@ -46,6 +44,7 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
                   getMATrackRecordColor={getMATrackRecordColor}
                   isInTop100={index < 100}
                   index={index}
+                  listingId={listingId}
                 />
               ))}
             </TableBody>

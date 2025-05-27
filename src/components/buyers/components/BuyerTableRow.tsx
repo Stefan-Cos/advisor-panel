@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Buyer } from '../types/BuyerTypes';
@@ -22,6 +21,7 @@ interface BuyerTableRowProps {
   getMATrackRecordColor: (record: string) => string;
   isInTop100?: boolean;
   index: number;
+  listingId?: string;
 }
 
 const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
@@ -32,7 +32,8 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
   toggleRationale,
   getMATrackRecordColor,
   isInTop100 = true,
-  index
+  index,
+  listingId
 }) => {
   const [sheetOpen, setSheetOpen] = React.useState(false);
   const [maRecordSheetOpen, setMARecordSheetOpen] = React.useState(false);
@@ -114,6 +115,9 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
             name={buyer.name}
             isSaved={savedBuyers.includes(buyer.id)}
             onSave={onAddToSaved}
+            listingId={listingId}
+            buyerType={buyer.type as 'strategic' | 'pe'}
+            buyerData={buyer}
           />
         </TableCell>
       </TableRow>

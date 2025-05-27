@@ -422,6 +422,45 @@ export type Database = {
           },
         ]
       }
+      saved_buyers_list: {
+        Row: {
+          buyer_data: Json
+          buyer_id: string
+          buyer_name: string
+          buyer_type: string
+          feedback: string | null
+          id: string
+          project_id: string
+          rank: number | null
+          saved_at: string
+          updated_at: string
+        }
+        Insert: {
+          buyer_data: Json
+          buyer_id: string
+          buyer_name: string
+          buyer_type: string
+          feedback?: string | null
+          id?: string
+          project_id: string
+          rank?: number | null
+          saved_at?: string
+          updated_at?: string
+        }
+        Update: {
+          buyer_data?: Json
+          buyer_id?: string
+          buyer_name?: string
+          buyer_type?: string
+          feedback?: string | null
+          id?: string
+          project_id?: string
+          rank?: number | null
+          saved_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       users: {
         Row: {
           created_at: string
