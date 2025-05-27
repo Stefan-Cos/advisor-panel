@@ -7,7 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import BuyerTabs from './components/BuyerTabs';
 import BuyerFilter from './components/BuyerFilter';
 import ExcelDownloadButton from './components/ExcelDownloadButton';
-import { getBuyers } from '@/services/buyersService';
+import { getAllBuyers } from '@/services/buyersService';
 import { getSavedBuyersList } from '@/services/savedBuyersService';
 
 interface BlueKnightListProps {
@@ -32,7 +32,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
   const loadBuyers = async () => {
     try {
       setLoading(true);
-      const buyers = await getBuyers();
+      const buyers = await getAllBuyers();
       
       // Separate strategic and PE buyers
       const strategic = buyers.filter(buyer => buyer.type === 'strategic');
@@ -112,7 +112,10 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
           </div>
         </div>
         <div className="p-4">
-          <BuyerFilter onFilterApply={handleFilterApply} />
+          <BuyerFilter 
+            onFilterApply={handleFilterApply} 
+            onClose={toggleFilterSidebar}
+          />
         </div>
       </div>
 
@@ -134,7 +137,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
             </Button>
             <ExcelDownloadButton 
               buyers={activeTab === 'strategic' ? strategicBuyers : peBuyers}
-              filename={`${activeTab}-buyers.xlsx`}
+              buyerType={activeTab as 'strategic' | 'pe'}
             />
           </div>
         </div>

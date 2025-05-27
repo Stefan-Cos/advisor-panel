@@ -58,13 +58,13 @@ const BuyerTabs: React.FC<BuyerTabsProps> = ({
           value="strategic" 
           className="data-[state=active]:bg-[#001437] data-[state=active]:text-white"
         >
-          Strategic ({strategicBuyers.length})
+          Strategic ({strategicBuyers?.length || 0})
         </TabsTrigger>
         <TabsTrigger 
           value="pe"
           className="data-[state=active]:bg-[#001437] data-[state=active]:text-white"
         >
-          PE/VC ({peBuyers.length})
+          PE/VC ({peBuyers?.length || 0})
         </TabsTrigger>
       </TabsList>
       

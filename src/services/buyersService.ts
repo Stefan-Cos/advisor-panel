@@ -84,6 +84,9 @@ export const getAllBuyers = async (): Promise<DatabaseBuyer[]> => {
   }
 };
 
+// Add getBuyers as an alias for getAllBuyers to maintain backward compatibility
+export const getBuyers = getAllBuyers;
+
 export const getBuyerById = async (id: string): Promise<DatabaseBuyer | null> => {
   try {
     // Use direct table access with type assertion as workaround
