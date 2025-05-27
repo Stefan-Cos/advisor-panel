@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
-import { Settings, Save } from 'lucide-react';
+import { Settings, Save, Database } from 'lucide-react';
 
 // Import components
 import ProcessingAnimation from './ai-builder/ProcessingAnimation';
@@ -10,6 +10,7 @@ import MatchedResults from './ai-builder/MatchedResults';
 import SavedSearchesList from './ai-builder/SavedSearchesList';
 import SavedSearchDetails from './ai-builder/SavedSearchDetails';
 import FilterSidebarToggle from './ai-builder/FilterSidebarToggle';
+import DataManagementTab from './ai-builder/DataManagementTab';
 
 // Import services
 import { 
@@ -473,6 +474,18 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     }
   }, [activeTab]);
 
+  // Handle data upload completion
+  const handleDataUploaded = () => {
+    if (selectedSavedSearch) {
+      // Reload the search results to show the new data
+      handleLoadSavedSearch(selectedSavedSearch);
+    }
+    toast({
+      title: "Data Refreshed",
+      description: "Search results have been updated with the new data."
+    });
+  };
+
   return (
     <div className="bg-white shadow-sm rounded-lg border border-gray-200" id="ai-buyer-builder-section">
       {/* Filter Sidebar Toggle with BuyerFilter component directly embedded */}
@@ -485,7 +498,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
       <Tabs defaultValue="scoring" value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="border-b border-gray-200">
           <div className="px-4 py-2">
-            <TabsList className="grid grid-cols-2 h-9">
+            <TabsList className="grid grid-cols-3 h-9">
               <TabsTrigger value="scoring" className="text-xs">
                 <Settings className="h-3 w-3 mr-1" />
                 Configure AI Scoring
@@ -493,6 +506,10 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
               <TabsTrigger value="searches" className="text-xs">
                 <Save className="h-3 w-3 mr-1" />
                 Saved Searches
+              </TabsTrigger>
+              <TabsTrigger value="data-management" className="text-xs">
+                <Database className="h-3 w-3 mr-1" />
+                Data Management
               </TabsTrigger>
             </TabsList>
           </div>
@@ -539,6 +556,14 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
                 onSelectSearch={handleLoadSavedSearch}
               />
             )}
+          </TabsContent>
+
+          <TabsContent value="data-management" className="p-0 m-0">
+            <DataManagementTab
+              listingId={listingId}
+              selectedSavedSearch={selectedSavedSearch}
+              onDataUploaded={handleDataUploaded}
+            />
           </TabsContent>
         </div>
       </Tabs>
