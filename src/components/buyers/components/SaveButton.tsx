@@ -38,34 +38,44 @@ const SaveButton: React.FC<SaveButtonProps> = ({
   const handleSave = async () => {
     if (isActuallySaved || isLoading) return;
 
+    // If we don't have a listingId, show error and don't proceed
+    if (!listingId) {
+      console.error('No listingId provided for saving buyer');
+      toast({
+        title: "Error",
+        description: "Unable to save buyer: missing project information.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
-      if (listingId && buyerData) {
-        console.log('Saving buyer to database:', { id, name, buyerType, listingId });
-        
-        await saveBuyerToList({
-          project_id: listingId,
-          buyer_id: id,
-          buyer_name: name,
-          buyer_type: buyerType,
-          buyer_data: buyerData
-        });
-        
-        setIsActuallySaved(true);
-        toast({
-          title: "Buyer Saved",
-          description: `${name} has been added to your saved list.`
-        });
-        
-        console.log('Buyer saved successfully to database');
-      } else {
-        console.log('Missing required data for saving:', { listingId, buyerData: !!buyerData });
-        toast({
-          title: "Error",
-          description: "Missing required information to save buyer.",
-          variant: "destructive"
-        });
-      }
+      console.log('Saving buyer to database:', { id, name, buyerType, listingId });
+      
+      // Create buyer data object if not provided
+      const dataToSave = buyerData || {
+        id,
+        name,
+        type: buyerType,
+        // Add any other essential fields that might be needed
+      };
+      
+      await saveBuyerToList({
+        project_id: listingId,
+        buyer_id: id,
+        buyer_name: name,
+        buyer_type: buyerType,
+        buyer_data: dataToSave
+      });
+      
+      setIsActuallySaved(true);
+      toast({
+        title: "Buyer Saved",
+        description: `${name} has been added to your saved list.`
+      });
+      
+      console.log('Buyer saved successfully to database');
       
       // Call the original onSave for backward compatibility
       onSave(id);
