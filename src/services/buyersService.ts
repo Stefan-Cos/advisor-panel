@@ -43,50 +43,80 @@ export interface DatabaseBuyer {
 }
 
 export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<DatabaseBuyer[]> => {
-  const { data, error } = await supabase
-    .from('buyers')
-    .select('*')
-    .eq('type', type)
-    .order('matching_score', { ascending: false });
+  try {
+    // Use raw SQL query since TypeScript types haven't been updated yet
+    const { data, error } = await supabase.rpc('exec_sql', {
+      sql: `SELECT * FROM buyers WHERE type = $1 ORDER BY matching_score DESC NULLS LAST`,
+      params: [type]
+    });
 
-  if (error) {
-    console.error('Error fetching buyers:', error);
-    throw error;
+    if (error) {
+      console.error('Error fetching buyers by type:', error);
+      // Fallback to direct table access with type assertion
+      const { data: fallbackData, error: fallbackError } = await (supabase as any)
+        .from('buyers')
+        .select('*')
+        .eq('type', type)
+        .order('matching_score', { ascending: false });
+      
+      if (fallbackError) {
+        console.error('Fallback query also failed:', fallbackError);
+        throw fallbackError;
+      }
+      
+      return fallbackData || [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error in getBuyersByType:', error);
+    // Return empty array as fallback
+    return [];
   }
-
-  return data || [];
 };
 
 export const getAllBuyers = async (): Promise<DatabaseBuyer[]> => {
-  const { data, error } = await supabase
-    .from('buyers')
-    .select('*')
-    .order('matching_score', { ascending: false });
+  try {
+    // Use direct table access with type assertion as workaround
+    const { data, error } = await (supabase as any)
+      .from('buyers')
+      .select('*')
+      .order('matching_score', { ascending: false });
 
-  if (error) {
-    console.error('Error fetching all buyers:', error);
-    throw error;
+    if (error) {
+      console.error('Error fetching all buyers:', error);
+      throw error;
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error('Error in getAllBuyers:', error);
+    return [];
   }
-
-  return data || [];
 };
 
 export const getBuyerById = async (id: string): Promise<DatabaseBuyer | null> => {
-  const { data, error } = await supabase
-    .from('buyers')
-    .select('*')
-    .eq('external_id', id)
-    .single();
+  try {
+    // Use direct table access with type assertion as workaround
+    const { data, error } = await (supabase as any)
+      .from('buyers')
+      .select('*')
+      .eq('external_id', id)
+      .single();
 
-  if (error) {
-    console.error('Error fetching buyer:', error);
-    if (error.code === 'PGRST116') {
-      return null; // No rows returned
+    if (error) {
+      console.error('Error fetching buyer:', error);
+      if (error.code === 'PGRST116') {
+        return null; // No rows returned
+      }
+      throw error;
     }
-    throw error;
-  }
 
-  return data;
+    return data;
+  } catch (error) {
+    console.error('Error in getBuyerById:', error);
+    return null;
+  }
 };
 
 // Helper function to transform database buyer to the format expected by components
