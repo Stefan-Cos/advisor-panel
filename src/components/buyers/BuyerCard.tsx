@@ -18,6 +18,8 @@ interface BuyerCardProps {
   fitPercentage?: number;
   addedToSaved?: boolean;
   onAddToSaved?: (id: string) => void;
+  listingId?: string;
+  buyerData?: any;
 }
 
 const BuyerCard: React.FC<BuyerCardProps> = ({
@@ -28,10 +30,24 @@ const BuyerCard: React.FC<BuyerCardProps> = ({
   sector,
   offering,
   customers,
-  fitPercentage = Math.floor(Math.random() * 31) + 70, // Random fit % between 70-100 for demo
+  fitPercentage = Math.floor(Math.random() * 31) + 70,
   addedToSaved = false,
-  onAddToSaved,
+  onAddToSaved = () => {},
+  listingId,
+  buyerData
 }) => {
+  // Create buyer data object for saving
+  const buyerDataForSave = buyerData || {
+    id,
+    name,
+    type,
+    location,
+    sector,
+    offering,
+    customers,
+    fitPercentage
+  };
+
   return (
     <div className={cn(
       "premium-card animate-scale-in overflow-hidden",
@@ -46,6 +62,9 @@ const BuyerCard: React.FC<BuyerCardProps> = ({
               name={name}
               isSaved={addedToSaved}
               onSave={onAddToSaved}
+              listingId={listingId}
+              buyerType={type}
+              buyerData={buyerDataForSave}
             />
           </div>
         </div>

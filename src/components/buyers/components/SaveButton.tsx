@@ -28,7 +28,7 @@ const SaveButton: React.FC<SaveButtonProps> = ({
   const [isActuallySaved, setIsActuallySaved] = useState(isSaved);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check if buyer is saved in the database
+  // Check if buyer is saved in the database when component mounts
   useEffect(() => {
     if (listingId) {
       checkIfBuyerIsSaved(listingId, id).then(setIsActuallySaved);
@@ -41,6 +41,8 @@ const SaveButton: React.FC<SaveButtonProps> = ({
     setIsLoading(true);
     try {
       if (listingId && buyerData) {
+        console.log('Saving buyer to database:', { id, name, buyerType, listingId });
+        
         await saveBuyerToList({
           project_id: listingId,
           buyer_id: id,
@@ -53,6 +55,15 @@ const SaveButton: React.FC<SaveButtonProps> = ({
         toast({
           title: "Buyer Saved",
           description: `${name} has been added to your saved list.`
+        });
+        
+        console.log('Buyer saved successfully to database');
+      } else {
+        console.log('Missing required data for saving:', { listingId, buyerData: !!buyerData });
+        toast({
+          title: "Error",
+          description: "Missing required information to save buyer.",
+          variant: "destructive"
         });
       }
       
