@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { getBuyersByType, transformDatabaseBuyerToComponentFormat } from '@/services/buyersService';
@@ -223,6 +224,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
                     toggleRationale={toggleRationale}
                     getMATrackRecordColor={getMATrackRecordColor}
                     showDescription={false}
+                    listingId={listingId}
                   />
                 ) : (
                   <PEBuyerTable
@@ -232,6 +234,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
                     onAddToSaved={handleAddToSaved}
                     toggleRationale={toggleRationale}
                     showDescription={false}
+                    listingId={listingId}
                   />
                 )}
               </div>
