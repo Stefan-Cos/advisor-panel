@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
@@ -232,25 +233,50 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
 
   // Handle saving a search - now also saves results to buyer_search_results
   const handleSaveSearch = async (searchName: string) => {
+    console.log('=== SAVE SEARCH BUTTON CLICKED ===');
+    console.log('Search Name:', searchName);
+    console.log('Listing ID:', listingId);
+    console.log('Scoring Config:', scoringConfig);
+    console.log('Current Matched Buyers Count:', currentMatchedBuyers.length);
+    console.log('Current Matched Buyers Data:', currentMatchedBuyers);
+    console.log('Saved Buyers List:', savedBuyers);
+    
     try {
       // First save the search configuration
-      const savedSearch = await createSavedBuyerSearch({
+      const searchCriteria = { scoringConfig };
+      console.log('Search Criteria to be saved:', searchCriteria);
+      
+      const savedSearchPayload = {
         project_id: listingId,
         name: searchName,
-        search_criteria: { scoringConfig }
-      });
+        search_criteria: searchCriteria
+      };
+      console.log('Saved Search Payload:', savedSearchPayload);
+      
+      const savedSearch = await createSavedBuyerSearch(savedSearchPayload);
+      console.log('Saved Search Response:', savedSearch);
 
       // Then save the current matched buyers to buyer_search_results
       if (currentMatchedBuyers.length > 0 && savedSearch.id) {
-        const buyerResults = currentMatchedBuyers.map(buyer => ({
-          saved_search_id: savedSearch.id!,
-          buyer_data: buyer,
-          match_score: buyer.matchingScore || Math.floor(Math.random() * 40) + 60, // Use existing score or generate
-          rationale: buyer.rationale || null,
-          is_saved: savedBuyers.includes(buyer.id)
-        }));
+        const buyerResults = currentMatchedBuyers.map(buyer => {
+          const result = {
+            saved_search_id: savedSearch.id!,
+            buyer_data: buyer,
+            match_score: buyer.matchingScore || Math.floor(Math.random() * 40) + 60,
+            rationale: buyer.rationale || null,
+            is_saved: savedBuyers.includes(buyer.id)
+          };
+          console.log('Individual Buyer Result:', result);
+          return result;
+        });
 
-        await createBuyerSearchResults(buyerResults);
+        console.log('All Buyer Results to be saved:', buyerResults);
+        const buyerResultsResponse = await createBuyerSearchResults(buyerResults);
+        console.log('Buyer Results Save Response:', buyerResultsResponse);
+      } else {
+        console.log('No buyers to save or savedSearch.id is missing');
+        console.log('currentMatchedBuyers.length:', currentMatchedBuyers.length);
+        console.log('savedSearch.id:', savedSearch.id);
       }
 
       await loadSavedSearches();
@@ -259,8 +285,11 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
         title: "Search Saved",
         description: `"${searchName}" has been saved with ${currentMatchedBuyers.length} buyer results.`
       });
+      
+      console.log('=== SAVE SEARCH COMPLETED SUCCESSFULLY ===');
     } catch (error) {
-      console.error('Error saving search:', error);
+      console.error('=== ERROR SAVING SEARCH ===');
+      console.error('Error details:', error);
       toast({
         title: "Error",
         description: "Failed to save search. Please try again.",
