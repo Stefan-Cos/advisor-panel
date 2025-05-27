@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -221,8 +222,8 @@ const BuyerPreferencesSection: React.FC<BuyerPreferencesSectionProps> = ({
         <Button 
           type="button" 
           onClick={handleSubmit}
-          disabled={isSubmitting}
-          className="bg-blueknight-600 hover:bg-blueknight-700"
+          disabled={false}
+          className="bg-blueknight-600 hover:bg-blueknight-700 text-white"
         >
           {isSubmitting ? "Creating Project..." : "Create Project"}
         </Button>
