@@ -30,10 +30,7 @@ const App = () => (
           <Route path="/add-listing" element={<AddListing />} />
           <Route path="/add-listing/buyer-preferences" element={<BuyerPreferences />} />
           <Route path="/listings" element={<Listings />} />
-          <Route path="/listings/:id" element={<ListingDetails />} />
-          <Route path="/listings/:id/ai-buyer" element={<ListingDetails />} />
-          <Route path="/listings/:id/saved" element={<ListingDetails />} />
-          <Route path="/listings/:id/crm" element={<ListingDetails />} />
+          <Route path="/listings/:id/*" element={<ListingDetails />} />
           <Route path="/buyer-mandates" element={<BuyerMandates />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
