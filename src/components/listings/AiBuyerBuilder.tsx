@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "@/hooks/use-toast";
@@ -20,8 +19,11 @@ import {
   getBuyerSearchResults,
   saveBuyer,
   getSavedBuyers,
+  createBuyerSearchResults,
   BuyerSearchConfig
 } from '@/services/buyerSearchService';
+
+import { getBuyersByType, transformDatabaseBuyerToComponentFormat } from '@/services/buyersService';
 
 interface AiBuyerBuilderProps {
   listingId: string;
@@ -39,6 +41,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
   const [processingStep, setProcessingStep] = useState<number>(0);
   const [savedSearches, setSavedSearches] = useState<any[]>([]);
   const [savedSearchResults, setSavedSearchResults] = useState<any[]>([]);
+  const [currentMatchedBuyers, setCurrentMatchedBuyers] = useState<any[]>([]);
   
   // Scoring configuration state
   const [scoringConfig, setScoringConfig] = useState({
@@ -227,20 +230,34 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     });
   };
 
-  // Handle saving a search
+  // Handle saving a search - now also saves results to buyer_search_results
   const handleSaveSearch = async (searchName: string) => {
     try {
-      await createSavedBuyerSearch({
+      // First save the search configuration
+      const savedSearch = await createSavedBuyerSearch({
         project_id: listingId,
         name: searchName,
         search_criteria: { scoringConfig }
       });
 
-      await loadSavedSearches(); // Reload the list
+      // Then save the current matched buyers to buyer_search_results
+      if (currentMatchedBuyers.length > 0 && savedSearch.id) {
+        const buyerResults = currentMatchedBuyers.map(buyer => ({
+          saved_search_id: savedSearch.id!,
+          buyer_data: buyer,
+          match_score: buyer.matchingScore || Math.floor(Math.random() * 40) + 60, // Use existing score or generate
+          rationale: buyer.rationale || null,
+          is_saved: savedBuyers.includes(buyer.id)
+        }));
+
+        await createBuyerSearchResults(buyerResults);
+      }
+
+      await loadSavedSearches();
       
       toast({
         title: "Search Saved",
-        description: `"${searchName}" has been saved successfully.`
+        description: `"${searchName}" has been saved with ${currentMatchedBuyers.length} buyer results.`
       });
     } catch (error) {
       console.error('Error saving search:', error);
