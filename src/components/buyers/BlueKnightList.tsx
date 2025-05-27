@@ -1,82 +1,148 @@
-
 import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Download, Filter } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { getBuyersByType, transformDatabaseBuyerToComponentFormat } from '@/services/buyersService';
+import { Buyer } from './types/BuyerTypes';
 import BuyerTabs from './components/BuyerTabs';
-import BuyerFilter from './components/BuyerFilter';
-import ExcelDownloadButton from './components/ExcelDownloadButton';
-import { getAllBuyers } from '@/services/buyersService';
-import { getSavedBuyersList } from '@/services/savedBuyersService';
+import StrategicBuyerTable from './components/StrategicBuyerTable';
+import PEBuyerTable from './components/PEBuyerTable';
+import BlueKnightDescription from '../listings/BlueKnightDescription';
+import FilterSidebarToggle from '../listings/ai-builder/FilterSidebarToggle';
+
+// Import the ProcessingAnimation component
+import ProcessingAnimation from '../listings/ai-builder/ProcessingAnimation';
 
 interface BlueKnightListProps {
   listingId: string;
 }
 
+// Create a session storage key based on the listing ID
+const getFirstVisitKey = (listingId: string) => `blueknightlist_first_visit_${listingId}`;
+
 const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
-  const [activeTab, setActiveTab] = useState<string>("strategic");
-  const [filterVisible, setFilterVisible] = useState<boolean>(false);
-  const [strategicBuyers, setStrategicBuyers] = useState<any[]>([]);
-  const [peBuyers, setPEBuyers] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
+  const [buyers, setBuyers] = useState<Buyer[]>([]);
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [filterVisible, setFilterVisible] = useState<boolean>(false);
+  
+  // Add state to control the first-time animation
+  const [isFirstVisit, setIsFirstVisit] = useState<boolean>(true);
+  const [progressValue, setProgressValue] = useState<number>(0);
+  const [processingStep, setProcessingStep] = useState<number>(0);
 
-  // Load buyers and saved buyers on component mount
   useEffect(() => {
-    loadBuyers();
-    loadSavedBuyers();
-  }, [listingId]);
+    // Check if this is the first visit to this listing's BlueKnight List
+    const firstVisitKey = getFirstVisitKey(listingId);
+    const hasVisitedBefore = sessionStorage.getItem(firstVisitKey);
+    
+    if (!hasVisitedBefore) {
+      // This is the first visit, show the animation
+      setIsFirstVisit(true);
+      
+      // Start the progress animation
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += 10;
+        setProgressValue(progress);
+        
+        // Update processing step at certain thresholds
+        if (progress >= 20 && processingStep < 1) {
+          setProcessingStep(1);
+        } else if (progress >= 40 && processingStep < 2) {
+          setProcessingStep(2);
+        } else if (progress >= 60 && processingStep < 3) {
+          setProcessingStep(3);
+        } else if (progress >= 80 && processingStep < 4) {
+          setProcessingStep(4);
+        }
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          
+          // After animation completes, mark as visited and show content
+          setTimeout(() => {
+            sessionStorage.setItem(firstVisitKey, 'true');
+            setIsFirstVisit(false);
+            loadBuyerData();
+          }, 500);
+        }
+      }, 800); // Slightly faster than AiBuyerBuilder for returning users
+      
+    } else {
+      // Not first visit, load data directly
+      setIsFirstVisit(false);
+      loadBuyerData();
+    }
+    
+    // Clean up interval on component unmount
+    return () => {
+      const interval = setInterval(() => {});
+      clearInterval(interval);
+    };
+  }, [listingId]); // Re-run when listingId changes
 
-  const loadBuyers = async () => {
+  // Move the data loading logic to a separate function
+  const loadBuyerData = async () => {
+    setIsLoading(true);
+    
     try {
-      setLoading(true);
-      const buyers = await getAllBuyers();
-      
-      // Separate strategic and PE buyers
-      const strategic = buyers.filter(buyer => buyer.type === 'strategic');
-      const pe = buyers.filter(buyer => buyer.type === 'pe');
-      
-      setStrategicBuyers(strategic);
-      setPEBuyers(pe);
+      const databaseBuyers = await getBuyersByType(activeTab);
+      const transformedBuyers = databaseBuyers.map(transformDatabaseBuyerToComponentFormat);
+      setBuyers(transformedBuyers);
     } catch (error) {
       console.error('Error loading buyers:', error);
       toast({
         title: "Error",
-        description: "Failed to load buyers. Please try again.",
+        description: "Failed to load buyer data. Please try again.",
         variant: "destructive"
       });
+      setBuyers([]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
-  const loadSavedBuyers = async () => {
-    try {
-      const saved = await getSavedBuyersList(listingId);
-      setSavedBuyers(saved.map(buyer => buyer.buyer_id));
-    } catch (error) {
-      console.error('Error loading saved buyers:', error);
+  // When tab changes, refresh the data
+  useEffect(() => {
+    if (!isFirstVisit) {
+      loadBuyerData();
     }
-  };
+  }, [activeTab]);
 
-  // Handle saving a buyer
-  const handleAddToSaved = async (buyerId: string) => {
-    if (!savedBuyers.includes(buyerId)) {
-      setSavedBuyers(prev => [...prev, buyerId]);
-      // The actual saving is handled by the SaveButton component
-      // We just update the local state for immediate UI feedback
-    }
-  };
-
-  // Handle expanding a buyer rationale
+  // Toggle rationale expansion
   const toggleRationale = (buyerId: string) => {
     setExpandedRationales(prev => 
       prev.includes(buyerId) 
         ? prev.filter(id => id !== buyerId) 
         : [...prev, buyerId]
     );
+  };
+
+  // Handle saving a buyer
+  const handleAddToSaved = (buyerId: string) => {
+    if (!savedBuyers.includes(buyerId)) {
+      setSavedBuyers(prev => [...prev, buyerId]);
+      const buyer = buyers.find(b => b.id === buyerId);
+      toast({
+        title: "Buyer Saved",
+        description: `${buyer?.name} has been added to your saved list.`
+      });
+    }
+  };
+
+  // Function to determine color based on M&A track record
+  const getMATrackRecordColor = (record: string): string => {
+    switch (record.toLowerCase()) {
+      case 'high':
+        return 'bg-green-100 text-green-800';
+      case 'medium':
+        return 'bg-amber-100 text-amber-800';
+      case 'low':
+        return 'bg-gray-100 text-gray-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
   };
 
   // Toggle filter sidebar
@@ -86,84 +152,92 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
 
   // Handler for filter application
   const handleFilterApply = () => {
+    // This would normally filter the data based on selected filters
     toast({
       title: "Filters Applied",
-      description: "Your filters have been applied successfully."
+      description: "Your filters have been applied to the buyer list."
     });
   };
 
+  // Create a mock scoring configuration for the animation
+  const mockScoringConfig = {
+    offering: { enabled: true, weight: 80 },
+    problemSolved: { enabled: true, weight: 90 },
+    useCase: { enabled: true, weight: 70 },
+    customerBase: { enabled: true, weight: 85 },
+    positioning: { enabled: true, weight: 75 },
+    acquisitionHistory: { enabled: true, weight: 95 },
+  };
+
   return (
-    <div className="bg-white shadow-sm rounded-lg border border-gray-200" id="blueknight-list-section">
-      {/* Filter Sidebar with BuyerFilter component directly embedded */}
-      <div className={`fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
-        filterVisible ? 'translate-x-0' : 'translate-x-full'
-      }`}>
-        <div className="p-4 border-b border-gray-200">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold">Filters</h3>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleFilterSidebar}
-              className="text-gray-500 hover:text-gray-700"
-            >
-              ✕
-            </Button>
-          </div>
-        </div>
-        <div className="p-4">
-          <BuyerFilter 
-            onFilterApply={handleFilterApply} 
-            onClose={toggleFilterSidebar}
+    <div className="space-y-4" id="blueknight-list-section">
+      {/* If it's the first visit, show the processing animation */}
+      {isFirstVisit ? (
+        <div className="bg-white shadow-sm rounded-lg border border-gray-200 process-animation-placeholder">
+          <ProcessingAnimation 
+            progressValue={progressValue}
+            processingStep={processingStep}
+            scoringConfig={mockScoringConfig}
           />
         </div>
-      </div>
-
-      {/* Main content */}
-      <div className="border-b border-gray-200">
-        <div className="flex items-center justify-between p-4">
-          <h2 className="text-xl font-semibold text-blueknight-800">
-            BlueKnight Database
-          </h2>
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleFilterSidebar}
-              className="flex items-center space-x-1"
-            >
-              <Filter className="h-4 w-4" />
-              <span>Filter</span>
-            </Button>
-            <ExcelDownloadButton 
-              buyers={activeTab === 'strategic' ? strategicBuyers : peBuyers}
-              buyerType={activeTab as 'strategic' | 'pe'}
-            />
+      ) : (
+        <>
+          {/* Filter Sidebar Toggle - moved to the left side */}
+          <FilterSidebarToggle 
+            filterVisible={filterVisible} 
+            toggleFilterSidebar={toggleFilterSidebar}
+            onFilterApply={handleFilterApply}
+            position="left"
+          />
+          
+          {/* Description component rendered outside the tab-switching area */}
+          <BlueKnightDescription />
+          
+          <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+            <div className="mb-6">
+              <BuyerTabs 
+                activeTab={activeTab} 
+                setActiveTab={setActiveTab}
+                buyers={buyers}
+              />
+            </div>
+            
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-pulse space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                  <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+                </div>
+              </div>
+            ) : (
+              <div>
+                {activeTab === 'strategic' ? (
+                  <StrategicBuyerTable
+                    buyers={buyers}
+                    savedBuyers={savedBuyers}
+                    expandedRationales={expandedRationales}
+                    onAddToSaved={handleAddToSaved}
+                    toggleRationale={toggleRationale}
+                    getMATrackRecordColor={getMATrackRecordColor}
+                    showDescription={false}
+                  />
+                ) : (
+                  <PEBuyerTable
+                    buyers={buyers}
+                    savedBuyers={savedBuyers}
+                    expandedRationales={expandedRationales}
+                    onAddToSaved={handleAddToSaved}
+                    toggleRationale={toggleRationale}
+                    showDescription={false}
+                  />
+                )}
+              </div>
+            )}
           </div>
-        </div>
-      </div>
-
-      <div className="p-4">
-        <BuyerTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          strategicBuyers={strategicBuyers}
-          peBuyers={peBuyers}
-          savedBuyers={savedBuyers}
-          expandedRationales={expandedRationales}
-          onAddToSaved={handleAddToSaved}
-          toggleRationale={toggleRationale}
-          loading={loading}
-          listingId={listingId}
-        />
-      </div>
-
-      {/* Overlay for filter sidebar */}
-      {filterVisible && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-25 z-40"
-          onClick={toggleFilterSidebar}
-        />
+        </>
       )}
     </div>
   );
