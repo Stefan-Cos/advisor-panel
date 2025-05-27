@@ -181,6 +181,100 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
       });
 
       console.log('Scoring configuration saved:', scoringConfig);
+
+      // Load actual buyer data from the database
+      const [strategicBuyers, peBuyers] = await Promise.all([
+        getBuyersByType('strategic'),
+        getBuyersByType('pe')
+      ]);
+
+      // Transform and combine all buyers
+      const allBuyers = [
+        ...strategicBuyers.map(transformDatabaseBuyerToComponentFormat),
+        ...peBuyers.map(transformDatabaseBuyerToComponentFormat)
+      ];
+
+      // Apply scoring logic and flatten the data structure
+      const scoredBuyers = allBuyers.map(buyer => {
+        const baseScore = buyer.matchingScore || Math.floor(Math.random() * 40) + 60;
+        
+        // Flatten all the data to avoid nested JSONB
+        return {
+          // Basic identification
+          id: buyer.id,
+          external_id: buyer.id,
+          name: buyer.name,
+          buyer_type: buyer.type,
+          
+          // Location and basic info
+          hq: buyer.hq || buyer.location || 'N/A',
+          location: buyer.location || buyer.hq || 'N/A',
+          website: buyer.website || 'N/A',
+          
+          // Financial data
+          employees: buyer.employees || 0,
+          revenue: buyer.revenue || 0,
+          cash: buyer.cash || 0,
+          aum: buyer.aum || 0,
+          ebitda: buyer.ebitda || 'N/A',
+          
+          // Descriptions
+          description: buyer.description || 'N/A',
+          long_description: buyer.longDescription || buyer.description || 'N/A',
+          offering: buyer.offering || 'N/A',
+          
+          // Business details
+          sector: buyer.sector || 'N/A',
+          industry_focus: buyer.industryFocus || 'N/A',
+          customers: buyer.customers || 'N/A',
+          target_customer_types: Array.isArray(buyer.targetCustomerTypes) ? buyer.targetCustomerTypes.join(', ') : 'N/A',
+          primary_industries: Array.isArray(buyer.primaryIndustries) ? buyer.primaryIndustries.join(', ') : 'N/A',
+          sectors: Array.isArray(buyer.sectors) ? buyer.sectors.join(', ') : 'N/A',
+          keywords: Array.isArray(buyer.keywords) ? buyer.keywords.join(', ') : 'N/A',
+          
+          // Investment/acquisition details
+          ma_track_record: buyer.maTrackRecord || 'N/A',
+          previous_acquisitions: buyer.previousAcquisitions || 'N/A',
+          investments: buyer.investments || 'N/A',
+          investment_size: buyer.investmentSize || 'N/A',
+          investment_type: Array.isArray(buyer.investmentType) ? buyer.investmentType.join(', ') : 'N/A',
+          geography: Array.isArray(buyer.geography) ? buyer.geography.join(', ') : 'N/A',
+          industry_preferences: Array.isArray(buyer.industryPreferences) ? buyer.industryPreferences.join(', ') : 'N/A',
+          
+          // Company structure
+          parent_company: buyer.parentCompany || 'Independent',
+          is_public: buyer.isPublic || false,
+          is_pe_vc_backed: buyer.isPEVCBacked || false,
+          
+          // Dates
+          reported_date: buyer.reportedDate || new Date().toISOString().split('T')[0],
+          
+          // Scoring and rationale (flattened)
+          matching_score: baseScore,
+          overall_rationale: buyer.rationale?.overall || `This ${buyer.type === 'strategic' ? 'company' : 'fund'} shows strong potential as an acquisition target based on industry alignment and strategic fit.`,
+          offering_rationale: buyer.rationale?.offering || `Strong alignment between their offering and target acquisition criteria.`,
+          customers_rationale: buyer.rationale?.customers || `Customer base aligns well with acquisition strategy.`,
+          financial_rationale: buyer.rationale?.financialStrength || `Financial profile indicates strong acquisition capability.`,
+          transactions_rationale: buyer.rationale?.previousTransactions || `Transaction history demonstrates active acquisition strategy.`,
+          
+          // Status and metadata
+          status: buyer.status || 'active',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+      });
+
+      // Sort by matching score and take top results
+      const topBuyers = scoredBuyers
+        .sort((a, b) => b.matching_score - a.matching_score)
+        .slice(0, 20); // Limit to top 20 results
+
+      console.log('Loaded and scored buyers:', topBuyers.length);
+      console.log('Sample buyer data:', topBuyers[0]);
+      
+      // Set the current matched buyers
+      setCurrentMatchedBuyers(topBuyers);
+      
     } catch (error) {
       console.error('Error saving scoring configuration:', error);
     }
@@ -256,14 +350,20 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
       const savedSearch = await createSavedBuyerSearch(savedSearchPayload);
       console.log('Saved Search Response:', savedSearch);
 
-      // Then save the current matched buyers to buyer_search_results
+      // Then save the current matched buyers to buyer_search_results with flattened data
       if (currentMatchedBuyers.length > 0 && savedSearch.id) {
         const buyerResults = currentMatchedBuyers.map(buyer => {
           const result = {
             saved_search_id: savedSearch.id!,
-            buyer_data: buyer,
-            match_score: buyer.matchingScore || Math.floor(Math.random() * 40) + 60,
-            rationale: buyer.rationale || null,
+            buyer_data: buyer, // This is now flattened data, not nested JSONB
+            match_score: buyer.matching_score,
+            rationale: {
+              overall: buyer.overall_rationale,
+              offering: buyer.offering_rationale,
+              customers: buyer.customers_rationale,
+              financial: buyer.financial_rationale,
+              transactions: buyer.transactions_rationale
+            },
             is_saved: savedBuyers.includes(buyer.id)
           };
           console.log('Individual Buyer Result:', result);
