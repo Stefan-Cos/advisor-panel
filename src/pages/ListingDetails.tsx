@@ -30,10 +30,10 @@ const ListingDetailsPage = () => {
         <main className="flex-1 p-6 overflow-auto relative">
           <div className="w-full">
             <Routes>
-              <Route path="/" element={<ListingDetails {...listingData} />} />
-              <Route path="/ai-buyer" element={<ListingDetails {...listingData} />} />
-              <Route path="/saved" element={<ListingDetails {...listingData} />} />
-              <Route path="/crm" element={<ListingDetails {...listingData} />} />
+              <Route index element={<ListingDetails {...listingData} />} />
+              <Route path="ai-buyer" element={<ListingDetails {...listingData} />} />
+              <Route path="saved" element={<ListingDetails {...listingData} />} />
+              <Route path="crm" element={<ListingDetails {...listingData} />} />
               <Route path="*" element={<Navigate to={`/listings/${id}`} replace />} />
             </Routes>
           </div>
