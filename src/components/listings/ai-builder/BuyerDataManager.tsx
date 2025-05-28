@@ -177,6 +177,19 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     return result;
   };
 
+  const validateDateField = (value: string): string | null => {
+    if (!value || value === '' || value === '0') return null;
+    
+    // Try to parse as date
+    const date = new Date(value);
+    if (isNaN(date.getTime())) {
+      console.warn(`Invalid date value: ${value}`);
+      return null;
+    }
+    
+    return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
+  };
+
   const handleFileUpload = async () => {
     if (!uploadFile) {
       toast({
@@ -205,43 +218,59 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       console.log('Expected Headers:', config.headers);
 
       if (selectedTable === 'buyers') {
-        // Upload directly to buyers table with updated field mapping
+        // Upload directly to buyers table with improved field mapping
         const buyersData = dataRows.map((line, index) => {
           const values = parseCSVLine(line);
           const buyerData: any = {};
 
           headers.forEach((header, headerIndex) => {
-            const value = values[headerIndex]?.replace(/"/g, '').trim();
+            let value = values[headerIndex]?.replace(/"/g, '').trim();
             
-            if (value) {
+            if (value && value !== '' && value !== 'null' && value !== 'undefined') {
               // Handle array fields
               if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
                    'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
                    'all_industries', 'verticals', 'target_customers_industries'].includes(header)) {
-                buyerData[header] = value.split(',').map(v => v.trim()).filter(v => v);
+                // Handle comma-separated arrays or JSON arrays
+                try {
+                  if (value.startsWith('[') && value.endsWith(']')) {
+                    buyerData[header] = JSON.parse(value);
+                  } else {
+                    buyerData[header] = value.split(',').map(v => v.trim()).filter(v => v);
+                  }
+                } catch {
+                  buyerData[header] = value.split(',').map(v => v.trim()).filter(v => v);
+                }
               }
               // Handle numeric fields
               else if (['employees', 'matching_score', 'year_founded'].includes(header)) {
-                buyerData[header] = value ? parseInt(value) : null;
+                const numValue = parseInt(value);
+                buyerData[header] = isNaN(numValue) ? null : numValue;
               }
               // Handle decimal fields
               else if (['revenue', 'cash', 'aum', 'net_income', 'net_debt'].includes(header)) {
-                buyerData[header] = value ? parseFloat(value) : null;
+                const floatValue = parseFloat(value);
+                buyerData[header] = isNaN(floatValue) ? null : floatValue;
               }
               // Handle boolean fields
               else if (['is_public', 'is_pe_vc_backed'].includes(header)) {
                 buyerData[header] = value.toLowerCase() === 'true';
               }
-              // Handle date fields
+              // Handle date fields - with proper validation
               else if (['reported_date', 'last_financing_date', 'last_update_date', 'analyzed_at'].includes(header)) {
-                buyerData[header] = value || null;
+                buyerData[header] = validateDateField(value);
               }
               // Handle JSONB fields
               else if (['rationale', 'employee_history'].includes(header)) {
                 try {
                   buyerData[header] = JSON.parse(value);
                 } catch {
-                  buyerData[header] = value;
+                  // If JSON parsing fails, treat as string for rationale or null for structured data
+                  if (header === 'rationale') {
+                    buyerData[header] = { note: value };
+                  } else {
+                    buyerData[header] = null;
+                  }
                 }
               }
               // Handle all other text fields
@@ -333,7 +362,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                   buyerData[header] = value.toLowerCase() === 'true';
                   break;
                 case 'reported_date':
-                  buyerData[header] = value || new Date().toISOString().split('T')[0];
+                  buyerData[header] = validateDateField(value) || new Date().toISOString().split('T')[0];
                   break;
                 default:
                   buyerData[header] = value || null;
