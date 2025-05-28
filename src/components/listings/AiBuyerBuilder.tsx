@@ -198,7 +198,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
       const scoredBuyers = allBuyers.map(buyer => {
         const baseScore = buyer.matchingScore || Math.floor(Math.random() * 40) + 60;
         
-        // Flatten all the data to avoid nested JSONB
+        // Flatten all the data to avoid nested JSONB - updated with new column names
         return {
           // Basic identification
           id: buyer.id,
@@ -262,7 +262,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
 
-          // New columns from migration
+          // New columns from migration - using proper property names
           year_founded: buyer.yearFounded || null,
           company_pbid: buyer.companyPbid || 'N/A',
           website_https: buyer.websiteHttps || buyer.website || 'N/A',
@@ -448,7 +448,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
             industry_preferences: buyer.industry_preferences,
             parent_company: buyer.parent_company,
             is_public: buyer.is_public,
-            is_pe_vc_backed: buyer.is_pe_vc_backed,
+            is_pe_vc_backed: buyer.isPEVCBacked,
             reported_date: buyer.reported_date,
             matching_score: buyer.matching_score,
             overall_rationale: buyer.overall_rationale,

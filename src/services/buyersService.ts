@@ -41,30 +41,30 @@ export interface DatabaseBuyer {
   created_at?: string;
   updated_at?: string;
   
-  // New columns added from migration
-  year_founded?: number;
-  company_pbid?: string;
-  website_https?: string;
-  company_linkedin?: string;
-  registry_name?: string;
-  registration_number?: string;
-  legal_name?: string;
-  all_industries?: string[];
-  primary_industry_code?: string;
-  primary_industry_sector?: string;
-  primary_industry_group?: string;
-  verticals?: string[];
-  ownership_status?: string;
-  active_investors?: string;
-  employee_history?: any;
-  net_income?: number;
-  net_debt?: number;
-  fiscal_period?: string;
-  financing_status?: string;
-  last_financing_date?: string;
-  last_financing_deal_type?: string;
-  last_update_date?: string;
-  source_file?: string;
+  // New columns with correct quoted names
+  "Year Founded"?: number;
+  "Company PBId"?: string;
+  "Website Https"?: string;
+  "Company LinkedIn"?: string;
+  "Registry Name"?: string;
+  "Registration Number"?: string;
+  "Legal Name"?: string;
+  "All Industries"?: string[];
+  "Primary Industry Code"?: string;
+  "Primary Industry Sector"?: string;
+  "Primary Industry Group"?: string;
+  "Verticals"?: string[];
+  "Ownership Status"?: string;
+  "Active Investors"?: string;
+  "Employee History"?: any;
+  "Net Income"?: number;
+  "Net Debt"?: number;
+  "Fiscal Period"?: string;
+  "Financing Status"?: string;
+  "Last Financing Date"?: string;
+  "Last Financing Deal Type"?: string;
+  "Last Update Date"?: string;
+  "SourceFile"?: string;
   url?: string;
   id_x?: string;
   analyzed_at?: string;
@@ -100,9 +100,9 @@ export interface DatabaseBuyer {
   describe_products_services?: string;
   product_service_features?: string;
   supply_chain_role?: string;
-  target_customers_type_new?: string;
+  target_customers_type?: string;
   target_customers_industries?: string[];
-  investments_last_2_years?: string;
+  "Investments in the last 2 Years"?: string;
 }
 
 export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<DatabaseBuyer[]> => {
@@ -210,30 +210,30 @@ export const transformDatabaseBuyerToComponentFormat = (buyer: DatabaseBuyer): a
     industryPreferences: buyer.industry_preferences,
     rationale: buyer.rationale,
     
-    // Transform new columns
-    yearFounded: buyer.year_founded,
-    companyPbid: buyer.company_pbid,
-    websiteHttps: buyer.website_https,
-    companyLinkedin: buyer.company_linkedin,
-    registryName: buyer.registry_name,
-    registrationNumber: buyer.registration_number,
-    legalName: buyer.legal_name,
-    allIndustries: buyer.all_industries,
-    primaryIndustryCode: buyer.primary_industry_code,
-    primaryIndustrySector: buyer.primary_industry_sector,
-    primaryIndustryGroup: buyer.primary_industry_group,
-    verticals: buyer.verticals,
-    ownershipStatus: buyer.ownership_status,
-    activeInvestors: buyer.active_investors,
-    employeeHistory: buyer.employee_history,
-    netIncome: buyer.net_income,
-    netDebt: buyer.net_debt,
-    fiscalPeriod: buyer.fiscal_period,
-    financingStatus: buyer.financing_status,
-    lastFinancingDate: buyer.last_financing_date,
-    lastFinancingDealType: buyer.last_financing_deal_type,
-    lastUpdateDate: buyer.last_update_date,
-    sourceFile: buyer.source_file,
+    // Transform new columns with quoted names
+    yearFounded: buyer["Year Founded"],
+    companyPbid: buyer["Company PBId"],
+    websiteHttps: buyer["Website Https"],
+    companyLinkedin: buyer["Company LinkedIn"],
+    registryName: buyer["Registry Name"],
+    registrationNumber: buyer["Registration Number"],
+    legalName: buyer["Legal Name"],
+    allIndustries: buyer["All Industries"],
+    primaryIndustryCode: buyer["Primary Industry Code"],
+    primaryIndustrySector: buyer["Primary Industry Sector"],
+    primaryIndustryGroup: buyer["Primary Industry Group"],
+    verticals: buyer["Verticals"],
+    ownershipStatus: buyer["Ownership Status"],
+    activeInvestors: buyer["Active Investors"],
+    employeeHistory: buyer["Employee History"],
+    netIncome: buyer["Net Income"],
+    netDebt: buyer["Net Debt"],
+    fiscalPeriod: buyer["Fiscal Period"],
+    financingStatus: buyer["Financing Status"],
+    lastFinancingDate: buyer["Last Financing Date"],
+    lastFinancingDealType: buyer["Last Financing Deal Type"],
+    lastUpdateDate: buyer["Last Update Date"],
+    sourceFile: buyer["SourceFile"],
     url: buyer.url,
     idX: buyer.id_x,
     analyzedAt: buyer.analyzed_at,
@@ -269,8 +269,8 @@ export const transformDatabaseBuyerToComponentFormat = (buyer: DatabaseBuyer): a
     describeProductsServices: buyer.describe_products_services,
     productServiceFeatures: buyer.product_service_features,
     supplyChainRole: buyer.supply_chain_role,
-    targetCustomersTypeNew: buyer.target_customers_type_new,
+    targetCustomersTypeNew: buyer.target_customers_type,
     targetCustomersIndustries: buyer.target_customers_industries,
-    investmentsLast2Years: buyer.investments_last_2_years
+    investmentsLast2Years: buyer["Investments in the last 2 Years"]
   };
 };
