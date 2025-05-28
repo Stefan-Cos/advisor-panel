@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -280,7 +279,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
         // Handle buyer_search_results upload
         let currentSavedSearchId = savedSearchId;
 
-        if (!currentSavedSearchId) {
+        // Only create a new search if we have a valid listing ID and no saved search
+        if (!currentSavedSearchId && listingId !== 'global') {
           const defaultSearchName = `Data Upload - ${new Date().toLocaleDateString()}`;
           const defaultSearch = await createSavedBuyerSearch({
             project_id: listingId,
@@ -288,6 +288,16 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
             search_criteria: { uploadType: selectedTable }
           });
           currentSavedSearchId = defaultSearch.id!;
+        }
+
+        // If we're in global mode or still no search ID, skip buyer_search_results upload
+        if (!currentSavedSearchId) {
+          toast({
+            title: "Info",
+            description: "Buyer search results uploads require a specific listing context. Please use this from within a listing's AI Buyer Builder.",
+            variant: "destructive"
+          });
+          return;
         }
 
         const buyerResults = dataRows.map((line, index) => {
@@ -359,8 +369,22 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Table Selection */}
-      <Card>
+      {listingId === 'global' && (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <Info className="h-4 w-4 text-blue-600 mr-2" />
+              <span className="text-xs text-blue-700">
+                You're in global data upload mode. Only the Buyers Master Database upload is available here. 
+                For buyer search results uploads, please use the Data Management tab within a specific listing's AI Buyer Builder.
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {(listingId !== 'global' || selectedTable === 'buyers') && (
+        <Card>
         <CardHeader>
           <CardTitle className="flex items-center text-sm">
             <Table className="h-4 w-4 mr-2" />
@@ -395,16 +419,25 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           </div>
         </CardContent>
       </Card>
+      )}
 
-      {/* Download Template Section */}
-      <Card>
+      {(() => {
+        const availableConfigs = listingId === 'global' 
+          ? { buyers: tableConfigs.buyers }
+          : tableConfigs;
+        
+        const currentConfig = availableConfigs[selectedTable as keyof typeof availableConfigs] || tableConfigs.buyers;
+        
+        return (
+          <>
+            <Card>
         <CardHeader>
           <CardTitle className="flex items-center text-sm">
             <Download className="h-4 w-4 mr-2" />
-            Download {selectedConfig.name} Template
+            Download {currentConfig.name} Template
           </CardTitle>
           <CardDescription className="text-xs">
-            Download a CSV template for {selectedConfig.name.toLowerCase()} with sample data and proper column headings
+            Download a CSV template for {currentConfig.name.toLowerCase()} with sample data and proper column headings
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -417,7 +450,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                 </div>
               </div>
               <ul className="mt-2 space-y-1 list-disc list-inside ml-6">
-                <li><strong>{selectedConfig.headers.length} complete fields</strong> for {selectedConfig.name}</li>
+                <li><strong>{currentConfig.headers.length} complete fields</strong> for {currentConfig.name}</li>
                 <li><strong>Sample data rows</strong> with realistic examples</li>
                 <li><strong>Clear column headings</strong> matching database schema</li>
                 <li><strong>Proper data formatting</strong> for each field type</li>
@@ -429,7 +462,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
               className="w-full"
             >
               <FileSpreadsheet className="h-4 w-4 mr-2" />
-              Download {selectedConfig.name} Template ({selectedConfig.headers.length} fields)
+              Download {currentConfig.name} Template ({currentConfig.headers.length} fields)
             </Button>
           </div>
         </CardContent>
@@ -440,10 +473,10 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center text-sm">
             <Upload className="h-4 w-4 mr-2" />
-            Upload Data to {selectedConfig.name}
+            Upload Data to {currentConfig.name}
           </CardTitle>
           <CardDescription className="text-xs">
-            Upload a CSV file with data for {selectedConfig.name.toLowerCase()} using the template format
+            Upload a CSV file with data for {currentConfig.name.toLowerCase()} using the template format
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -457,7 +490,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="file-upload" className="text-xs">Select CSV File for {selectedConfig.name}</Label>
+            <Label htmlFor="file-upload" className="text-xs">Select CSV File for {currentConfig.name}</Label>
             <Input
               id="file-upload"
               type="file"
@@ -465,7 +498,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
               onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
             />
             <div className="text-xs text-gray-500">
-              Supports all {selectedConfig.headers.length} fields for {selectedConfig.name}
+              Supports all {currentConfig.headers.length} fields for {currentConfig.name}
             </div>
           </div>
 
@@ -474,10 +507,13 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
             disabled={!uploadFile || uploading}
             className="w-full"
           >
-            {uploading ? `Uploading to ${selectedConfig.name}...` : `Upload Data to ${selectedConfig.name}`}
+            {uploading ? `Uploading to ${currentConfig.name}...` : `Upload Data to ${currentConfig.name}`}
           </Button>
         </CardContent>
       </Card>
+          </>
+        );
+      })()}
     </div>
   );
 };
