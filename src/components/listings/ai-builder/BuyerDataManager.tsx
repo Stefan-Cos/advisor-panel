@@ -155,22 +155,29 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     });
   };
 
-  // Enhanced encoding detection and file reading
+  // Enhanced encoding detection
   const detectEncoding = async (file: File): Promise<string> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (event) => {
         const buffer = event.target?.result as ArrayBuffer;
-        const bytes = new Uint8Array(buffer.slice(0, 1024)); // Read first 1KB for detection
+        const bytes = new Uint8Array(buffer.slice(0, 1024));
         
-        // Check for BOM (Byte Order Mark)
+        // Check for BOM
         if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
           console.log('Detected UTF-8 BOM');
           resolve('UTF-8');
           return;
         }
         
-        // Check for high ASCII characters that might indicate encoding issues
+        // Check for UTF-16 BOM
+        if (bytes.length >= 2 && ((bytes[0] === 0xFF && bytes[1] === 0xFE) || (bytes[0] === 0xFE && bytes[1] === 0xFF))) {
+          console.log('Detected UTF-16 BOM');
+          resolve('UTF-16');
+          return;
+        }
+        
+        // Analyze byte patterns
         let hasHighAscii = false;
         let nullBytes = 0;
         
@@ -179,21 +186,18 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           if (bytes[i] > 127) hasHighAscii = true;
         }
         
-        // If we have null bytes, likely binary or UTF-16
         if (nullBytes > 0) {
-          console.log('Detected potential UTF-16 or binary data');
+          console.log('Detected null bytes, likely UTF-16');
           resolve('UTF-16');
           return;
         }
         
-        // If high ASCII characters, might be Windows-1252 or ISO-8859-1
         if (hasHighAscii) {
-          console.log('Detected high ASCII characters, using Windows-1252');
+          console.log('Detected high ASCII, using Windows-1252');
           resolve('Windows-1252');
           return;
         }
         
-        // Default to UTF-8
         console.log('Defaulting to UTF-8');
         resolve('UTF-8');
       };
@@ -201,7 +205,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     });
   };
 
-  // Enhanced file reading with multiple encoding attempts
+  // Read file with multiple encoding attempts
   const readFileWithMultipleEncodings = async (file: File): Promise<string> => {
     const detectedEncoding = await detectEncoding(file);
     console.log('Detected encoding:', detectedEncoding);
@@ -211,17 +215,17 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       'UTF-8',
       'Windows-1252',
       'ISO-8859-1',
-      'UTF-16'
-    ].filter((encoding, index, arr) => arr.indexOf(encoding) === index); // Remove duplicates
+      'UTF-16LE',
+      'UTF-16BE'
+    ].filter((encoding, index, arr) => arr.indexOf(encoding) === index);
     
     for (const encoding of encodingsToTry) {
       try {
-        console.log(`Attempting to read file with encoding: ${encoding}`);
+        console.log(`Attempting to read with encoding: ${encoding}`);
         const content = await new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = (event) => {
             const result = event.target?.result as string;
-            // Basic validation - check if we have reasonable content
             if (result && result.length > 0 && !result.includes('\uFFFD')) {
               resolve(result);
             } else {
@@ -229,12 +233,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
             }
           };
           reader.onerror = () => reject(new Error(`Failed to read with encoding ${encoding}`));
-          
-          if (encoding === 'UTF-16') {
-            reader.readAsText(file, 'UTF-16LE');
-          } else {
-            reader.readAsText(file, encoding);
-          }
+          reader.readAsText(file, encoding);
         });
         
         console.log(`Successfully read file with encoding: ${encoding}`);
@@ -248,8 +247,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     throw new Error('Could not read file with any supported encoding');
   };
 
-  // Enhanced CSV parser with better quote and escape handling
-  const parseCSVLine = (line: string): string[] => {
+  // Enhanced CSV parser with better quote and delimiter handling
+  const parseCSVLine = (line: string, delimiter: string = ','): string[] => {
     const result = [];
     let current = '';
     let inQuotes = false;
@@ -279,7 +278,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           // Start of quoted field
           inQuotes = true;
         }
-      } else if (char === ',' && !inQuotes) {
+      } else if (char === delimiter && !inQuotes) {
         // Field separator found outside quotes
         result.push(current.trim());
         current = '';
@@ -297,7 +296,25 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     return result;
   };
 
-  // Enhanced text field sanitization with better encoding handling
+  // Detect CSV delimiter
+  const detectDelimiter = (line: string): string => {
+    const delimiters = [',', ';', '\t', '|'];
+    let bestDelimiter = ',';
+    let maxFields = 0;
+    
+    for (const delimiter of delimiters) {
+      const fields = parseCSVLine(line, delimiter);
+      if (fields.length > maxFields) {
+        maxFields = fields.length;
+        bestDelimiter = delimiter;
+      }
+    }
+    
+    console.log(`Detected delimiter: "${bestDelimiter}" with ${maxFields} fields`);
+    return bestDelimiter;
+  };
+
+  // Enhanced text field sanitization
   const sanitizeTextField = (value: string): string => {
     if (!value) return '';
     
@@ -308,21 +325,21 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       cleaned = cleaned.substring(1);
     }
     
-    // Remove leading/trailing quotes if they wrap the entire value
+    // Remove wrapping quotes if they exist
     if (cleaned.startsWith('"') && cleaned.endsWith('"') && cleaned.length > 1) {
       cleaned = cleaned.slice(1, -1);
     }
     
-    // Handle escaped quotes within the text
+    // Handle escaped quotes
     cleaned = cleaned.replace(/""/g, '"');
     
-    // Replace common encoding artifacts - fixed duplicate key issue
+    // Replace encoding artifacts
     const encodingReplacements = {
       'â€™': "'", // Smart apostrophe
-      'â€œ': '"', // Smart quote open
+      'â€œ': '"', // Smart quote open  
       'â€': '"',  // Smart quote close
-      'â€"': '–', // En dash - keeping first occurrence
-      'â€•': '—', // Em dash - using different key
+      'â€"': '–', // En dash
+      'â€•': '—', // Em dash
       'Â': '',    // Non-breaking space artifact
       '\u00A0': ' ', // Non-breaking space to regular space
       '\u2018': "'", // Left single quotation mark
@@ -337,18 +354,18 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       cleaned = cleaned.replace(new RegExp(artifact, 'g'), replacement);
     }
     
-    // Remove null bytes and other problematic control characters
+    // Remove control characters
     cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
     
-    // Normalize whitespace but preserve intentional line breaks
+    // Normalize whitespace
     cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-    cleaned = cleaned.replace(/[ \t]+/g, ' '); // Multiple spaces/tabs to single space
+    cleaned = cleaned.replace(/[ \t]+/g, ' ');
     
-    // Limit field length to prevent database issues
+    // Limit length
     const maxLength = 10000;
     if (cleaned.length > maxLength) {
       cleaned = cleaned.substring(0, maxLength) + '...';
-      console.warn(`Text field truncated to ${maxLength} characters`);
+      console.warn(`Field truncated to ${maxLength} characters`);
     }
     
     return cleaned;
@@ -360,7 +377,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     
     const cleaned = sanitizeTextField(value);
     
-    // Try to parse as JSON array first
+    // Try JSON array first
     try {
       if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
         const parsed = JSON.parse(cleaned);
@@ -372,24 +389,23 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       console.warn('Failed to parse JSON array:', error);
     }
     
-    // Parse as comma-separated values
+    // Parse as comma-separated
     return cleaned
       .split(',')
-      .map(item => item.trim().replace(/^["']|["']$/g, '')) // Remove quotes
+      .map(item => item.trim().replace(/^["']|["']$/g, ''))
       .filter(item => item && item !== 'null' && item !== 'undefined');
   };
 
   const validateDateField = (value: string): string | null => {
     if (!value || value === '' || value === '0') return null;
     
-    // Try to parse as date
     const date = new Date(value);
     if (isNaN(date.getTime())) {
       console.warn(`Invalid date value: ${value}`);
       return null;
     }
     
-    return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
+    return date.toISOString().split('T')[0];
   };
 
   const validateNumericField = (value: string, fieldName: string): number | null => {
@@ -401,7 +417,6 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       return null;
     }
     
-    // Check for values that would cause database overflow (precision 10, scale 2 = max 99,999,999.99)
     const maxValue = 99999999.99;
     if (Math.abs(numValue) > maxValue) {
       console.warn(`Numeric value too large for ${fieldName}: ${value}, capping at ${maxValue}`);
@@ -411,16 +426,27 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     return numValue;
   };
 
+  // Enhanced header cleaning
   const cleanHeaderName = (header: string): string | null => {
-    // Remove quotes and trim whitespace
-    const cleaned = header.replace(/"/g, '').trim();
+    const cleaned = header.replace(/[""]/g, '').trim();
     
-    // Filter out empty headers and "Unnamed" columns
-    if (!cleaned || cleaned === '' || cleaned.startsWith('Unnamed:')) {
+    if (!cleaned || cleaned === '' || cleaned.startsWith('Unnamed:') || cleaned === 'null') {
       return null;
     }
     
     return cleaned;
+  };
+
+  // Validate header mapping
+  const validateHeaderMapping = (headers: string[], expectedHeaders: string[]): { valid: boolean; missing: string[]; extra: string[] } => {
+    const missing = expectedHeaders.filter(h => !headers.includes(h));
+    const extra = headers.filter(h => !expectedHeaders.includes(h));
+    
+    return {
+      valid: missing.length === 0,
+      missing,
+      extra
+    };
   };
 
   const handleFileUpload = async () => {
@@ -436,7 +462,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     setUploading(true);
 
     try {
-      console.log('Starting file upload process...');
+      console.log('=== CSV UPLOAD DEBUG START ===');
       console.log('File details:', {
         name: uploadFile.name,
         size: uploadFile.size,
@@ -444,10 +470,10 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
         lastModified: new Date(uploadFile.lastModified)
       });
       
-      // Enhanced file reading with encoding detection
+      // Read file with enhanced encoding detection
       const fileContent = await readFileWithMultipleEncodings(uploadFile);
       console.log('File content length:', fileContent.length);
-      console.log('First 200 characters:', fileContent.substring(0, 200));
+      console.log('First 500 characters:', fileContent.substring(0, 500));
       
       // Split lines and filter empty ones
       const lines = fileContent.split(/\r?\n/).filter(line => line.trim());
@@ -457,94 +483,94 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
         throw new Error('CSV file must contain headers and at least one data row');
       }
 
-      // Clean and filter headers to remove empty ones and "Unnamed" columns
-      const rawHeaders = parseCSVLine(lines[0]);
+      // Detect delimiter and parse headers
+      const delimiter = detectDelimiter(lines[0]);
+      console.log('Using delimiter:', delimiter);
+      
+      const rawHeaders = parseCSVLine(lines[0], delimiter);
       console.log('Raw headers:', rawHeaders);
       
-      const cleanedHeaders = rawHeaders.map(cleanHeaderName);
+      const cleanedHeaders = rawHeaders.map(cleanHeaderName).filter(h => h !== null) as string[];
       console.log('Cleaned headers:', cleanedHeaders);
       
-      // Create mapping of valid header indices
-      const validHeaderIndices: { [key: number]: string } = {};
-      cleanedHeaders.forEach((header, index) => {
-        if (header !== null) {
-          validHeaderIndices[index] = header;
-        }
-      });
-
-      const validHeaders = Object.values(validHeaderIndices);
-      const dataRows = lines.slice(1);
       const config = tableConfigs[selectedTable as keyof typeof tableConfigs];
-
-      console.log('Valid headers after filtering:', validHeaders);
-      console.log('Expected headers:', config.headers);
-      console.log('Data rows to process:', dataRows.length);
-
-      if (validHeaders.length === 0) {
-        throw new Error('No valid headers found in CSV file after filtering out unnamed columns');
+      
+      // Validate header mapping
+      const headerValidation = validateHeaderMapping(cleanedHeaders, config.headers);
+      console.log('Header validation:', headerValidation);
+      
+      if (!headerValidation.valid && headerValidation.missing.length > 5) {
+        console.warn('Many missing headers detected:', headerValidation.missing);
+        toast({
+          title: "Warning",
+          description: `Many expected headers are missing. Found ${cleanedHeaders.length} headers, expected ${config.headers.length}. Proceeding with available data.`,
+        });
       }
 
+      const dataRows = lines.slice(1);
+      console.log('Data rows to process:', dataRows.length);
+      console.log('Sample data row:', dataRows[0]);
+
       if (selectedTable === 'buyers') {
-        // Upload directly to buyers table with enhanced field mapping
+        // Process buyers data
         const buyersData = dataRows.map((line, index) => {
-          console.log(`Processing row ${index + 1}/${dataRows.length}`);
-          const values = parseCSVLine(line);
+          if (index % 100 === 0) {
+            console.log(`Processing row ${index + 1}/${dataRows.length}`);
+          }
+          
+          const values = parseCSVLine(line, delimiter);
+          console.log(`Row ${index} - Fields: ${values.length}, Sample: [${values.slice(0, 3).join(', ')}]`);
+          
           const buyerData: any = {};
 
-          // Only process valid headers with their corresponding indices
-          Object.entries(validHeaderIndices).forEach(([indexStr, header]) => {
-            const headerIndex = parseInt(indexStr);
-            
-            // Skip if value doesn't exist at this index
+          // Map values to headers
+          cleanedHeaders.forEach((header, headerIndex) => {
             if (headerIndex >= values.length) return;
             
             let rawValue = values[headerIndex];
             if (!rawValue || rawValue === 'null' || rawValue === 'undefined') return;
 
-            // Enhanced text field processing based on field type
-            if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
-                 'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
-                 'all_industries', 'verticals', 'target_customers_industries'].includes(header)) {
-              // Array fields
-              buyerData[header] = parseArrayField(rawValue);
-            }
-            else if (['employees', 'matching_score', 'year_founded'].includes(header)) {
-              // Integer fields
-              const numValue = parseInt(sanitizeTextField(rawValue));
-              buyerData[header] = isNaN(numValue) ? null : numValue;
-            }
-            else if (['revenue', 'cash', 'aum', 'net_income', 'net_debt'].includes(header)) {
-              // Decimal fields with overflow protection
-              buyerData[header] = validateNumericField(sanitizeTextField(rawValue), header);
-            }
-            else if (['is_public', 'is_pe_vc_backed'].includes(header)) {
-              // Boolean fields
-              const cleanValue = sanitizeTextField(rawValue).toLowerCase();
-              buyerData[header] = cleanValue === 'true' || cleanValue === '1' || cleanValue === 'yes';
-            }
-            else if (['reported_date', 'last_financing_date', 'last_update_date', 'analyzed_at'].includes(header)) {
-              // Date fields
-              buyerData[header] = validateDateField(sanitizeTextField(rawValue));
-            }
-            else if (['rationale', 'employee_history'].includes(header)) {
-              // JSONB fields
-              const cleanValue = sanitizeTextField(rawValue);
-              try {
-                buyerData[header] = JSON.parse(cleanValue);
-              } catch {
-                if (header === 'rationale') {
-                  buyerData[header] = { note: cleanValue };
-                } else {
-                  buyerData[header] = null;
+            try {
+              // Enhanced field processing based on type
+              if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
+                   'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
+                   'all_industries', 'verticals', 'target_customers_industries'].includes(header)) {
+                buyerData[header] = parseArrayField(rawValue);
+              }
+              else if (['employees', 'matching_score', 'year_founded'].includes(header)) {
+                const numValue = parseInt(sanitizeTextField(rawValue));
+                buyerData[header] = isNaN(numValue) ? null : numValue;
+              }
+              else if (['revenue', 'cash', 'aum', 'net_income', 'net_debt'].includes(header)) {
+                buyerData[header] = validateNumericField(sanitizeTextField(rawValue), header);
+              }
+              else if (['is_public', 'is_pe_vc_backed'].includes(header)) {
+                const cleanValue = sanitizeTextField(rawValue).toLowerCase();
+                buyerData[header] = cleanValue === 'true' || cleanValue === '1' || cleanValue === 'yes';
+              }
+              else if (['reported_date', 'last_financing_date', 'last_update_date', 'analyzed_at'].includes(header)) {
+                buyerData[header] = validateDateField(sanitizeTextField(rawValue));
+              }
+              else if (['rationale', 'employee_history'].includes(header)) {
+                const cleanValue = sanitizeTextField(rawValue);
+                try {
+                  buyerData[header] = JSON.parse(cleanValue);
+                } catch {
+                  if (header === 'rationale') {
+                    buyerData[header] = { note: cleanValue };
+                  } else {
+                    buyerData[header] = null;
+                  }
                 }
               }
-            }
-            else {
-              // Text fields with enhanced sanitization
-              const cleanValue = sanitizeTextField(rawValue);
-              if (cleanValue) {
-                buyerData[header] = cleanValue;
+              else {
+                const cleanValue = sanitizeTextField(rawValue);
+                if (cleanValue) {
+                  buyerData[header] = cleanValue;
+                }
               }
+            } catch (error) {
+              console.warn(`Error processing field ${header} for row ${index}:`, error);
             }
           });
 
@@ -562,7 +588,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           return buyerData;
         });
 
-        console.log('Processed buyers data sample:', buyersData[0]);
+        console.log('Sample processed buyer:', buyersData[0]);
         console.log('Total buyers to insert:', buyersData.length);
 
         // Insert into buyers table
@@ -571,10 +597,11 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           .insert(buyersData);
 
         if (error) {
-          console.error('Error inserting buyers:', error);
+          console.error('Database insertion error:', error);
           throw error;
         }
 
+        console.log('=== CSV UPLOAD SUCCESS ===');
         toast({
           title: "Upload Successful",
           description: `Successfully uploaded ${buyersData.length} buyers to the database.`
@@ -584,7 +611,6 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
         // Handle buyer_search_results upload
         let currentSavedSearchId = savedSearchId;
 
-        // Only create a new search if we have a valid listing ID and no saved search
         if (!currentSavedSearchId && listingId !== 'global') {
           const defaultSearchName = `Data Upload - ${new Date().toLocaleDateString()}`;
           const defaultSearch = await createSavedBuyerSearch({
@@ -595,32 +621,33 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           currentSavedSearchId = defaultSearch.id!;
         }
 
-        // If we're in global mode or still no search ID, skip buyer_search_results upload
         if (!currentSavedSearchId) {
           toast({
             title: "Info",
-            description: "Buyer search results uploads require a specific listing context. Please use this from within a listing's AI Buyer Builder.",
+            description: "Buyer search results uploads require a specific listing context.",
             variant: "destructive"
           });
           return;
         }
 
         const buyerResults = dataRows.map((line, index) => {
-          const values = parseCSVLine(line);
+          const values = parseCSVLine(line, delimiter);
           const buyerData: any = {
             saved_search_id: currentSavedSearchId,
             buyer_external_id: `upload_${Date.now()}_${index}`,
           };
 
-          Object.entries(validHeaderIndices).forEach(([indexStr, header]) => {
-            const headerIndex = parseInt(indexStr);
-            const value = values[headerIndex]?.replace(/"/g, '').trim();
+          cleanedHeaders.forEach((header, headerIndex) => {
+            if (headerIndex >= values.length) return;
             
-            if (value && config.headers.includes(header)) {
+            const value = values[headerIndex];
+            if (!value || value === 'null') return;
+            
+            if (config.headers.includes(header)) {
               switch (header) {
                 case 'employees':
                 case 'matching_score':
-                  buyerData[header] = value ? parseInt(value) : null;
+                  buyerData[header] = value ? parseInt(sanitizeTextField(value)) : null;
                   break;
                 case 'revenue':
                 case 'cash':
@@ -629,7 +656,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                   break;
                 case 'is_public':
                 case 'is_pe_vc_backed':
-                  buyerData[header] = value.toLowerCase() === 'true';
+                  buyerData[header] = sanitizeTextField(value).toLowerCase() === 'true';
                   break;
                 case 'reported_date':
                   buyerData[header] = validateDateField(value) || new Date().toISOString().split('T')[0];
@@ -660,7 +687,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       onDataUploaded?.();
 
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error('=== CSV UPLOAD ERROR ===');
+      console.error('Error details:', error);
       toast({
         title: "Upload Failed",
         description: error instanceof Error ? error.message : "Failed to upload file. Please check the format and try again.",
@@ -774,7 +802,6 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
         </CardContent>
       </Card>
 
-      {/* Upload Section */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center text-sm">
@@ -782,8 +809,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
             Upload Data to {currentConfig.name}
           </CardTitle>
           <CardDescription className="text-xs">
-            Upload a CSV file with data for {currentConfig.name.toLowerCase()} using the template format. 
-            Supports UTF-8, Windows-1252, ISO-8859-1, and UTF-16 encodings.
+            Upload a CSV file with enhanced parsing for better text field mapping. 
+            Supports multiple delimiters (comma, semicolon, tab, pipe) and various encodings.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -805,8 +832,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
               onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
             />
             <div className="text-xs text-gray-500">
-              Supports all {currentConfig.headers.length} fields for {currentConfig.name}. 
-              Auto-detects encoding (UTF-8, Windows-1252, ISO-8859-1, UTF-16).
+              Enhanced CSV parsing with automatic delimiter detection, encoding support, and robust text field mapping.
             </div>
           </div>
 
