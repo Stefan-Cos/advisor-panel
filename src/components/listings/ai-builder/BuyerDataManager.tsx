@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -154,31 +155,137 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     });
   };
 
-  // Enhanced CSV parser with proper quote handling and text field support
+  // Enhanced encoding detection and file reading
+  const detectEncoding = async (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const buffer = event.target?.result as ArrayBuffer;
+        const bytes = new Uint8Array(buffer.slice(0, 1024)); // Read first 1KB for detection
+        
+        // Check for BOM (Byte Order Mark)
+        if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+          console.log('Detected UTF-8 BOM');
+          resolve('UTF-8');
+          return;
+        }
+        
+        // Check for high ASCII characters that might indicate encoding issues
+        let hasHighAscii = false;
+        let nullBytes = 0;
+        
+        for (let i = 0; i < bytes.length; i++) {
+          if (bytes[i] === 0) nullBytes++;
+          if (bytes[i] > 127) hasHighAscii = true;
+        }
+        
+        // If we have null bytes, likely binary or UTF-16
+        if (nullBytes > 0) {
+          console.log('Detected potential UTF-16 or binary data');
+          resolve('UTF-16');
+          return;
+        }
+        
+        // If high ASCII characters, might be Windows-1252 or ISO-8859-1
+        if (hasHighAscii) {
+          console.log('Detected high ASCII characters, using Windows-1252');
+          resolve('Windows-1252');
+          return;
+        }
+        
+        // Default to UTF-8
+        console.log('Defaulting to UTF-8');
+        resolve('UTF-8');
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  };
+
+  // Enhanced file reading with multiple encoding attempts
+  const readFileWithMultipleEncodings = async (file: File): Promise<string> => {
+    const detectedEncoding = await detectEncoding(file);
+    console.log('Detected encoding:', detectedEncoding);
+    
+    const encodingsToTry = [
+      detectedEncoding,
+      'UTF-8',
+      'Windows-1252',
+      'ISO-8859-1',
+      'UTF-16'
+    ].filter((encoding, index, arr) => arr.indexOf(encoding) === index); // Remove duplicates
+    
+    for (const encoding of encodingsToTry) {
+      try {
+        console.log(`Attempting to read file with encoding: ${encoding}`);
+        const content = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const result = event.target?.result as string;
+            // Basic validation - check if we have reasonable content
+            if (result && result.length > 0 && !result.includes('\uFFFD')) {
+              resolve(result);
+            } else {
+              reject(new Error(`Invalid content with encoding ${encoding}`));
+            }
+          };
+          reader.onerror = () => reject(new Error(`Failed to read with encoding ${encoding}`));
+          
+          if (encoding === 'UTF-16') {
+            reader.readAsText(file, 'UTF-16LE');
+          } else {
+            reader.readAsText(file, encoding);
+          }
+        });
+        
+        console.log(`Successfully read file with encoding: ${encoding}`);
+        return content;
+      } catch (error) {
+        console.warn(`Failed to read with encoding ${encoding}:`, error);
+        continue;
+      }
+    }
+    
+    throw new Error('Could not read file with any supported encoding');
+  };
+
+  // Enhanced CSV parser with better quote and escape handling
   const parseCSVLine = (line: string): string[] => {
     const result = [];
     let current = '';
     let inQuotes = false;
     let i = 0;
     
+    // Remove BOM if present
+    if (line.charCodeAt(0) === 0xFEFF) {
+      line = line.substring(1);
+    }
+    
     while (i < line.length) {
       const char = line[i];
       const nextChar = line[i + 1];
       
       if (char === '"') {
-        if (inQuotes && nextChar === '"') {
-          // Handle escaped quotes (double quotes)
-          current += '"';
-          i += 2; // Skip both quotes
-          continue;
+        if (inQuotes) {
+          if (nextChar === '"') {
+            // Escaped quote (double quotes)
+            current += '"';
+            i += 2;
+            continue;
+          } else {
+            // End of quoted field
+            inQuotes = false;
+          }
         } else {
-          // Toggle quote state
-          inQuotes = !inQuotes;
+          // Start of quoted field
+          inQuotes = true;
         }
       } else if (char === ',' && !inQuotes) {
         // Field separator found outside quotes
         result.push(current.trim());
         current = '';
+      } else if ((char === '\r' || char === '\n') && !inQuotes) {
+        // End of line outside quotes
+        break;
       } else {
         current += char;
       }
@@ -190,12 +297,18 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     return result;
   };
 
-  // Enhanced text field sanitization
+  // Enhanced text field sanitization with better encoding handling
   const sanitizeTextField = (value: string): string => {
     if (!value) return '';
     
-    // Remove leading/trailing quotes if they wrap the entire value
     let cleaned = value.trim();
+    
+    // Remove BOM if present
+    if (cleaned.charCodeAt(0) === 0xFEFF) {
+      cleaned = cleaned.substring(1);
+    }
+    
+    // Remove leading/trailing quotes if they wrap the entire value
     if (cleaned.startsWith('"') && cleaned.endsWith('"') && cleaned.length > 1) {
       cleaned = cleaned.slice(1, -1);
     }
@@ -203,13 +316,35 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     // Handle escaped quotes within the text
     cleaned = cleaned.replace(/""/g, '"');
     
-    // Remove null bytes and other control characters except newlines and tabs
+    // Replace common encoding artifacts
+    const encodingReplacements = {
+      'â€™': "'", // Smart apostrophe
+      'â€œ': '"', // Smart quote open
+      'â€': '"',  // Smart quote close
+      'â€"': '–', // En dash
+      'â€"': '—', // Em dash
+      'Â': '',    // Non-breaking space artifact
+      '\u00A0': ' ', // Non-breaking space to regular space
+      '\u2018': "'", // Left single quotation mark
+      '\u2019': "'", // Right single quotation mark
+      '\u201C': '"', // Left double quotation mark
+      '\u201D': '"', // Right double quotation mark
+      '\u2013': '–', // En dash
+      '\u2014': '—', // Em dash
+    };
+    
+    for (const [artifact, replacement] of Object.entries(encodingReplacements)) {
+      cleaned = cleaned.replace(new RegExp(artifact, 'g'), replacement);
+    }
+    
+    // Remove null bytes and other problematic control characters
     cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
     
     // Normalize whitespace but preserve intentional line breaks
     cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    cleaned = cleaned.replace(/[ \t]+/g, ' '); // Multiple spaces/tabs to single space
     
-    // Limit field length to prevent database issues (adjust as needed)
+    // Limit field length to prevent database issues
     const maxLength = 10000;
     if (cleaned.length > maxLength) {
       cleaned = cleaned.substring(0, maxLength) + '...';
@@ -288,30 +423,6 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     return cleaned;
   };
 
-  // Enhanced file reading with encoding detection
-  const readFileWithEncoding = async (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      
-      reader.onload = (event) => {
-        const result = event.target?.result as string;
-        resolve(result);
-      };
-      
-      reader.onerror = () => {
-        reject(new Error('Failed to read file'));
-      };
-      
-      // Try UTF-8 first, fallback to Latin-1 if needed
-      try {
-        reader.readAsText(file, 'UTF-8');
-      } catch (error) {
-        console.warn('UTF-8 reading failed, trying Latin-1:', error);
-        reader.readAsText(file, 'ISO-8859-1');
-      }
-    });
-  };
-
   const handleFileUpload = async () => {
     if (!uploadFile) {
       toast({
@@ -325,9 +436,22 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     setUploading(true);
 
     try {
-      // Enhanced file reading with encoding support
-      const fileContent = await readFileWithEncoding(uploadFile);
+      console.log('Starting file upload process...');
+      console.log('File details:', {
+        name: uploadFile.name,
+        size: uploadFile.size,
+        type: uploadFile.type,
+        lastModified: new Date(uploadFile.lastModified)
+      });
+      
+      // Enhanced file reading with encoding detection
+      const fileContent = await readFileWithMultipleEncodings(uploadFile);
+      console.log('File content length:', fileContent.length);
+      console.log('First 200 characters:', fileContent.substring(0, 200));
+      
+      // Split lines and filter empty ones
       const lines = fileContent.split(/\r?\n/).filter(line => line.trim());
+      console.log('Total lines after filtering:', lines.length);
       
       if (lines.length < 2) {
         throw new Error('CSV file must contain headers and at least one data row');
@@ -335,7 +459,10 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
 
       // Clean and filter headers to remove empty ones and "Unnamed" columns
       const rawHeaders = parseCSVLine(lines[0]);
+      console.log('Raw headers:', rawHeaders);
+      
       const cleanedHeaders = rawHeaders.map(cleanHeaderName);
+      console.log('Cleaned headers:', cleanedHeaders);
       
       // Create mapping of valid header indices
       const validHeaderIndices: { [key: number]: string } = {};
@@ -349,9 +476,9 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       const dataRows = lines.slice(1);
       const config = tableConfigs[selectedTable as keyof typeof tableConfigs];
 
-      console.log('Raw CSV Headers:', rawHeaders);
-      console.log('Valid Headers after filtering:', validHeaders);
-      console.log('Expected Headers:', config.headers);
+      console.log('Valid headers after filtering:', validHeaders);
+      console.log('Expected headers:', config.headers);
+      console.log('Data rows to process:', dataRows.length);
 
       if (validHeaders.length === 0) {
         throw new Error('No valid headers found in CSV file after filtering out unnamed columns');
@@ -360,6 +487,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       if (selectedTable === 'buyers') {
         // Upload directly to buyers table with enhanced field mapping
         const buyersData = dataRows.map((line, index) => {
+          console.log(`Processing row ${index + 1}/${dataRows.length}`);
           const values = parseCSVLine(line);
           const buyerData: any = {};
 
@@ -434,7 +562,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           return buyerData;
         });
 
-        console.log('Processed buyers data:', buyersData);
+        console.log('Processed buyers data sample:', buyersData[0]);
+        console.log('Total buyers to insert:', buyersData.length);
 
         // Insert into buyers table
         const { error } = await supabase
@@ -506,7 +635,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                   buyerData[header] = validateDateField(value) || new Date().toISOString().split('T')[0];
                   break;
                 default:
-                  buyerData[header] = value || null;
+                  buyerData[header] = sanitizeTextField(value) || null;
               }
             }
           });
@@ -653,7 +782,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
             Upload Data to {currentConfig.name}
           </CardTitle>
           <CardDescription className="text-xs">
-            Upload a CSV file with data for {currentConfig.name.toLowerCase()} using the template format
+            Upload a CSV file with data for {currentConfig.name.toLowerCase()} using the template format. 
+            Supports UTF-8, Windows-1252, ISO-8859-1, and UTF-16 encodings.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -675,7 +805,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
               onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
             />
             <div className="text-xs text-gray-500">
-              Supports all {currentConfig.headers.length} fields for {currentConfig.name}
+              Supports all {currentConfig.headers.length} fields for {currentConfig.name}. 
+              Auto-detects encoding (UTF-8, Windows-1252, ISO-8859-1, UTF-16).
             </div>
           </div>
 
