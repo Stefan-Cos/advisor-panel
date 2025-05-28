@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,7 +29,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
   const tableConfigs = {
     buyers: {
       name: 'Buyers Master Database',
-      description: 'Complete buyer information for the master buyers database with all fields',
+      description: 'Complete buyer information for the master buyers database with all current fields',
       headers: [
         'external_id', 'name', 'type', 'description', 'long_description', 'hq', 'location',
         'employees', 'revenue', 'cash', 'aum', 'reported_date', 'is_pe_vc_backed', 'is_public',
@@ -36,64 +37,67 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
         'industry_focus', 'status', 'primary_industries', 'keywords', 'target_customer_types',
         'parent_company', 'industry_preferences', 'investments', 'previous_acquisitions',
         'investment_type', 'geography', 'investment_size', 'ebitda', 'matching_score',
-        'rationale', 'Year Founded', 'Company PBId', 'Website Https', 'Company LinkedIn',
-        'Registry Name', 'Registration Number', 'Legal Name', 'All Industries',
-        'Primary Industry Code', 'Primary Industry Sector', 'Primary Industry Group',
-        'Verticals', 'Ownership Status', 'Active Investors', 'Employee History',
-        'Net Income', 'Net Debt', 'Fiscal Period', 'Financing Status',
-        'Last Financing Date', 'Last Financing Deal Type', 'Last Update Date', 'SourceFile',
-        'url', 'id_x', 'analyzed_at', 'id_y', 'long_offering', 'long_problem_solved',
-        'long_use_cases', 'target_customers_description', 'summary', 'category_tag',
-        'offering_tag', 'short_sentence_broad', 'short_sentence_specific',
-        'categorisation_offering', 'problem_tag', 'problem_short_sentence_broad',
-        'problem_short_sentence_specific', 'problem_combined', 'use_case_tag',
-        'use_case_short_sentence_broad', 'use_case_short_sentence_specific',
-        'use_case_combined', 'customer_tag', 'customer_short_sentence_broad',
-        'customer_short_sentence_specific', 'customer_combined', 'target_functional_category',
-        'target_commercial_category', 'product_service_tags', 'technology_delivery',
-        'company_short_description', 'industry_category', 'describe_products_services',
-        'product_service_features', 'supply_chain_role', 'target_customers_type',
-        'target_customers_industries', 'Investments in the last 2 Years'
+        'rationale', 'year_founded', 'employee_history', 'net_income', 'net_debt',
+        'last_financing_date', 'last_update_date', 'analyzed_at', 'id_x', 'id_y',
+        'investments_last_2_years', 'long_offering', 'long_problem_solved', 'long_use_cases',
+        'target_customers_description', 'summary', 'category_tag', 'offering_tag',
+        'short_sentence_broad', 'short_sentence_specific', 'categorisation_offering',
+        'problem_tag', 'problem_short_sentence_broad', 'problem_short_sentence_specific',
+        'problem_combined', 'use_case_tag', 'use_case_short_sentence_broad',
+        'use_case_short_sentence_specific', 'use_case_combined', 'customer_tag',
+        'customer_short_sentence_broad', 'customer_short_sentence_specific',
+        'customer_combined', 'target_functional_category', 'target_commercial_category',
+        'product_service_tags', 'technology_delivery', 'company_short_description',
+        'industry_category', 'company_pbid', 'website_https', 'company_linkedin',
+        'registry_name', 'registration_number', 'legal_name', 'all_industries',
+        'primary_industry_code', 'primary_industry_sector', 'primary_industry_group',
+        'verticals', 'ownership_status', 'active_investors', 'describe_products_services',
+        'product_service_features', 'supply_chain_role', 'fiscal_period', 'financing_status',
+        'target_customers_type_new', 'last_financing_deal_type', 'target_customers_industries',
+        'source_file', 'url'
       ],
       sampleData: [
         [
           'buyer_001', 'Global Tech Solutions', 'strategic',
-          'Leading technology solutions provider', 'Global Tech Solutions is a comprehensive...',
-          'San Francisco, CA', 'United States', '1200', '150000000', '25000000', '',
+          'Leading technology solutions provider', 'Global Tech Solutions is a comprehensive technology platform serving enterprise clients...',
+          'San Francisco, CA', 'United States', '1200', '150000000', '25000000', '0',
           '2024-01-15', 'false', 'true', 'https://globaltech.com', 'Technology',
-          'Very Active', 'Enterprise software solutions', 'Technology,Software', 'Fortune 500 companies',
-          'Software & IT Services', 'active', 'Technology,Software,IT Services',
-          'enterprise software,SaaS', 'B2B,Enterprise', 'Independent',
-          'Software,IT Services', 'Active acquirer of technology companies',
-          'Acquired CloudTech Inc (2023)', 'Strategic acquisitions', 'North America,Europe',
-          '$25M - $150M', '18000000', '92', '{"overall": "Excellent strategic fit"}',
-          '2015', 'COMP001', 'https://globaltech.com', 'https://linkedin.com/company/globaltech',
-          'Global Tech Solutions LLC', 'REG123456', 'Global Tech Solutions LLC',
-          'Technology,Software,Cloud Computing', 'TECH001', 'Technology', 'Software',
-          'Enterprise Software,Cloud Services', 'Private', 'Series C Investors',
-          '{"2023": 1200, "2022": 1100}', '12000000', '5000000', 'Q4 2023',
-          'Series C Completed', '2023-06-15', 'Series C', '2024-01-15', 'upload_2024.csv',
-          'https://globaltech.com/about', 'ID_X_001', '2024-01-15', 'ID_Y_001',
-          'Comprehensive enterprise software platform', 'Solving workflow inefficiencies',
-          'Workflow automation and data analytics', 'Mid to large enterprises',
-          'Leading provider of enterprise solutions', 'Technology', 'Enterprise Software',
-          'Comprehensive technology solutions', 'Specific enterprise software focus',
-          'Enterprise Software Platform', 'Workflow Inefficiency', 'Streamlined workflows',
+          'Very Active', 'Enterprise software solutions', '"Technology,Software,IT Services"', 'Fortune 500 companies',
+          'Software & IT Services', 'active', '"Technology,Software,IT Services"',
+          '"enterprise software,SaaS,cloud computing"', '"B2B,Enterprise,Large Corporations"',
+          'Independent', '"Software,IT Services,Cloud Computing"', 'Active acquirer of technology companies',
+          'Acquired CloudTech Inc (2023), DataFlow Systems (2022)', '"Strategic acquisitions,Growth investments"',
+          '"North America,Europe"', '$25M - $150M', '18000000', '92',
+          '{"overall": "Excellent strategic fit", "offering": "Technology alignment perfect"}',
+          '2015', '{"2023": 1200, "2022": 1100, "2021": 1050}', '12000000', '5000000',
+          '2023-06-15', '2024-01-15', '2024-01-15', 'ID_X_001', 'ID_Y_001',
+          'Acquired 3 companies in the last 2 years', 'Comprehensive enterprise software platform',
+          'Solving workflow inefficiencies in large enterprises', 'Workflow automation and data analytics',
+          'Mid to large enterprises seeking digital transformation', 'Leading provider of enterprise solutions',
+          'Technology', 'Enterprise Software', 'Comprehensive technology solutions for enterprises',
+          'Specific enterprise software focus with cloud capabilities', 'Enterprise Software Platform',
+          'Workflow Inefficiency', 'Streamlined workflows for better productivity',
           'Automated business processes', 'Workflow automation solutions',
-          'Analytics Platform', 'Advanced analytics capabilities', 'Data-driven insights',
+          'Analytics Platform', 'Advanced analytics capabilities', 'Data-driven insights for decision making',
           'Business intelligence solutions', 'Enterprise Customers', 'Fortune 500 focus',
           'Large enterprise clients', 'Enterprise customer solutions',
-          'Workflow Automation', 'Business Intelligence', 'Enterprise Software,Analytics',
-          'Cloud-based', 'Comprehensive enterprise software solutions', 'Technology',
-          'Enterprise software and analytics platforms', 'Advanced workflow automation',
-          'Software Provider', 'Enterprise,Large Corporations', 'Technology,Healthcare,Finance',
-          'Acquired 3 companies in the last 2 years'
+          'Workflow Automation', 'Business Intelligence', '"Enterprise Software,Analytics,Cloud Services"',
+          'Cloud-based SaaS', 'Comprehensive enterprise software solutions provider', 'Technology',
+          'COMP001', 'https://globaltech.com', 'https://linkedin.com/company/globaltech',
+          'Global Tech Solutions LLC', 'REG123456', 'Global Tech Solutions LLC',
+          '"Technology,Software,Cloud Computing,Enterprise Solutions"', 'TECH001',
+          'Technology', 'Software', '"Enterprise Software,Cloud Services,Analytics"',
+          'Private', 'Series C Investors', 'Enterprise software and analytics platforms',
+          'Advanced workflow automation and business intelligence', 'Software Provider',
+          'Q4 2023', 'Series C Completed', 'Enterprise,Large Corporations',
+          'Series C', '"Technology,Healthcare,Finance"', 'upload_2024.csv',
+          'https://globaltech.com/about'
         ]
       ]
     },
     buyer_search_results: {
       name: 'Buyer Search Results',
-      description: 'Search results with buyer data and AI scoring',
+      description: 'Search results with buyer data and AI scoring for specific searches',
       headers: [
         'buyer_name', 'buyer_type', 'description', 'long_description', 'website',
         'hq', 'location', 'geography', 'employees', 'revenue', 'cash', 'aum', 'ebitda',
@@ -107,18 +111,21 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       sampleData: [
         [
           'TechCorp Solutions', 'strategic',
-          'Leading enterprise software provider', 'Comprehensive technology solutions...',
+          'Leading enterprise software provider', 'Comprehensive technology solutions for modern enterprises...',
           'https://techcorp.com', 'San Francisco, CA', 'United States', 'North America,Europe',
-          '1200', '150000000', '25000000', '', '18000000',
+          '1200', '150000000', '25000000', '0', '18000000',
           'Enterprise SaaS platforms', 'Technology', 'Software & IT Services',
           'Technology,Software,IT Services', 'Technology,Software', 'enterprise software,SaaS',
           'Fortune 500 companies', 'B2B,Enterprise', 'Very Active',
           'Acquired CloudTech Inc (2023)', 'Active technology acquisitions',
           '$25M - $150M', 'Strategic acquisitions', 'Software,IT Services',
           'Independent', 'true', 'false', '92',
-          'Excellent strategic fit', 'Technology alignment perfect',
-          'Overlapping customer base', 'Strong financial profile',
-          'Proven acquisition track record', '2024-01-15', 'active'
+          'Excellent strategic fit with strong technology alignment',
+          'Technology platforms complement target company perfectly',
+          'Significant overlap in customer base and market focus',
+          'Strong financial profile with proven acquisition capability',
+          'Proven track record with 5+ acquisitions in last 3 years',
+          '2024-01-15', 'active'
         ]
       ]
     }
@@ -198,7 +205,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       console.log('Expected Headers:', config.headers);
 
       if (selectedTable === 'buyers') {
-        // Upload directly to buyers table
+        // Upload directly to buyers table with updated field mapping
         const buyersData = dataRows.map((line, index) => {
           const values = parseCSVLine(line);
           const buyerData: any = {};
@@ -210,15 +217,15 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
               // Handle array fields
               if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
                    'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
-                   'All Industries', 'Verticals', 'target_customers_industries'].includes(header)) {
+                   'all_industries', 'verticals', 'target_customers_industries'].includes(header)) {
                 buyerData[header] = value.split(',').map(v => v.trim()).filter(v => v);
               }
               // Handle numeric fields
-              else if (['employees', 'matching_score', 'Year Founded'].includes(header)) {
+              else if (['employees', 'matching_score', 'year_founded'].includes(header)) {
                 buyerData[header] = value ? parseInt(value) : null;
               }
               // Handle decimal fields
-              else if (['revenue', 'cash', 'aum', 'Net Income', 'Net Debt'].includes(header)) {
+              else if (['revenue', 'cash', 'aum', 'net_income', 'net_debt'].includes(header)) {
                 buyerData[header] = value ? parseFloat(value) : null;
               }
               // Handle boolean fields
@@ -226,11 +233,11 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                 buyerData[header] = value.toLowerCase() === 'true';
               }
               // Handle date fields
-              else if (['reported_date', 'Last Financing Date', 'Last Update Date', 'analyzed_at'].includes(header)) {
+              else if (['reported_date', 'last_financing_date', 'last_update_date', 'analyzed_at'].includes(header)) {
                 buyerData[header] = value || null;
               }
               // Handle JSONB fields
-              else if (['rationale', 'Employee History'].includes(header)) {
+              else if (['rationale', 'employee_history'].includes(header)) {
                 try {
                   buyerData[header] = JSON.parse(value);
                 } catch {
