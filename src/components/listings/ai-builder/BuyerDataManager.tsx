@@ -190,6 +190,25 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     return date.toISOString().split('T')[0]; // Return YYYY-MM-DD format
   };
 
+  const validateNumericField = (value: string, fieldName: string): number | null => {
+    if (!value || value === '' || value === '0') return null;
+    
+    const numValue = parseFloat(value);
+    if (isNaN(numValue)) {
+      console.warn(`Invalid numeric value for ${fieldName}: ${value}`);
+      return null;
+    }
+    
+    // Check for values that would cause database overflow (precision 10, scale 2 = max 99,999,999.99)
+    const maxValue = 99999999.99;
+    if (Math.abs(numValue) > maxValue) {
+      console.warn(`Numeric value too large for ${fieldName}: ${value}, capping at ${maxValue}`);
+      return numValue > 0 ? maxValue : -maxValue;
+    }
+    
+    return numValue;
+  };
+
   const handleFileUpload = async () => {
     if (!uploadFile) {
       toast({
@@ -247,10 +266,9 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                 const numValue = parseInt(value);
                 buyerData[header] = isNaN(numValue) ? null : numValue;
               }
-              // Handle decimal fields
+              // Handle decimal fields with overflow protection
               else if (['revenue', 'cash', 'aum', 'net_income', 'net_debt'].includes(header)) {
-                const floatValue = parseFloat(value);
-                buyerData[header] = isNaN(floatValue) ? null : floatValue;
+                buyerData[header] = validateNumericField(value, header);
               }
               // Handle boolean fields
               else if (['is_public', 'is_pe_vc_backed'].includes(header)) {
@@ -355,7 +373,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                 case 'revenue':
                 case 'cash':
                 case 'aum':
-                  buyerData[header] = value ? parseFloat(value) : null;
+                  buyerData[header] = validateNumericField(value, header);
                   break;
                 case 'is_public':
                 case 'is_pe_vc_backed':
