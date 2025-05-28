@@ -154,26 +154,94 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     });
   };
 
+  // Enhanced CSV parser with proper quote handling and text field support
   const parseCSVLine = (line: string): string[] => {
     const result = [];
     let current = '';
     let inQuotes = false;
+    let i = 0;
     
-    for (let i = 0; i < line.length; i++) {
+    while (i < line.length) {
       const char = line[i];
+      const nextChar = line[i + 1];
       
       if (char === '"') {
-        inQuotes = !inQuotes;
+        if (inQuotes && nextChar === '"') {
+          // Handle escaped quotes (double quotes)
+          current += '"';
+          i += 2; // Skip both quotes
+          continue;
+        } else {
+          // Toggle quote state
+          inQuotes = !inQuotes;
+        }
       } else if (char === ',' && !inQuotes) {
+        // Field separator found outside quotes
         result.push(current.trim());
         current = '';
       } else {
         current += char;
       }
+      i++;
     }
     
+    // Add the last field
     result.push(current.trim());
     return result;
+  };
+
+  // Enhanced text field sanitization
+  const sanitizeTextField = (value: string): string => {
+    if (!value) return '';
+    
+    // Remove leading/trailing quotes if they wrap the entire value
+    let cleaned = value.trim();
+    if (cleaned.startsWith('"') && cleaned.endsWith('"') && cleaned.length > 1) {
+      cleaned = cleaned.slice(1, -1);
+    }
+    
+    // Handle escaped quotes within the text
+    cleaned = cleaned.replace(/""/g, '"');
+    
+    // Remove null bytes and other control characters except newlines and tabs
+    cleaned = cleaned.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+    
+    // Normalize whitespace but preserve intentional line breaks
+    cleaned = cleaned.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    
+    // Limit field length to prevent database issues (adjust as needed)
+    const maxLength = 10000;
+    if (cleaned.length > maxLength) {
+      cleaned = cleaned.substring(0, maxLength) + '...';
+      console.warn(`Text field truncated to ${maxLength} characters`);
+    }
+    
+    return cleaned;
+  };
+
+  // Enhanced array field parsing
+  const parseArrayField = (value: string): string[] => {
+    if (!value) return [];
+    
+    const cleaned = sanitizeTextField(value);
+    
+    // Try to parse as JSON array first
+    try {
+      if (cleaned.startsWith('[') && cleaned.endsWith(']')) {
+        const parsed = JSON.parse(cleaned);
+        if (Array.isArray(parsed)) {
+          return parsed.map(item => String(item).trim()).filter(item => item);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to parse JSON array:', error);
+    }
+    
+    // Parse as comma-separated values
+    return cleaned
+      .split(',')
+      .map(item => item.trim().replace(/^["']|["']$/g, '')) // Remove quotes
+      .filter(item => item && item !== 'null' && item !== 'undefined');
   };
 
   const validateDateField = (value: string): string | null => {
@@ -220,6 +288,30 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     return cleaned;
   };
 
+  // Enhanced file reading with encoding detection
+  const readFileWithEncoding = async (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        resolve(result);
+      };
+      
+      reader.onerror = () => {
+        reject(new Error('Failed to read file'));
+      };
+      
+      // Try UTF-8 first, fallback to Latin-1 if needed
+      try {
+        reader.readAsText(file, 'UTF-8');
+      } catch (error) {
+        console.warn('UTF-8 reading failed, trying Latin-1:', error);
+        reader.readAsText(file, 'ISO-8859-1');
+      }
+    });
+  };
+
   const handleFileUpload = async () => {
     if (!uploadFile) {
       toast({
@@ -233,8 +325,9 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     setUploading(true);
 
     try {
-      const fileContent = await uploadFile.text();
-      const lines = fileContent.split('\n').filter(line => line.trim());
+      // Enhanced file reading with encoding support
+      const fileContent = await readFileWithEncoding(uploadFile);
+      const lines = fileContent.split(/\r?\n/).filter(line => line.trim());
       
       if (lines.length < 2) {
         throw new Error('CSV file must contain headers and at least one data row');
@@ -265,7 +358,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       }
 
       if (selectedTable === 'buyers') {
-        // Upload directly to buyers table with improved field mapping
+        // Upload directly to buyers table with enhanced field mapping
         const buyersData = dataRows.map((line, index) => {
           const values = parseCSVLine(line);
           const buyerData: any = {};
@@ -277,55 +370,52 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
             // Skip if value doesn't exist at this index
             if (headerIndex >= values.length) return;
             
-            let value = values[headerIndex]?.replace(/"/g, '').trim();
-            
-            if (value && value !== '' && value !== 'null' && value !== 'undefined') {
-              // Handle array fields
-              if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
-                   'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
-                   'all_industries', 'verticals', 'target_customers_industries'].includes(header)) {
-                try {
-                  if (value.startsWith('[') && value.endsWith(']')) {
-                    buyerData[header] = JSON.parse(value);
-                  } else {
-                    buyerData[header] = value.split(',').map(v => v.trim()).filter(v => v);
-                  }
-                } catch {
-                  buyerData[header] = value.split(',').map(v => v.trim()).filter(v => v);
+            let rawValue = values[headerIndex];
+            if (!rawValue || rawValue === 'null' || rawValue === 'undefined') return;
+
+            // Enhanced text field processing based on field type
+            if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
+                 'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
+                 'all_industries', 'verticals', 'target_customers_industries'].includes(header)) {
+              // Array fields
+              buyerData[header] = parseArrayField(rawValue);
+            }
+            else if (['employees', 'matching_score', 'year_founded'].includes(header)) {
+              // Integer fields
+              const numValue = parseInt(sanitizeTextField(rawValue));
+              buyerData[header] = isNaN(numValue) ? null : numValue;
+            }
+            else if (['revenue', 'cash', 'aum', 'net_income', 'net_debt'].includes(header)) {
+              // Decimal fields with overflow protection
+              buyerData[header] = validateNumericField(sanitizeTextField(rawValue), header);
+            }
+            else if (['is_public', 'is_pe_vc_backed'].includes(header)) {
+              // Boolean fields
+              const cleanValue = sanitizeTextField(rawValue).toLowerCase();
+              buyerData[header] = cleanValue === 'true' || cleanValue === '1' || cleanValue === 'yes';
+            }
+            else if (['reported_date', 'last_financing_date', 'last_update_date', 'analyzed_at'].includes(header)) {
+              // Date fields
+              buyerData[header] = validateDateField(sanitizeTextField(rawValue));
+            }
+            else if (['rationale', 'employee_history'].includes(header)) {
+              // JSONB fields
+              const cleanValue = sanitizeTextField(rawValue);
+              try {
+                buyerData[header] = JSON.parse(cleanValue);
+              } catch {
+                if (header === 'rationale') {
+                  buyerData[header] = { note: cleanValue };
+                } else {
+                  buyerData[header] = null;
                 }
               }
-              // Handle numeric fields
-              else if (['employees', 'matching_score', 'year_founded'].includes(header)) {
-                const numValue = parseInt(value);
-                buyerData[header] = isNaN(numValue) ? null : numValue;
-              }
-              // Handle decimal fields with overflow protection
-              else if (['revenue', 'cash', 'aum', 'net_income', 'net_debt'].includes(header)) {
-                buyerData[header] = validateNumericField(value, header);
-              }
-              // Handle boolean fields
-              else if (['is_public', 'is_pe_vc_backed'].includes(header)) {
-                buyerData[header] = value.toLowerCase() === 'true';
-              }
-              // Handle date fields - with proper validation
-              else if (['reported_date', 'last_financing_date', 'last_update_date', 'analyzed_at'].includes(header)) {
-                buyerData[header] = validateDateField(value);
-              }
-              // Handle JSONB fields
-              else if (['rationale', 'employee_history'].includes(header)) {
-                try {
-                  buyerData[header] = JSON.parse(value);
-                } catch {
-                  if (header === 'rationale') {
-                    buyerData[header] = { note: value };
-                  } else {
-                    buyerData[header] = null;
-                  }
-                }
-              }
-              // Handle all other text fields
-              else {
-                buyerData[header] = value;
+            }
+            else {
+              // Text fields with enhanced sanitization
+              const cleanValue = sanitizeTextField(rawValue);
+              if (cleanValue) {
+                buyerData[header] = cleanValue;
               }
             }
           });
