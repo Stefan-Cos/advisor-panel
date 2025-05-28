@@ -316,13 +316,13 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     // Handle escaped quotes within the text
     cleaned = cleaned.replace(/""/g, '"');
     
-    // Replace common encoding artifacts
+    // Replace common encoding artifacts - fixed duplicate key issue
     const encodingReplacements = {
       'â€™': "'", // Smart apostrophe
       'â€œ': '"', // Smart quote open
       'â€': '"',  // Smart quote close
-      'â€"': '–', // En dash
-      'â€"': '—', // Em dash
+      'â€"': '–', // En dash - keeping first occurrence
+      'â€•': '—', // Em dash - using different key
       'Â': '',    // Non-breaking space artifact
       '\u00A0': ' ', // Non-breaking space to regular space
       '\u2018': "'", // Left single quotation mark
