@@ -1,21 +1,32 @@
 
-
-
 export const analyzeCompanyWebsite = async (website: string): Promise<any> => {
   try {
     console.log('Starting website analysis for:', website);
     
-    // Make POST request to the DigitalOcean API (removed /docs from the URL)
-    const response = await fetch('https://starfish-app-xbudz.ondigitalocean.app', {
+    // Ensure the URL has a protocol
+    let formattedUrl = website;
+    if (!website.startsWith('http://') && !website.startsWith('https://')) {
+      formattedUrl = 'https://' + website;
+    }
+    
+    console.log('Formatted URL:', formattedUrl);
+    
+    // Make POST request to the DigitalOcean API
+    const response = await fetch('https://starfish-app-xbudz.ondigitalocean.app/scrape', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ url: website })
+      body: JSON.stringify({ url: formattedUrl })
     });
 
+    console.log('API Response Status:', response.status);
+    console.log('API Response Headers:', Object.fromEntries(response.headers.entries()));
+
     if (!response.ok) {
-      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('API Error Response:', errorText);
+      throw new Error(`API request failed: ${response.status} ${response.statusText}. Response: ${errorText}`);
     }
 
     const data = await response.json();
@@ -48,5 +59,3 @@ export const analyzeCompanyWebsite = async (website: string): Promise<any> => {
     throw error;
   }
 };
-
-
