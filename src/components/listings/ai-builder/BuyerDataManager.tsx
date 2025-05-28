@@ -130,6 +130,37 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     }
   };
 
+  // Add missing validation functions
+  const validateNumericField = (value: string, fieldName: string): number | null => {
+    if (!value || value === 'null' || value === 'undefined' || value.toLowerCase() === 'nan') {
+      return null;
+    }
+    
+    const cleanValue = value.replace(/[,$]/g, '');
+    const numValue = parseFloat(cleanValue);
+    
+    if (isNaN(numValue)) {
+      console.warn(`Invalid numeric value for ${fieldName}:`, value);
+      return null;
+    }
+    
+    return numValue;
+  };
+
+  const validateDateField = (value: string): string | null => {
+    if (!value || value === 'null' || value === 'undefined') {
+      return null;
+    }
+    
+    const date = new Date(value);
+    if (isNaN(date.getTime())) {
+      console.warn(`Invalid date value:`, value);
+      return null;
+    }
+    
+    return date.toISOString().split('T')[0];
+  };
+
   const handleDownloadTemplate = () => {
     const config = tableConfigs[selectedTable as keyof typeof tableConfigs];
     
