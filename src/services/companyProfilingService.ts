@@ -1,11 +1,12 @@
 
 
+
 export const analyzeCompanyWebsite = async (website: string): Promise<any> => {
   try {
     console.log('Starting website analysis for:', website);
     
-    // Make POST request to the DigitalOcean API
-    const response = await fetch('https://starfish-app-xbudz.ondigitalocean.app/docs', {
+    // Make POST request to the DigitalOcean API (removed /docs from the URL)
+    const response = await fetch('https://starfish-app-xbudz.ondigitalocean.app', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -47,4 +48,5 @@ export const analyzeCompanyWebsite = async (website: string): Promise<any> => {
     throw error;
   }
 };
+
 
