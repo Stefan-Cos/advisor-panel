@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -209,6 +208,18 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     return numValue;
   };
 
+  const cleanHeaderName = (header: string): string | null => {
+    // Remove quotes and trim whitespace
+    const cleaned = header.replace(/"/g, '').trim();
+    
+    // Filter out empty headers and "Unnamed" columns
+    if (!cleaned || cleaned === '' || cleaned.startsWith('Unnamed:')) {
+      return null;
+    }
+    
+    return cleaned;
+  };
+
   const handleFileUpload = async () => {
     if (!uploadFile) {
       toast({
@@ -229,12 +240,29 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
         throw new Error('CSV file must contain headers and at least one data row');
       }
 
-      const headers = parseCSVLine(lines[0]).map(h => h.replace(/"/g, '').trim());
+      // Clean and filter headers to remove empty ones and "Unnamed" columns
+      const rawHeaders = parseCSVLine(lines[0]);
+      const cleanedHeaders = rawHeaders.map(cleanHeaderName);
+      
+      // Create mapping of valid header indices
+      const validHeaderIndices: { [key: number]: string } = {};
+      cleanedHeaders.forEach((header, index) => {
+        if (header !== null) {
+          validHeaderIndices[index] = header;
+        }
+      });
+
+      const validHeaders = Object.values(validHeaderIndices);
       const dataRows = lines.slice(1);
       const config = tableConfigs[selectedTable as keyof typeof tableConfigs];
 
-      console.log('CSV Headers:', headers);
+      console.log('Raw CSV Headers:', rawHeaders);
+      console.log('Valid Headers after filtering:', validHeaders);
       console.log('Expected Headers:', config.headers);
+
+      if (validHeaders.length === 0) {
+        throw new Error('No valid headers found in CSV file after filtering out unnamed columns');
+      }
 
       if (selectedTable === 'buyers') {
         // Upload directly to buyers table with improved field mapping
@@ -242,7 +270,13 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           const values = parseCSVLine(line);
           const buyerData: any = {};
 
-          headers.forEach((header, headerIndex) => {
+          // Only process valid headers with their corresponding indices
+          Object.entries(validHeaderIndices).forEach(([indexStr, header]) => {
+            const headerIndex = parseInt(indexStr);
+            
+            // Skip if value doesn't exist at this index
+            if (headerIndex >= values.length) return;
+            
             let value = values[headerIndex]?.replace(/"/g, '').trim();
             
             if (value && value !== '' && value !== 'null' && value !== 'undefined') {
@@ -250,7 +284,6 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
               if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
                    'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
                    'all_industries', 'verticals', 'target_customers_industries'].includes(header)) {
-                // Handle comma-separated arrays or JSON arrays
                 try {
                   if (value.startsWith('[') && value.endsWith(']')) {
                     buyerData[header] = JSON.parse(value);
@@ -283,7 +316,6 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                 try {
                   buyerData[header] = JSON.parse(value);
                 } catch {
-                  // If JSON parsing fails, treat as string for rationale or null for structured data
                   if (header === 'rationale') {
                     buyerData[header] = { note: value };
                   } else {
@@ -361,7 +393,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
             buyer_external_id: `upload_${Date.now()}_${index}`,
           };
 
-          headers.forEach((header, headerIndex) => {
+          Object.entries(validHeaderIndices).forEach(([indexStr, header]) => {
+            const headerIndex = parseInt(indexStr);
             const value = values[headerIndex]?.replace(/"/g, '').trim();
             
             if (value && config.headers.includes(header)) {
