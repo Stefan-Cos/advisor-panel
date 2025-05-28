@@ -204,124 +204,403 @@ export type Database = {
       }
       buyers: {
         Row: {
+          active_investors: string | null
+          all_industries: string[] | null
+          analyzed_at: string | null
           aum: number | null
           cash: number | null
+          categorisation_offering: string | null
+          category_tag: string | null
+          company_linkedin: string | null
+          company_pbid: string | null
+          company_short_description: string | null
           created_at: string
+          customer_combined: string | null
+          customer_short_sentence_broad: string | null
+          customer_short_sentence_specific: string | null
+          customer_tag: string | null
           customers: string | null
+          describe_products_services: string | null
           description: string | null
           ebitda: string | null
+          employee_history: Json | null
           employees: number | null
           external_id: string
+          financing_status: string | null
+          fiscal_period: string | null
           geography: string[] | null
           hq: string | null
           id: string
+          id_x: string | null
+          id_y: string | null
+          industry_category: string | null
           industry_focus: string | null
           industry_preferences: string[] | null
           investment_size: string | null
           investment_type: string[] | null
           investments: string | null
+          investments_last_2_years: string | null
           is_pe_vc_backed: boolean | null
           is_public: boolean | null
           keywords: string[] | null
+          last_financing_date: string | null
+          last_financing_deal_type: string | null
+          last_update_date: string | null
+          legal_name: string | null
           location: string | null
           long_description: string | null
+          long_offering: string | null
+          long_problem_solved: string | null
+          long_use_cases: string | null
           ma_track_record: string | null
           matching_score: number | null
           name: string
+          net_debt: number | null
+          net_income: number | null
           offering: string | null
+          offering_tag: string | null
+          ownership_status: string | null
           parent_company: string | null
           previous_acquisitions: string | null
           primary_industries: string[] | null
+          primary_industry_code: string | null
+          primary_industry_group: string | null
+          primary_industry_sector: string | null
+          problem_combined: string | null
+          problem_short_sentence_broad: string | null
+          problem_short_sentence_specific: string | null
+          problem_tag: string | null
+          product_service_features: string | null
+          product_service_tags: string[] | null
           rationale: Json | null
+          registration_number: string | null
+          registry_name: string | null
           reported_date: string | null
           revenue: number | null
           sector: string | null
           sectors: string[] | null
+          short_sentence_broad: string | null
+          short_sentence_specific: string | null
+          source_file: string | null
           status: string | null
+          summary: string | null
+          supply_chain_role: string | null
+          target_commercial_category: string | null
           target_customer_types: string[] | null
+          target_customers_description: string | null
+          target_customers_industries: string[] | null
+          target_customers_type_new: string | null
+          target_functional_category: string | null
+          technology_delivery: string | null
           type: string
           updated_at: string
+          url: string | null
+          use_case_combined: string | null
+          use_case_short_sentence_broad: string | null
+          use_case_short_sentence_specific: string | null
+          use_case_tag: string | null
+          verticals: string[] | null
           website: string | null
+          website_https: string | null
+          year_founded: number | null
         }
         Insert: {
+          active_investors?: string | null
+          all_industries?: string[] | null
+          analyzed_at?: string | null
           aum?: number | null
           cash?: number | null
+          categorisation_offering?: string | null
+          category_tag?: string | null
+          company_linkedin?: string | null
+          company_pbid?: string | null
+          company_short_description?: string | null
           created_at?: string
+          customer_combined?: string | null
+          customer_short_sentence_broad?: string | null
+          customer_short_sentence_specific?: string | null
+          customer_tag?: string | null
           customers?: string | null
+          describe_products_services?: string | null
           description?: string | null
           ebitda?: string | null
+          employee_history?: Json | null
           employees?: number | null
           external_id: string
+          financing_status?: string | null
+          fiscal_period?: string | null
           geography?: string[] | null
           hq?: string | null
           id?: string
+          id_x?: string | null
+          id_y?: string | null
+          industry_category?: string | null
           industry_focus?: string | null
           industry_preferences?: string[] | null
           investment_size?: string | null
           investment_type?: string[] | null
           investments?: string | null
+          investments_last_2_years?: string | null
           is_pe_vc_backed?: boolean | null
           is_public?: boolean | null
           keywords?: string[] | null
+          last_financing_date?: string | null
+          last_financing_deal_type?: string | null
+          last_update_date?: string | null
+          legal_name?: string | null
           location?: string | null
           long_description?: string | null
+          long_offering?: string | null
+          long_problem_solved?: string | null
+          long_use_cases?: string | null
           ma_track_record?: string | null
           matching_score?: number | null
           name: string
+          net_debt?: number | null
+          net_income?: number | null
           offering?: string | null
+          offering_tag?: string | null
+          ownership_status?: string | null
           parent_company?: string | null
           previous_acquisitions?: string | null
           primary_industries?: string[] | null
+          primary_industry_code?: string | null
+          primary_industry_group?: string | null
+          primary_industry_sector?: string | null
+          problem_combined?: string | null
+          problem_short_sentence_broad?: string | null
+          problem_short_sentence_specific?: string | null
+          problem_tag?: string | null
+          product_service_features?: string | null
+          product_service_tags?: string[] | null
           rationale?: Json | null
+          registration_number?: string | null
+          registry_name?: string | null
           reported_date?: string | null
           revenue?: number | null
           sector?: string | null
           sectors?: string[] | null
+          short_sentence_broad?: string | null
+          short_sentence_specific?: string | null
+          source_file?: string | null
           status?: string | null
+          summary?: string | null
+          supply_chain_role?: string | null
+          target_commercial_category?: string | null
           target_customer_types?: string[] | null
+          target_customers_description?: string | null
+          target_customers_industries?: string[] | null
+          target_customers_type_new?: string | null
+          target_functional_category?: string | null
+          technology_delivery?: string | null
           type: string
           updated_at?: string
+          url?: string | null
+          use_case_combined?: string | null
+          use_case_short_sentence_broad?: string | null
+          use_case_short_sentence_specific?: string | null
+          use_case_tag?: string | null
+          verticals?: string[] | null
           website?: string | null
+          website_https?: string | null
+          year_founded?: number | null
         }
         Update: {
+          active_investors?: string | null
+          all_industries?: string[] | null
+          analyzed_at?: string | null
           aum?: number | null
           cash?: number | null
+          categorisation_offering?: string | null
+          category_tag?: string | null
+          company_linkedin?: string | null
+          company_pbid?: string | null
+          company_short_description?: string | null
           created_at?: string
+          customer_combined?: string | null
+          customer_short_sentence_broad?: string | null
+          customer_short_sentence_specific?: string | null
+          customer_tag?: string | null
           customers?: string | null
+          describe_products_services?: string | null
           description?: string | null
           ebitda?: string | null
+          employee_history?: Json | null
           employees?: number | null
           external_id?: string
+          financing_status?: string | null
+          fiscal_period?: string | null
           geography?: string[] | null
           hq?: string | null
           id?: string
+          id_x?: string | null
+          id_y?: string | null
+          industry_category?: string | null
           industry_focus?: string | null
           industry_preferences?: string[] | null
           investment_size?: string | null
           investment_type?: string[] | null
           investments?: string | null
+          investments_last_2_years?: string | null
           is_pe_vc_backed?: boolean | null
           is_public?: boolean | null
           keywords?: string[] | null
+          last_financing_date?: string | null
+          last_financing_deal_type?: string | null
+          last_update_date?: string | null
+          legal_name?: string | null
           location?: string | null
           long_description?: string | null
+          long_offering?: string | null
+          long_problem_solved?: string | null
+          long_use_cases?: string | null
           ma_track_record?: string | null
           matching_score?: number | null
           name?: string
+          net_debt?: number | null
+          net_income?: number | null
           offering?: string | null
+          offering_tag?: string | null
+          ownership_status?: string | null
           parent_company?: string | null
           previous_acquisitions?: string | null
           primary_industries?: string[] | null
+          primary_industry_code?: string | null
+          primary_industry_group?: string | null
+          primary_industry_sector?: string | null
+          problem_combined?: string | null
+          problem_short_sentence_broad?: string | null
+          problem_short_sentence_specific?: string | null
+          problem_tag?: string | null
+          product_service_features?: string | null
+          product_service_tags?: string[] | null
           rationale?: Json | null
+          registration_number?: string | null
+          registry_name?: string | null
           reported_date?: string | null
           revenue?: number | null
           sector?: string | null
           sectors?: string[] | null
+          short_sentence_broad?: string | null
+          short_sentence_specific?: string | null
+          source_file?: string | null
           status?: string | null
+          summary?: string | null
+          supply_chain_role?: string | null
+          target_commercial_category?: string | null
           target_customer_types?: string[] | null
+          target_customers_description?: string | null
+          target_customers_industries?: string[] | null
+          target_customers_type_new?: string | null
+          target_functional_category?: string | null
+          technology_delivery?: string | null
           type?: string
           updated_at?: string
+          url?: string | null
+          use_case_combined?: string | null
+          use_case_short_sentence_broad?: string | null
+          use_case_short_sentence_specific?: string | null
+          use_case_tag?: string | null
+          verticals?: string[] | null
           website?: string | null
+          website_https?: string | null
+          year_founded?: number | null
+        }
+        Relationships: []
+      }
+      investors: {
+        Row: {
+          "Active Portfolio": string | null
+          AUM: string | null
+          "Buyer Type": string | null
+          "Company Name": string | null
+          "Company Website": string | null
+          "Dry Powder": string | null
+          "HQ Country": string | null
+          Investments: string | null
+          "Investments in the last 2 Years": string | null
+          "Investments in the last 5 Years": string | null
+          "Last Closed Fund Size": string | null
+          "Last Closed Fund Size Date": string | null
+          "Preferred Company Valuation Max": string | null
+          "Preferred Company Valuation Min": string | null
+          "Preferred Deal Size Max": string | null
+          "Preferred Deal Size Min": string | null
+          "Preferred EBITDA Max": string | null
+          "Preferred EBITDA Min": string | null
+          "Preferred Geography": string | null
+          "Preferred Industry": string | null
+          "Preferred Investment Amount Max": string | null
+          "Preferred Investment Amount Min": string | null
+          "Preferred Investment Horizon": string | null
+          "Preferred Investment Types": string | null
+          "Preferred Revenue Max": string | null
+          "Preferred Revenue Min": string | null
+          "Preferred Verticals": string | null
+          "Primary Investor Type": string | null
+          "Website Https": string | null
+        }
+        Insert: {
+          "Active Portfolio"?: string | null
+          AUM?: string | null
+          "Buyer Type"?: string | null
+          "Company Name"?: string | null
+          "Company Website"?: string | null
+          "Dry Powder"?: string | null
+          "HQ Country"?: string | null
+          Investments?: string | null
+          "Investments in the last 2 Years"?: string | null
+          "Investments in the last 5 Years"?: string | null
+          "Last Closed Fund Size"?: string | null
+          "Last Closed Fund Size Date"?: string | null
+          "Preferred Company Valuation Max"?: string | null
+          "Preferred Company Valuation Min"?: string | null
+          "Preferred Deal Size Max"?: string | null
+          "Preferred Deal Size Min"?: string | null
+          "Preferred EBITDA Max"?: string | null
+          "Preferred EBITDA Min"?: string | null
+          "Preferred Geography"?: string | null
+          "Preferred Industry"?: string | null
+          "Preferred Investment Amount Max"?: string | null
+          "Preferred Investment Amount Min"?: string | null
+          "Preferred Investment Horizon"?: string | null
+          "Preferred Investment Types"?: string | null
+          "Preferred Revenue Max"?: string | null
+          "Preferred Revenue Min"?: string | null
+          "Preferred Verticals"?: string | null
+          "Primary Investor Type"?: string | null
+          "Website Https"?: string | null
+        }
+        Update: {
+          "Active Portfolio"?: string | null
+          AUM?: string | null
+          "Buyer Type"?: string | null
+          "Company Name"?: string | null
+          "Company Website"?: string | null
+          "Dry Powder"?: string | null
+          "HQ Country"?: string | null
+          Investments?: string | null
+          "Investments in the last 2 Years"?: string | null
+          "Investments in the last 5 Years"?: string | null
+          "Last Closed Fund Size"?: string | null
+          "Last Closed Fund Size Date"?: string | null
+          "Preferred Company Valuation Max"?: string | null
+          "Preferred Company Valuation Min"?: string | null
+          "Preferred Deal Size Max"?: string | null
+          "Preferred Deal Size Min"?: string | null
+          "Preferred EBITDA Max"?: string | null
+          "Preferred EBITDA Min"?: string | null
+          "Preferred Geography"?: string | null
+          "Preferred Industry"?: string | null
+          "Preferred Investment Amount Max"?: string | null
+          "Preferred Investment Amount Min"?: string | null
+          "Preferred Investment Horizon"?: string | null
+          "Preferred Investment Types"?: string | null
+          "Preferred Revenue Max"?: string | null
+          "Preferred Revenue Min"?: string | null
+          "Preferred Verticals"?: string | null
+          "Primary Investor Type"?: string | null
+          "Website Https"?: string | null
         }
         Relationships: []
       }
@@ -575,6 +854,117 @@ export type Database = {
           rank?: number | null
           saved_at?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      transaction: {
+        Row: {
+          "Add On": string | null
+          "Add-on Platform": string | null
+          "Buyer Name 1": string | null
+          "Buyer Name 1 Type": string | null
+          "Buyer Name 2": string | null
+          "Buyer Name 2 Type": string | null
+          "Buyer Name 3": string | null
+          "Buyer Name 3 Type": string | null
+          "Buyer Name 4": string | null
+          "Buyer Name 4 Type": string | null
+          "Buyer Name 5": string | null
+          "Buyer Name 5 Type": string | null
+          "Buyer Name 6": string | null
+          "Buyer Name 6 Type": string | null
+          "Company ID": string | null
+          "Company Name": string | null
+          "Company Website": string | null
+          "Deal Class": string | null
+          "Deal Date": string | null
+          "Deal ID": string | null
+          "Deal Synopsis": string | null
+          "Deal Type": string | null
+          "Direct PE Investment": string | null
+          EBITDA: string | null
+          "Financing Status": string | null
+          "Fiscal Year": number | null
+          "Implied EV": string | null
+          Investors: string | null
+          "Investors Website": string | null
+          Revenue: string | null
+          "Reverse Merger/Distressed": string | null
+          "Seller Description": string | null
+          Sellers: string | null
+          "Website Https": string | null
+        }
+        Insert: {
+          "Add On"?: string | null
+          "Add-on Platform"?: string | null
+          "Buyer Name 1"?: string | null
+          "Buyer Name 1 Type"?: string | null
+          "Buyer Name 2"?: string | null
+          "Buyer Name 2 Type"?: string | null
+          "Buyer Name 3"?: string | null
+          "Buyer Name 3 Type"?: string | null
+          "Buyer Name 4"?: string | null
+          "Buyer Name 4 Type"?: string | null
+          "Buyer Name 5"?: string | null
+          "Buyer Name 5 Type"?: string | null
+          "Buyer Name 6"?: string | null
+          "Buyer Name 6 Type"?: string | null
+          "Company ID"?: string | null
+          "Company Name"?: string | null
+          "Company Website"?: string | null
+          "Deal Class"?: string | null
+          "Deal Date"?: string | null
+          "Deal ID"?: string | null
+          "Deal Synopsis"?: string | null
+          "Deal Type"?: string | null
+          "Direct PE Investment"?: string | null
+          EBITDA?: string | null
+          "Financing Status"?: string | null
+          "Fiscal Year"?: number | null
+          "Implied EV"?: string | null
+          Investors?: string | null
+          "Investors Website"?: string | null
+          Revenue?: string | null
+          "Reverse Merger/Distressed"?: string | null
+          "Seller Description"?: string | null
+          Sellers?: string | null
+          "Website Https"?: string | null
+        }
+        Update: {
+          "Add On"?: string | null
+          "Add-on Platform"?: string | null
+          "Buyer Name 1"?: string | null
+          "Buyer Name 1 Type"?: string | null
+          "Buyer Name 2"?: string | null
+          "Buyer Name 2 Type"?: string | null
+          "Buyer Name 3"?: string | null
+          "Buyer Name 3 Type"?: string | null
+          "Buyer Name 4"?: string | null
+          "Buyer Name 4 Type"?: string | null
+          "Buyer Name 5"?: string | null
+          "Buyer Name 5 Type"?: string | null
+          "Buyer Name 6"?: string | null
+          "Buyer Name 6 Type"?: string | null
+          "Company ID"?: string | null
+          "Company Name"?: string | null
+          "Company Website"?: string | null
+          "Deal Class"?: string | null
+          "Deal Date"?: string | null
+          "Deal ID"?: string | null
+          "Deal Synopsis"?: string | null
+          "Deal Type"?: string | null
+          "Direct PE Investment"?: string | null
+          EBITDA?: string | null
+          "Financing Status"?: string | null
+          "Fiscal Year"?: number | null
+          "Implied EV"?: string | null
+          Investors?: string | null
+          "Investors Website"?: string | null
+          Revenue?: string | null
+          "Reverse Merger/Distressed"?: string | null
+          "Seller Description"?: string | null
+          Sellers?: string | null
+          "Website Https"?: string | null
         }
         Relationships: []
       }
