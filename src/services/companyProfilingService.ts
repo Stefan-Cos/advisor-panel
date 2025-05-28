@@ -12,7 +12,7 @@ export const analyzeCompanyWebsite = async (website: string): Promise<any> => {
     console.log('Formatted URL:', formattedUrl);
     
     // Make POST request to the DigitalOcean API
-    const response = await fetch('https://starfish-app-xbudz.ondigitalocean.app/scrape', {
+    const response = await fetch('https://starfish-app-xbudz.ondigitalocean.app', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
