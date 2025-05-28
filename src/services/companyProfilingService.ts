@@ -1,21 +1,23 @@
 
-import { supabase } from "@/integrations/supabase/client";
-
 export const analyzeCompanyWebsite = async (website: string): Promise<any> => {
   try {
     console.log('Starting website analysis for:', website);
     
-    // Call the scrape-website edge function
-    const { data, error } = await supabase.functions.invoke('scrape-website', {
-      body: { url: website }
+    // Make POST request to the DigitalOcean API
+    const response = await fetch('https://starfish-app-xbudz.ondigitalocean.app/docs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: website })
     });
 
-    if (error) {
-      console.error('Edge function error:', error);
-      throw new Error(`Scraping failed: ${error.message}`);
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.status} ${response.statusText}`);
     }
 
-    console.log('Scraping successful:', data);
+    const data = await response.json();
+    console.log('API response successful:', data);
     
     if (data?.textContent) {
       console.log('First 400 words from website:', data.textContent);
