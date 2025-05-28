@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, Download, FileSpreadsheet, AlertCircle, Info, Table } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { createBuyerSearchResults, createSavedBuyerSearch } from '@/services/buyerSearchService';
 
 interface BuyerDataManagerProps {
@@ -21,13 +23,78 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
-  const [selectedTable, setSelectedTable] = useState<string>('buyer_search_results');
+  const [selectedTable, setSelectedTable] = useState<string>('buyers');
 
   // Define table configurations with their respective fields and sample data
   const tableConfigs = {
+    buyers: {
+      name: 'Buyers Master Database',
+      description: 'Complete buyer information for the master buyers database with all fields',
+      headers: [
+        'external_id', 'name', 'type', 'description', 'long_description', 'hq', 'location',
+        'employees', 'revenue', 'cash', 'aum', 'reported_date', 'is_pe_vc_backed', 'is_public',
+        'website', 'sector', 'ma_track_record', 'offering', 'sectors', 'customers',
+        'industry_focus', 'status', 'primary_industries', 'keywords', 'target_customer_types',
+        'parent_company', 'industry_preferences', 'investments', 'previous_acquisitions',
+        'investment_type', 'geography', 'investment_size', 'ebitda', 'matching_score',
+        'rationale', 'Year Founded', 'Company PBId', 'Website Https', 'Company LinkedIn',
+        'Registry Name', 'Registration Number', 'Legal Name', 'All Industries',
+        'Primary Industry Code', 'Primary Industry Sector', 'Primary Industry Group',
+        'Verticals', 'Ownership Status', 'Active Investors', 'Employee History',
+        'Net Income', 'Net Debt', 'Fiscal Period', 'Financing Status',
+        'Last Financing Date', 'Last Financing Deal Type', 'Last Update Date', 'SourceFile',
+        'url', 'id_x', 'analyzed_at', 'id_y', 'long_offering', 'long_problem_solved',
+        'long_use_cases', 'target_customers_description', 'summary', 'category_tag',
+        'offering_tag', 'short_sentence_broad', 'short_sentence_specific',
+        'categorisation_offering', 'problem_tag', 'problem_short_sentence_broad',
+        'problem_short_sentence_specific', 'problem_combined', 'use_case_tag',
+        'use_case_short_sentence_broad', 'use_case_short_sentence_specific',
+        'use_case_combined', 'customer_tag', 'customer_short_sentence_broad',
+        'customer_short_sentence_specific', 'customer_combined', 'target_functional_category',
+        'target_commercial_category', 'product_service_tags', 'technology_delivery',
+        'company_short_description', 'industry_category', 'describe_products_services',
+        'product_service_features', 'supply_chain_role', 'target_customers_type',
+        'target_customers_industries', 'Investments in the last 2 Years'
+      ],
+      sampleData: [
+        [
+          'buyer_001', 'Global Tech Solutions', 'strategic',
+          'Leading technology solutions provider', 'Global Tech Solutions is a comprehensive...',
+          'San Francisco, CA', 'United States', '1200', '150000000', '25000000', '',
+          '2024-01-15', 'false', 'true', 'https://globaltech.com', 'Technology',
+          'Very Active', 'Enterprise software solutions', 'Technology,Software', 'Fortune 500 companies',
+          'Software & IT Services', 'active', 'Technology,Software,IT Services',
+          'enterprise software,SaaS', 'B2B,Enterprise', 'Independent',
+          'Software,IT Services', 'Active acquirer of technology companies',
+          'Acquired CloudTech Inc (2023)', 'Strategic acquisitions', 'North America,Europe',
+          '$25M - $150M', '18000000', '92', '{"overall": "Excellent strategic fit"}',
+          '2015', 'COMP001', 'https://globaltech.com', 'https://linkedin.com/company/globaltech',
+          'Global Tech Solutions LLC', 'REG123456', 'Global Tech Solutions LLC',
+          'Technology,Software,Cloud Computing', 'TECH001', 'Technology', 'Software',
+          'Enterprise Software,Cloud Services', 'Private', 'Series C Investors',
+          '{"2023": 1200, "2022": 1100}', '12000000', '5000000', 'Q4 2023',
+          'Series C Completed', '2023-06-15', 'Series C', '2024-01-15', 'upload_2024.csv',
+          'https://globaltech.com/about', 'ID_X_001', '2024-01-15', 'ID_Y_001',
+          'Comprehensive enterprise software platform', 'Solving workflow inefficiencies',
+          'Workflow automation and data analytics', 'Mid to large enterprises',
+          'Leading provider of enterprise solutions', 'Technology', 'Enterprise Software',
+          'Comprehensive technology solutions', 'Specific enterprise software focus',
+          'Enterprise Software Platform', 'Workflow Inefficiency', 'Streamlined workflows',
+          'Automated business processes', 'Workflow automation solutions',
+          'Analytics Platform', 'Advanced analytics capabilities', 'Data-driven insights',
+          'Business intelligence solutions', 'Enterprise Customers', 'Fortune 500 focus',
+          'Large enterprise clients', 'Enterprise customer solutions',
+          'Workflow Automation', 'Business Intelligence', 'Enterprise Software,Analytics',
+          'Cloud-based', 'Comprehensive enterprise software solutions', 'Technology',
+          'Enterprise software and analytics platforms', 'Advanced workflow automation',
+          'Software Provider', 'Enterprise,Large Corporations', 'Technology,Healthcare,Finance',
+          'Acquired 3 companies in the last 2 years'
+        ]
+      ]
+    },
     buyer_search_results: {
       name: 'Buyer Search Results',
-      description: 'Complete buyer data with search results and AI scoring',
+      description: 'Search results with buyer data and AI scoring',
       headers: [
         'buyer_name', 'buyer_type', 'description', 'long_description', 'website',
         'hq', 'location', 'geography', 'employees', 'revenue', 'cash', 'aum', 'ebitda',
@@ -41,82 +108,18 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       sampleData: [
         [
           'TechCorp Solutions', 'strategic',
-          'Leading enterprise software provider specializing in cloud-based solutions',
-          'TechCorp Solutions is a comprehensive technology solutions provider with over a decade of experience in delivering enterprise software, cloud infrastructure, and digital transformation services to Fortune 500 companies worldwide.',
-          'https://techcorp.com', 'San Francisco, CA', 'United States', 'North America, Europe, Asia-Pacific',
+          'Leading enterprise software provider', 'Comprehensive technology solutions...',
+          'https://techcorp.com', 'San Francisco, CA', 'United States', 'North America,Europe',
           '1200', '150000000', '25000000', '', '18000000',
-          'Enterprise SaaS platforms, Cloud infrastructure, Digital transformation consulting',
-          'Technology', 'Software & IT Services', 'Technology, Software, IT Services',
-          'Technology, Software, Cloud Computing', 'enterprise software, SaaS, cloud computing',
-          'Fortune 500 companies, Mid-market enterprises', 'B2B, Enterprise, Government',
-          'Very Active', 'Acquired CloudTech Inc (2023, $45M), DataFlow Systems (2022, $32M)',
-          'Active acquirer of complementary technology companies', '$25M - $150M',
-          'Strategic acquisitions, Technology integrations', 'Software, IT Services, Cloud Computing',
+          'Enterprise SaaS platforms', 'Technology', 'Software & IT Services',
+          'Technology,Software,IT Services', 'Technology,Software', 'enterprise software,SaaS',
+          'Fortune 500 companies', 'B2B,Enterprise', 'Very Active',
+          'Acquired CloudTech Inc (2023)', 'Active technology acquisitions',
+          '$25M - $150M', 'Strategic acquisitions', 'Software,IT Services',
           'Independent', 'true', 'false', '92',
-          'Excellent strategic fit with strong technology synergies',
-          'Technology stack aligns perfectly with platform capabilities',
-          'Overlapping customer base in enterprise segment',
-          'Strong balance sheet with consistent revenue growth',
-          'Proven track record of successful technology acquisitions',
-          '2024-01-15', 'active'
-        ]
-      ]
-    },
-    buyers: {
-      name: 'Buyers Master Database',
-      description: 'Core buyer information for the master buyers database',
-      headers: [
-        'external_id', 'name', 'type', 'description', 'long_description', 'hq', 'location',
-        'employees', 'revenue', 'cash', 'aum', 'reported_date', 'is_pe_vc_backed', 'is_public',
-        'website', 'sector', 'ma_track_record', 'offering', 'sectors', 'customers',
-        'industry_focus', 'status', 'primary_industries', 'keywords', 'target_customer_types',
-        'parent_company', 'industry_preferences', 'investments', 'previous_acquisitions',
-        'investment_type', 'geography', 'investment_size', 'ebitda', 'matching_score',
-        'rationale'
-      ],
-      sampleData: [
-        [
-          'buyer_001', 'Global Manufacturing Partners', 'strategic',
-          'Industrial manufacturing company specializing in automotive and aerospace',
-          'Global Manufacturing Partners is a leading manufacturer of precision components and assemblies for the automotive, aerospace, and industrial equipment sectors.',
-          'Detroit, MI', 'United States', '850', '75000000', '12000000', '',
-          '2024-02-20', 'false', 'false', 'https://globalmanufacturing.com',
-          'Manufacturing', 'Moderate', 'Precision manufacturing, Component assembly',
-          'Manufacturing, Automotive, Aerospace', 'OEMs, Tier 1 suppliers, Industrial equipment manufacturers',
-          'Automotive, Aerospace, Industrial Equipment', 'active',
-          'Manufacturing, Automotive, Aerospace', 'precision manufacturing, automotive components',
-          'B2B, Manufacturing, Industrial', 'Independent', 'Manufacturing, Automotive, Aerospace',
-          'Selective acquisitions to expand manufacturing capabilities', 'Acquired Precision Tools Co (2022, $15M)',
-          'Strategic bolt-on acquisitions', 'North America, Europe', '$10M - $50M',
-          '8500000', '78', '{"overall": "Good strategic fit for expanding manufacturing capabilities", "offering": "Manufacturing processes complement operational strengths"}'
-        ]
-      ]
-    },
-    saved_buyers: {
-      name: 'Saved Buyers List',
-      description: 'List of buyers saved by users with notes and status',
-      headers: [
-        'project_id', 'buyer_id', 'buyer_data', 'notes', 'status'
-      ],
-      sampleData: [
-        [
-          listingId, 'buyer_001',
-          '{"name": "TechCorp Solutions", "type": "strategic", "hq": "San Francisco, CA", "revenue": 150000000}',
-          'High priority target - excellent technology fit', 'saved'
-        ]
-      ]
-    },
-    saved_buyers_list: {
-      name: 'Saved Buyers List (Legacy)',
-      description: 'Legacy saved buyers list with ranking and feedback',
-      headers: [
-        'project_id', 'buyer_id', 'buyer_name', 'buyer_type', 'buyer_data', 'feedback', 'rank'
-      ],
-      sampleData: [
-        [
-          listingId, 'buyer_001', 'TechCorp Solutions', 'strategic',
-          '{"hq": "San Francisco, CA", "revenue": 150000000, "employees": 1200}',
-          'Excellent strategic fit with strong synergies', '1'
+          'Excellent strategic fit', 'Technology alignment perfect',
+          'Overlapping customer base', 'Strong financial profile',
+          'Proven acquisition track record', '2024-01-15', 'active'
         ]
       ]
     }
@@ -181,24 +184,6 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     setUploading(true);
 
     try {
-      let currentSavedSearchId = savedSearchId;
-
-      // If no saved search is selected, create a default one
-      if (!currentSavedSearchId) {
-        const defaultSearchName = `Data Upload - ${new Date().toLocaleDateString()}`;
-        const defaultSearch = await createSavedBuyerSearch({
-          project_id: listingId,
-          name: defaultSearchName,
-          search_criteria: { uploadType: selectedTable }
-        });
-        currentSavedSearchId = defaultSearch.id!;
-        
-        toast({
-          title: "Search Created",
-          description: `Created "${defaultSearchName}" for your data upload.`
-        });
-      }
-
       const fileContent = await uploadFile.text();
       const lines = fileContent.split('\n').filter(line => line.trim());
       
@@ -213,65 +198,147 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       console.log('CSV Headers:', headers);
       console.log('Expected Headers:', config.headers);
 
-      // Validate headers match template
-      const missingHeaders = config.headers.filter(h => !headers.includes(h));
-      if (missingHeaders.length > 0) {
-        console.warn('Missing headers:', missingHeaders);
-      }
+      if (selectedTable === 'buyers') {
+        // Upload directly to buyers table
+        const buyersData = dataRows.map((line, index) => {
+          const values = parseCSVLine(line);
+          const buyerData: any = {};
 
-      const buyerResults = dataRows.map((line, index) => {
-        const values = parseCSVLine(line);
-        const buyerData: any = {
-          saved_search_id: currentSavedSearchId,
-          buyer_external_id: `upload_${Date.now()}_${index}`,
-        };
-
-        // Map CSV values to buyer data structure
-        headers.forEach((header, headerIndex) => {
-          const value = values[headerIndex]?.replace(/"/g, '').trim();
-          
-          if (value && config.headers.includes(header)) {
-            switch (header) {
-              case 'employees':
-              case 'matching_score':
+          headers.forEach((header, headerIndex) => {
+            const value = values[headerIndex]?.replace(/"/g, '').trim();
+            
+            if (value) {
+              // Handle array fields
+              if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
+                   'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
+                   'All Industries', 'Verticals', 'target_customers_industries'].includes(header)) {
+                buyerData[header] = value.split(',').map(v => v.trim()).filter(v => v);
+              }
+              // Handle numeric fields
+              else if (['employees', 'matching_score', 'Year Founded'].includes(header)) {
                 buyerData[header] = value ? parseInt(value) : null;
-                break;
-              case 'revenue':
-              case 'cash':
-              case 'aum':
+              }
+              // Handle decimal fields
+              else if (['revenue', 'cash', 'aum', 'Net Income', 'Net Debt'].includes(header)) {
                 buyerData[header] = value ? parseFloat(value) : null;
-                break;
-              case 'is_public':
-              case 'is_pe_vc_backed':
+              }
+              // Handle boolean fields
+              else if (['is_public', 'is_pe_vc_backed'].includes(header)) {
                 buyerData[header] = value.toLowerCase() === 'true';
-                break;
-              case 'reported_date':
-                buyerData[header] = value || new Date().toISOString().split('T')[0];
-                break;
-              default:
+              }
+              // Handle date fields
+              else if (['reported_date', 'Last Financing Date', 'Last Update Date', 'analyzed_at'].includes(header)) {
                 buyerData[header] = value || null;
+              }
+              // Handle JSONB fields
+              else if (['rationale', 'Employee History'].includes(header)) {
+                try {
+                  buyerData[header] = JSON.parse(value);
+                } catch {
+                  buyerData[header] = value;
+                }
+              }
+              // Handle all other text fields
+              else {
+                buyerData[header] = value;
+              }
             }
+          });
+
+          // Set required defaults
+          if (!buyerData.external_id) {
+            buyerData.external_id = `upload_${Date.now()}_${index}`;
           }
+          if (!buyerData.name) {
+            buyerData.name = 'Unknown Company';
+          }
+          if (!buyerData.type) {
+            buyerData.type = 'strategic';
+          }
+
+          return buyerData;
         });
 
-        // Set default values for required fields
-        buyerData.buyer_name = buyerData.buyer_name || 'Unknown';
-        buyerData.buyer_type = buyerData.buyer_type || 'strategic';
-        buyerData.status = buyerData.status || 'active';
-        buyerData.matching_score = buyerData.matching_score || 0;
+        console.log('Processed buyers data:', buyersData);
 
-        return buyerData;
-      });
+        // Insert into buyers table
+        const { error } = await supabase
+          .from('buyers')
+          .insert(buyersData);
 
-      console.log('Processed buyer results:', buyerResults);
+        if (error) {
+          console.error('Error inserting buyers:', error);
+          throw error;
+        }
 
-      // Upload to database
-      await createBuyerSearchResults(buyerResults);
+        toast({
+          title: "Upload Successful",
+          description: `Successfully uploaded ${buyersData.length} buyers to the database.`
+        });
 
-      toast({
-        title: "Upload Successful",
-        description: `Successfully uploaded ${buyerResults.length} records to ${config.name}.`
-      });
+      } else {
+        // Handle buyer_search_results upload
+        let currentSavedSearchId = savedSearchId;
+
+        if (!currentSavedSearchId) {
+          const defaultSearchName = `Data Upload - ${new Date().toLocaleDateString()}`;
+          const defaultSearch = await createSavedBuyerSearch({
+            project_id: listingId,
+            name: defaultSearchName,
+            search_criteria: { uploadType: selectedTable }
+          });
+          currentSavedSearchId = defaultSearch.id!;
+        }
+
+        const buyerResults = dataRows.map((line, index) => {
+          const values = parseCSVLine(line);
+          const buyerData: any = {
+            saved_search_id: currentSavedSearchId,
+            buyer_external_id: `upload_${Date.now()}_${index}`,
+          };
+
+          headers.forEach((header, headerIndex) => {
+            const value = values[headerIndex]?.replace(/"/g, '').trim();
+            
+            if (value && config.headers.includes(header)) {
+              switch (header) {
+                case 'employees':
+                case 'matching_score':
+                  buyerData[header] = value ? parseInt(value) : null;
+                  break;
+                case 'revenue':
+                case 'cash':
+                case 'aum':
+                  buyerData[header] = value ? parseFloat(value) : null;
+                  break;
+                case 'is_public':
+                case 'is_pe_vc_backed':
+                  buyerData[header] = value.toLowerCase() === 'true';
+                  break;
+                case 'reported_date':
+                  buyerData[header] = value || new Date().toISOString().split('T')[0];
+                  break;
+                default:
+                  buyerData[header] = value || null;
+              }
+            }
+          });
+
+          buyerData.buyer_name = buyerData.buyer_name || 'Unknown';
+          buyerData.buyer_type = buyerData.buyer_type || 'strategic';
+          buyerData.status = buyerData.status || 'active';
+          buyerData.matching_score = buyerData.matching_score || 0;
+
+          return buyerData;
+        });
+
+        await createBuyerSearchResults(buyerResults);
+
+        toast({
+          title: "Upload Successful",
+          description: `Successfully uploaded ${buyerResults.length} records to ${config.name}.`
+        });
+      }
 
       setUploadFile(null);
       onDataUploaded?.();
@@ -380,7 +447,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {!savedSearchId && (
+          {!savedSearchId && selectedTable === 'buyer_search_results' && (
             <div className="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-md">
               <Info className="h-4 w-4 text-blue-600 mr-2" />
               <span className="text-xs text-blue-700">
