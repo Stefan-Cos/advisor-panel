@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { StrictMode } from 'react'
 import App from './App.tsx'
 import './index.css'
+import { debugTrackingScripts } from './utils/trackingDebugger'
 
 // Create a root for the application
 const root = createRoot(document.getElementById("root")!)
@@ -57,9 +58,11 @@ root.render(
   </StrictMode>
 )
 
-// Set the body to fully opaque once the app is loaded
+// Set the body to fully opaque once the app is loaded and debug tracking scripts
 window.addEventListener('load', () => {
   setTimeout(() => {
     document.body.style.opacity = '1'
+    // Debug tracking scripts after page load
+    debugTrackingScripts()
   }, 100)
 })
