@@ -46,6 +46,87 @@ export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
   }
 };
 
+// New function to get linked buyer data by merging matching and buyers tables
+export const getLinkedBuyerData = async () => {
+  try {
+    console.log('Fetching linked buyer data from both tables...');
+    
+    // Get all matching records
+    const matchingBuyers = await getBuyersFromMatching();
+    
+    if (matchingBuyers.length === 0) {
+      console.log('No matching data found, returning empty array');
+      return [];
+    }
+    
+    // Get all buyers from the buyers table
+    const { data: buyersData, error: buyersError } = await supabase
+      .from('buyers')
+      .select('*');
+    
+    if (buyersError) {
+      console.error('Error fetching buyers table:', buyersError);
+      return matchingBuyers.map(buyer => transformMatchingBuyerToComponentFormat(buyer));
+    }
+    
+    console.log(`Found ${buyersData?.length || 0} buyers in buyers table`);
+    
+    // Link matching data with buyers data
+    const linkedData = matchingBuyers.map(matchingBuyer => {
+      // Try to find matching buyer by name
+      const linkedBuyer = buyersData?.find(buyer => {
+        const matchingName = matchingBuyer["Buyer Name"] || matchingBuyer["Company Name"] || '';
+        return buyer.name.toLowerCase().trim() === matchingName.toLowerCase().trim();
+      });
+      
+      if (linkedBuyer) {
+        console.log(`Linked matching record "${matchingBuyer["Buyer Name"]}" with buyer "${linkedBuyer.name}"`);
+        // Merge the data, prioritizing matching table for scores and rationale
+        return {
+          ...linkedBuyer,
+          matching_score: parseMatchScore(matchingBuyer["Match Socre"]),
+          rationale: {
+            overall: matchingBuyer["Overall Rationale"] || 'Strong strategic alignment based on matching criteria.',
+            offering: matchingBuyer["Offering Rationale"] || 'Good offering alignment.',
+            customers: matchingBuyer["Customers Rationale"] || 'Customer base aligns well.',
+            financialStrength: matchingBuyer["Financial Strenght Rationale"] || 'Strong financial profile.',
+            previousTransactions: matchingBuyer["Prev Transactions Rationale"] || 'Good transaction history.',
+            scores: {
+              offering: matchingBuyer["Offering"] || 75,
+              customers: matchingBuyer["Customers"] || 65,
+              previousTransactions: matchingBuyer["Sector"] || 70,
+              financialStrength: matchingBuyer["Positioning"] || 68,
+              overall: parseMatchScore(matchingBuyer["Match Socre"])
+            }
+          },
+          // Update description if matching has better info
+          description: matchingBuyer["Short Description"] || linkedBuyer.description,
+          offering: matchingBuyer["Offering Combined"] || linkedBuyer.offering,
+          website: matchingBuyer["Company Website"] || linkedBuyer.website
+        };
+      } else {
+        console.log(`No buyer found for matching record "${matchingBuyer["Buyer Name"]}", using transformed data`);
+        // If no buyer found, use transformed matching data
+        return transformMatchingBuyerToComponentFormat(matchingBuyer);
+      }
+    });
+    
+    console.log(`Successfully linked ${linkedData.length} buyer records`);
+    return linkedData;
+    
+  } catch (error) {
+    console.error('Error in getLinkedBuyerData:', error);
+    return [];
+  }
+};
+
+// Helper function to parse match score
+const parseMatchScore = (scoreStr: string | undefined): number => {
+  if (!scoreStr) return 75;
+  const parsed = parseFloat(scoreStr.toString().replace('%', ''));
+  return isNaN(parsed) ? 75 : Math.round(parsed);
+};
+
 export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): any => {
   // Parse match score - handle both string and number formats
   let matchScore = 75; // default
@@ -63,36 +144,36 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
     name: buyer["Buyer Name"] || buyer["Buyer Name2"] || "Unknown Buyer",
     type: 'strategic', // Default to strategic, could be enhanced based on data
     description: buyer["Short Description"] || buyer["Offering Combined"] || 'No description available',
-    longDescription: buyer["Offering Combined"] || buyer["Short Description"],
+    long_description: buyer["Offering Combined"] || buyer["Short Description"],
     hq: 'N/A', // Not available in matching table
     location: 'N/A', // Not available in matching table
     employees: 0, // Not available in matching table
     revenue: 0, // Not available in matching table
     cash: 0, // Not available in matching table
-    reportedDate: new Date().toISOString().split('T')[0],
-    isPEVCBacked: false,
-    isPublic: false,
+    reported_date: new Date().toISOString().split('T')[0],
+    is_pe_vc_backed: false,
+    is_public: false,
     website: buyer["Company Website"] || buyer["Company Name"] || 'N/A',
     sector: 'N/A',
-    maTrackRecord: 'N/A',
+    ma_track_record: 'N/A',
     offering: buyer["Offering Combined"] || buyer["Short Description"] || 'N/A',
     sectors: [],
     customers: 'N/A',
-    matchingScore: matchScore,
+    matching_score: matchScore,
     status: 'active',
-    primaryIndustries: [],
+    primary_industries: [],
     keywords: [],
-    targetCustomerTypes: [],
-    parentCompany: buyer["Company Name"] || 'Independent',
+    target_customer_types: [],
+    parent_company: buyer["Company Name"] || 'Independent',
     aum: 0,
     investments: 'N/A',
-    previousAcquisitions: 'N/A',
-    investmentType: [],
+    previous_acquisitions: 'N/A',
+    investment_type: [],
     geography: [],
-    investmentSize: 'N/A',
+    investment_size: 'N/A',
     ebitda: 'N/A',
-    industryFocus: 'N/A',
-    industryPreferences: [],
+    industry_focus: 'N/A',
+    industry_preferences: [],
     rationale: {
       overall: buyer["Overall Rationale"] || 'Strong strategic alignment based on matching criteria.',
       offering: buyer["Offering Rationale"] || 'Good offering alignment.',
