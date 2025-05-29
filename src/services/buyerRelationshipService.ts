@@ -234,11 +234,17 @@ export class BuyerRelationshipService {
    */
   static async getRelationshipStats() {
     try {
-      // Use simpler queries to avoid TypeScript deep instantiation error
-      const [totalResult, linkedResult] = await Promise.all([
-        supabase.from('matching').select('id', { count: 'exact', head: true }),
-        supabase.from('matching').select('id', { count: 'exact', head: true }).not('buyer_id', 'is', null)
-      ]);
+      // Use explicit types to avoid deep instantiation issues
+      const totalQuery = supabase
+        .from('matching')
+        .select('*', { count: 'exact', head: true });
+      
+      const linkedQuery = supabase
+        .from('matching')
+        .select('*', { count: 'exact', head: true })
+        .not('buyer_id', 'is', null);
+      
+      const [totalResult, linkedResult] = await Promise.all([totalQuery, linkedQuery]);
       
       if (totalResult.error || linkedResult.error) {
         console.error('Error getting relationship stats:', totalResult.error || linkedResult.error);
