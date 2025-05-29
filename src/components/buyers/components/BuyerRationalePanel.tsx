@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Buyer } from '../types/BuyerTypes';
 
@@ -6,24 +7,6 @@ interface BuyerRationalePanelProps {
 }
 
 const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
-  const getMatchScoreColor = (score: number) => {
-    if (score >= 85) return 'text-green-600';
-    if (score >= 70) return 'text-yellow-600';
-    return 'text-red-600';
-  };
-
-  // Provide default scores if they don't exist
-  const defaultScores = {
-    offering: buyer.matchingScore || 75,
-    customers: buyer.matchingScore ? Math.max(30, buyer.matchingScore - 10) : 65,
-    previousTransactions: buyer.matchingScore ? Math.min(100, buyer.matchingScore + 2) : 77,
-    financialStrength: buyer.matchingScore ? Math.max(40, buyer.matchingScore - 5) : 70,
-    overall: buyer.matchingScore || 75
-  };
-
-  // Safely get scores with fallback to defaults
-  const scores = buyer.rationale?.scores || defaultScores;
-
   return (
     <div className="p-4">
       <div className="mb-6 bg-white p-4 rounded-md border border-gray-200 shadow-sm">
@@ -118,53 +101,21 @@ const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
         <h3 className="text-sm font-semibold text-blue-800 mb-3 border-b border-blue-100 pb-2">Acquisition Rationale</h3>
         <div className="space-y-4">
           <div>
-            <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(scores.offering)} mr-2`}>
-                {scores.offering}%
-              </span>
-              <span>Offering</span>
-            </h4>
+            <h4 className="text-sm font-semibold text-blue-700 mb-1">Offering</h4>
             <p className="text-sm text-gray-700">{buyer.rationale?.offering || 'Strong alignment between their offering and target acquisition criteria.'}</p>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(scores.customers)} mr-2`}>
-                {scores.customers}%
-              </span>
-              <span>Customers</span>
-            </h4>
+            <h4 className="text-sm font-semibold text-blue-700 mb-1">Customers</h4>
             <p className="text-sm text-gray-700">{buyer.rationale?.customers || 'Customer base aligns well with acquisition strategy.'}</p>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(scores.previousTransactions)} mr-2`}>
-                {scores.previousTransactions}%
-              </span>
-              <span>Previous Transactions</span>
-            </h4>
+            <h4 className="text-sm font-semibold text-blue-700 mb-1">Previous Transactions</h4>
             <p className="text-sm text-gray-700">{buyer.rationale?.previousTransactions || 'Transaction history demonstrates active acquisition strategy.'}</p>
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(scores.financialStrength)} mr-2`}>
-                {scores.financialStrength}%
-              </span>
-              <span>Financial Strength</span>
-            </h4>
+            <h4 className="text-sm font-semibold text-blue-700 mb-1">Financial Strength</h4>
             <p className="text-sm text-gray-700">{buyer.rationale?.financialStrength || 'Financial profile indicates strong acquisition capability.'}</p>
           </div>
-          {/* Temporarily commented out overall rationale section */}
-          {/* 
-          <div>
-            <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
-              <span className={`text-sm font-medium ${getMatchScoreColor(scores.overall)} mr-2`}>
-                {scores.overall}%
-              </span>
-              <span>Overall Rationale</span>
-            </h4>
-            <p className="text-sm text-gray-700">{buyer.rationale?.overall || `This ${buyer.type === 'strategic' ? 'company' : 'fund'} shows strong potential as an acquisition target based on industry alignment and strategic fit.`}</p>
-          </div>
-          */}
         </div>
       </div>
     </div>

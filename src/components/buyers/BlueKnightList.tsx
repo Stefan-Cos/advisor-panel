@@ -7,6 +7,7 @@ import BuyerTabs from './components/BuyerTabs';
 import BuyerSearch from './components/BuyerSearch';
 import StrategicBuyerTable from './components/StrategicBuyerTable';
 import PEBuyerTable from './components/PEBuyerTable';
+import FilterSidebarToggle from '../listings/ai-builder/FilterSidebarToggle';
 import { getMATrackRecordColor } from './utils/buyerUtils';
 
 interface BlueKnightListProps {
@@ -20,6 +21,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [filterVisible, setFilterVisible] = useState(false);
   
   // Load buyer data from the new matched_buyers table
   const loadBuyerData = async () => {
@@ -74,55 +76,78 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     );
   };
 
+  const toggleFilterSidebar = () => {
+    setFilterVisible(!filterVisible);
+  };
+
+  const handleFilterApply = () => {
+    toast({
+      title: "Filters Applied",
+      description: "Your search filters have been applied successfully."
+    });
+    setFilterVisible(false);
+  };
+
   return (
-    <div className="animate-fade-in">
-      <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <BuyerTabs 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab}
-            buyers={allBuyers}
-          />
-        </div>
-        
-        <div className="mb-4">
-          <BuyerSearch searchValue={searchValue} onSearchChange={setSearchValue} />
-        </div>
-        
-        {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <div className="animate-pulse space-y-4">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-200 rounded w-full"></div>
-              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-              <div className="h-4 bg-gray-200 rounded w-4/5"></div>
-            </div>
+    <div className="animate-fade-in relative">
+      {/* Filter Sidebar Toggle */}
+      <FilterSidebarToggle
+        filterVisible={filterVisible}
+        toggleFilterSidebar={toggleFilterSidebar}
+        onFilterApply={handleFilterApply}
+        position="left"
+      />
+
+      {/* Main content with conditional left margin */}
+      <div className={`transition-all duration-300 ${filterVisible ? 'ml-[300px]' : 'ml-0'}`}>
+        <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <BuyerTabs 
+              activeTab={activeTab} 
+              setActiveTab={setActiveTab}
+              buyers={allBuyers}
+            />
           </div>
-        ) : (
-          <>
-            {activeTab === 'strategic' ? (
-              <StrategicBuyerTable 
-                buyers={filteredBuyers}
-                savedBuyers={savedBuyers}
-                expandedRationales={expandedRationales}
-                onAddToSaved={handleAddToSaved}
-                toggleRationale={toggleRationale}
-                getMATrackRecordColor={getMATrackRecordColor}
-                listingId={listingId}
-              />
-            ) : (
-              <PEBuyerTable
-                buyers={filteredBuyers}
-                savedBuyers={savedBuyers}
-                expandedRationales={expandedRationales}
-                onAddToSaved={handleAddToSaved}
-                toggleRationale={toggleRationale}
-                listingId={listingId}
-              />
-            )}
-          </>
-        )}
+          
+          <div className="mb-4">
+            <BuyerSearch searchValue={searchValue} onSearchChange={setSearchValue} />
+          </div>
+          
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-pulse space-y-4">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-200 rounded w-full"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                <div className="h-4 bg-gray-200 rounded w-4/5"></div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {activeTab === 'strategic' ? (
+                <StrategicBuyerTable 
+                  buyers={filteredBuyers}
+                  savedBuyers={savedBuyers}
+                  expandedRationales={expandedRationales}
+                  onAddToSaved={handleAddToSaved}
+                  toggleRationale={toggleRationale}
+                  getMATrackRecordColor={getMATrackRecordColor}
+                  listingId={listingId}
+                />
+              ) : (
+                <PEBuyerTable
+                  buyers={filteredBuyers}
+                  savedBuyers={savedBuyers}
+                  expandedRationales={expandedRationales}
+                  onAddToSaved={handleAddToSaved}
+                  toggleRationale={toggleRationale}
+                  listingId={listingId}
+                />
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
