@@ -98,7 +98,12 @@ export class BuyerRelationshipService {
   /**
    * Gets statistics about the current relationship state
    */
-  static async getRelationshipStats() {
+  static async getRelationshipStats(): Promise<{
+    totalMatching: number;
+    linkedRecords: number;
+    unlinkedRecords: number;
+    linkageRate: number;
+  }> {
     try {
       // Get total matching records
       const { count: totalMatching } = await supabase
@@ -111,12 +116,14 @@ export class BuyerRelationshipService {
         .select('*', { count: 'exact', head: true })
         .not('buyer_id', 'is', null);
       
-      const unlinkedRecords = (totalMatching || 0) - (linkedRecords || 0);
-      const linkageRate = totalMatching ? (linkedRecords || 0) / totalMatching * 100 : 0;
+      const totalCount = totalMatching || 0;
+      const linkedCount = linkedRecords || 0;
+      const unlinkedRecords = totalCount - linkedCount;
+      const linkageRate = totalCount ? (linkedCount / totalCount * 100) : 0;
       
       return {
-        totalMatching: totalMatching || 0,
-        linkedRecords: linkedRecords || 0,
+        totalMatching: totalCount,
+        linkedRecords: linkedCount,
         unlinkedRecords,
         linkageRate: Math.round(linkageRate * 100) / 100
       };
