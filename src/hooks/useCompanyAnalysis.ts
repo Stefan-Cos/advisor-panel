@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { analyzeCompanyWebsite } from '@/services/companyProfilingService';
 
@@ -15,34 +14,142 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
   const [analysisComplete, setAnalysisComplete] = useState(false);
 
   const extractCompanyDataFromResponse = (data: any) => {
-    // Extract company name from title or text content
+    console.log('Extracting data from API response:', data);
+    
+    // Check if we have the new structured response format
+    if (data.groq_responses) {
+      const responses = data.groq_responses;
+      
+      // Extract company name from existing formData or try to parse from description
+      let extractedCompanyName = formData.companyName;
+      if (responses.Company_Description && !extractedCompanyName) {
+        // Try to extract company name from the first sentence
+        const firstSentence = responses.Company_Description.split('.')[0];
+        const words = firstSentence.split(' ');
+        if (words.length > 0 && words[0] !== 'The' && words[0] !== 'A') {
+          extractedCompanyName = words[0];
+        }
+      }
+
+      // Parse industry categories
+      const industries = [];
+      if (responses.Industry_Category) {
+        industries.push(responses.Industry_Category);
+      }
+
+      // Parse product/service keywords
+      const productTags = [];
+      if (responses["Product/Service_Keywords"]) {
+        const keywords = responses["Product/Service_Keywords"].split(';')
+          .map(keyword => keyword.trim())
+          .filter(keyword => keyword.length > 0);
+        productTags.push(...keywords);
+      }
+
+      // Parse delivery method from Go-To-Market info
+      const deliveryMethods = [];
+      if (responses["Go-To-Market/Delivery_Method"]) {
+        const gtmText = responses["Go-To-Market/Delivery_Method"].toLowerCase();
+        if (gtmText.includes('software') || gtmText.includes('saas')) {
+          deliveryMethods.push("Cloud-based");
+        }
+        if (gtmText.includes('platform')) {
+          deliveryMethods.push("API");
+        }
+      }
+
+      // Parse supply chain role
+      const supplyChainRoles = [];
+      if (responses["Company_Position_in_Supply_Chain"]) {
+        const positionText = responses["Company_Position_in_Supply_Chain"].toLowerCase();
+        if (positionText.includes('software')) {
+          supplyChainRoles.push("Software Provider");
+        }
+        if (positionText.includes('consultancy') || positionText.includes('services')) {
+          supplyChainRoles.push("Service Provider");
+        }
+      }
+
+      // Parse functional categories/use cases
+      const useCases = [];
+      if (responses.Functional_Category) {
+        useCases.push(responses.Functional_Category);
+      }
+      if (responses["Use_Cases_and_End_Users"]) {
+        // Extract key use cases from the text
+        const useCaseText = responses["Use_Cases_and_End_Users"];
+        if (useCaseText.includes('sales coaching')) {
+          useCases.push("Sales Coaching");
+        }
+        if (useCaseText.includes('training')) {
+          useCases.push("Training & Development");
+        }
+        if (useCaseText.includes('performance')) {
+          useCases.push("Performance Management");
+        }
+      }
+
+      // Parse target customer industries
+      const customerIndustries = [];
+      if (responses.Target_Customer_Industries) {
+        customerIndustries.push(responses.Target_Customer_Industries);
+      }
+
+      // Parse customer type
+      const customerTypes = [];
+      if (responses.Target_Customer_Type) {
+        const typeText = responses.Target_Customer_Type.toLowerCase();
+        if (typeText.includes('large enterprises')) {
+          customerTypes.push("Enterprise");
+        }
+        if (typeText.includes('mid-sized')) {
+          customerTypes.push("SMB");
+        }
+      }
+
+      return {
+        companyName: extractedCompanyName,
+        description: responses.Company_Description || `${extractedCompanyName} provides innovative solutions in their industry.`,
+        industry: industries.length > 0 ? industries : ["Technology"],
+        offering: responses.Company_Offering || "Software solutions and services",
+        productTags: productTags.length > 0 ? productTags : ["Platform", "Software"],
+        deliveryMethod: deliveryMethods.length > 0 ? deliveryMethods : ["Cloud-based"],
+        supplyChainRole: supplyChainRoles.length > 0 ? supplyChainRoles : ["Software Provider"],
+        useCase: useCases.length > 0 ? useCases : ["Business Solutions"],
+        // Problem & Use Case section
+        problemSolved: responses["Problem_Solved_Market_Pain_Point"] || "",
+        useCases: responses["Use_Cases_and_End_Users"] || "",
+        // Target Customer section
+        targetCustomers: responses.Target_Customer_Description || "",
+        customerType: customerTypes.length > 0 ? customerTypes : ["Enterprise"],
+        customerIndustries: customerIndustries.length > 0 ? customerIndustries : ["Technology"]
+      };
+    }
+
+    // Fallback to original extraction logic if new format not available
+    // ... keep existing code (original extraction logic for backward compatibility)
     let extractedCompanyName = formData.companyName;
     if (data.title) {
-      // Try to extract company name from title (often in format "Company Name | Description")
       const titleParts = data.title.split('|')[0].trim();
-      if (titleParts && titleParts.length < 50) { // Reasonable company name length
+      if (titleParts && titleParts.length < 50) {
         extractedCompanyName = titleParts;
       }
     }
 
-    // Extract description from meta description or first paragraph of content
     let extractedDescription = '';
     if (data.meta?.description) {
       extractedDescription = data.meta.description;
     } else if (data.textContent) {
-      // Take first 2-3 sentences from content as description
       const sentences = data.textContent.split(/[.!?]+/).filter(s => s.trim().length > 20);
       if (sentences.length > 0) {
         extractedDescription = sentences.slice(0, 2).join('. ').trim() + '.';
       }
     }
 
-    // Extract keywords and potential industry tags from content
     const contentText = (data.textContent || '').toLowerCase();
     const metaText = (data.meta?.description || '').toLowerCase();
     const combinedText = `${contentText} ${metaText}`;
 
-    // Common industry keywords to look for
     const industryKeywords = {
       'Technology': ['software', 'saas', 'platform', 'technology', 'digital', 'tech', 'app', 'api'],
       'Healthcare': ['healthcare', 'medical', 'health', 'patient', 'clinical', 'pharmaceutical'],
@@ -54,7 +161,6 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
       'Real Estate': ['real estate', 'property', 'construction', 'building']
     };
 
-    // Extract industries based on content
     const detectedIndustries: string[] = [];
     Object.entries(industryKeywords).forEach(([industry, keywords]) => {
       if (keywords.some(keyword => combinedText.includes(keyword))) {
@@ -62,7 +168,6 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
       }
     });
 
-    // Extract product/service keywords
     const commonBusinessTerms = ['platform', 'solution', 'service', 'software', 'system', 'tool', 'application'];
     const extractedTags: string[] = [];
     commonBusinessTerms.forEach(term => {
@@ -71,7 +176,6 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
       }
     });
 
-    // Determine offering based on content
     let extractedOffering = '';
     if (combinedText.includes('saas') || combinedText.includes('software as a service')) {
       extractedOffering = 'Software as a service platform';
@@ -80,7 +184,6 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
     } else if (combinedText.includes('service')) {
       extractedOffering = 'Professional services';
     } else if (extractedDescription) {
-      // Use first sentence of description as offering
       const firstSentence = extractedDescription.split('.')[0];
       if (firstSentence && firstSentence.length < 100) {
         extractedOffering = firstSentence;
@@ -108,8 +211,8 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
       console.log('Analyzing website:', website);
       const scrapedData = await analyzeCompanyWebsite(website);
       
-      if (scrapedData?.textContent) {
-        console.log('Website content scraped successfully');
+      if (scrapedData) {
+        console.log('Website analysis completed successfully');
         console.log('Extracting company data from response...');
         
         // Extract and populate form data from the API response
