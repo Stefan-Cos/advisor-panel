@@ -246,33 +246,20 @@ export class BuyerRelationshipService {
    */
   static async getRelationshipStats(): Promise<RelationshipStats> {
     try {
-      // Use explicit any type for Supabase results to avoid deep instantiation
-      const totalQuery: Promise<any> = supabase
+      // Simple counting approach to avoid TypeScript deep instantiation
+      const { count: totalCount } = await supabase
         .from('matching')
-        .select('id', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true });
       
-      const linkedQuery: Promise<any> = supabase
+      const { count: linkedCount } = await supabase
         .from('matching')
-        .select('id', { count: 'exact', head: true })
+        .select('*', { count: 'exact', head: true })
         .not('buyer_id', 'is', null);
       
-      const [totalResult, linkedResult] = await Promise.all([totalQuery, linkedQuery]);
-      
-      if (totalResult.error || linkedResult.error) {
-        console.error('Error getting relationship stats:', totalResult.error || linkedResult.error);
-        return {
-          totalMatching: 0,
-          linkedRecords: 0,
-          unlinkedRecords: 0,
-          linkageRate: 0
-        };
-      }
-      
-      // Explicitly type the numbers
-      const totalMatching: number = totalResult.count ?? 0;
-      const linkedRecords: number = linkedResult.count ?? 0;
-      const unlinkedRecords: number = totalMatching - linkedRecords;
-      const linkageRate: number = totalMatching > 0 ? Math.round((linkedRecords / totalMatching * 100) * 100) / 100 : 0;
+      const totalMatching = totalCount || 0;
+      const linkedRecords = linkedCount || 0;
+      const unlinkedRecords = totalMatching - linkedRecords;
+      const linkageRate = totalMatching > 0 ? Math.round((linkedRecords / totalMatching * 100) * 100) / 100 : 0;
       
       return {
         totalMatching,
