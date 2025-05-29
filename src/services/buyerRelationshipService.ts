@@ -105,10 +105,25 @@ export class BuyerRelationshipService {
     linkageRate: number;
   }> {
     try {
-      // Use separate simple queries to avoid complex type inference
-      const { data: allRecords } = await supabase
+      // Explicitly type the response to avoid type inference issues
+      type MatchingRecord = {
+        buyer_id: string | null;
+      };
+      
+      const { data: allRecords, error } = await supabase
         .from('matching')
-        .select('buyer_id');
+        .select('buyer_id')
+        .returns<MatchingRecord[]>();
+      
+      if (error) {
+        console.error('Error fetching matching records:', error);
+        return {
+          totalMatching: 0,
+          linkedRecords: 0,
+          unlinkedRecords: 0,
+          linkageRate: 0
+        };
+      }
       
       if (!allRecords) {
         return {
@@ -120,7 +135,7 @@ export class BuyerRelationshipService {
       }
       
       const totalCount = allRecords.length;
-      const linkedCount = allRecords.filter(record => record.buyer_id !== null).length;
+      const linkedCount = allRecords.filter((record: MatchingRecord) => record.buyer_id !== null).length;
       const unlinkedRecords = totalCount - linkedCount;
       const linkageRate = totalCount ? (linkedCount / totalCount * 100) : 0;
       
