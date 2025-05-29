@@ -97,16 +97,14 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     // Filter by active tab
     filtered = filtered.filter(buyer => buyer.type === activeTab);
 
-    // Filter by search value - now properly searching company name
+    // Filter by search value - searching buyer name and description
     if (searchValue) {
       const searchTerm = searchValue.toLowerCase().trim();
       filtered = filtered.filter(buyer => {
         const buyerName = (buyer.name || '').toLowerCase();
-        const companyName = (buyer.company_name || '').toLowerCase();
         const description = (buyer.description || '').toLowerCase();
         
         return buyerName.includes(searchTerm) || 
-               companyName.includes(searchTerm) || 
                description.includes(searchTerm);
       });
     }
