@@ -12,11 +12,13 @@ const MatchScoreCell: React.FC<MatchScoreCellProps> = ({ matchingScore }) => {
   
   // Handle various input types and normalize to nearest 100s
   let numericScore = 0;
-  if (typeof matchingScore === 'number' && !isNaN(matchingScore)) {
-    numericScore = matchingScore;
-  } else if (typeof matchingScore === 'string') {
+  
+  // Convert to string first to handle all cases uniformly
+  const scoreStr = String(matchingScore);
+  
+  if (scoreStr && scoreStr !== 'undefined' && scoreStr !== 'null') {
     // Remove commas and parse
-    const cleaned = matchingScore.replace(/,/g, '');
+    const cleaned = scoreStr.replace(/,/g, '');
     const parsed = parseFloat(cleaned);
     if (!isNaN(parsed)) {
       numericScore = parsed;
