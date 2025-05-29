@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface MatchingBuyer {
@@ -83,9 +82,16 @@ export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
       });
     }
     
-    console.log(`Successfully fetched ${data?.length || 0} records from matching table:`, data);
+    // Sort by Total III in descending order after fetching
+    const sortedData = data?.sort((a, b) => {
+      const scoreA = parseMatchScore(a["Total III"]);
+      const scoreB = parseMatchScore(b["Total III"]);
+      return scoreB - scoreA; // Descending order
+    });
+    
+    console.log(`Successfully fetched ${sortedData?.length || 0} records from matching table:`, sortedData);
     console.log('=== END MATCHING SERVICE DEBUGGING ===');
-    return data || [];
+    return sortedData || [];
   } catch (error) {
     console.error('Exception in getBuyersFromMatching:', error);
     console.log('Exception details:', {
@@ -172,38 +178,29 @@ export const getLinkedBuyerData = async () => {
   }
 };
 
-// Helper function to parse match score from Total III
+// Helper function to parse match score from Total III - preserving actual values
 const parseMatchScore = (scoreStr: string | undefined): number => {
-  if (!scoreStr) return 75;
+  if (!scoreStr) return 0;
   
   // Remove commas and parse as number
   const cleanedScore = scoreStr.toString().replace(/,/g, '');
   const parsed = parseFloat(cleanedScore);
   
-  if (isNaN(parsed)) return 75;
+  if (isNaN(parsed)) return 0;
   
-  // Convert to percentage if it's a large number (like 1,500)
-  if (parsed > 100) {
-    return Math.min(Math.round(parsed / 20), 100); // Scale down large numbers to percentage
-  }
-  
-  return Math.round(parsed);
+  // Return the actual score without converting to percentage
+  return parsed;
 };
 
 export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): any => {
-  // Parse match score from Total III field
-  let matchScore = 75; // default
+  // Parse match score from Total III field - keep actual value
+  let matchScore = 0; // default
   if (buyer["Total III"]) {
     const scoreStr = buyer["Total III"].toString();
     const cleanedScore = scoreStr.replace(/,/g, '');
     const parsed = parseFloat(cleanedScore);
     if (!isNaN(parsed)) {
-      // Convert to percentage if it's a large number
-      if (parsed > 100) {
-        matchScore = Math.min(Math.round(parsed / 20), 100);
-      } else {
-        matchScore = Math.round(parsed);
-      }
+      matchScore = parsed; // Keep the actual score, don't convert to percentage
     }
   }
 
@@ -228,7 +225,7 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
     offering: buyer["Offering Combined"] || buyer["Short Description"] || 'N/A',
     sectors: [],
     customers: 'N/A',
-    matching_score: matchScore,
+    matching_score: matchScore, // Use actual Total III score
     status: 'active',
     primary_industries: [],
     keywords: [],
@@ -254,7 +251,7 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
         customers: buyer["Customers"] || 65,
         previousTransactions: buyer["Sector"] || 70,
         financialStrength: buyer["Positioning"] || 68,
-        overall: matchScore
+        overall: matchScore // Use actual score here too
       }
     },
     // Add the combined offering for easy access
