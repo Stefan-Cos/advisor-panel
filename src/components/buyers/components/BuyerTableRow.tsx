@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { TableCell, TableRow } from "@/components/ui/table";
 import { Buyer } from '../types/BuyerTypes';
@@ -5,7 +6,6 @@ import SaveButton from './SaveButton';
 import MatchScoreCell from './MatchScoreCell';
 import CompanyNameCell from './CompanyNameCell';
 import MATrackRecordCell from './MATrackRecordCell';
-import RationaleCell from './RationaleCell';
 import BuyerRationaleSheet from './BuyerRationaleSheet';
 import MATrackRecordPanel from './MATrackRecordPanel';
 import { getSampleRationale } from './sampleRationales';
@@ -45,22 +45,6 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
   const sampleRationale = getSampleRationale(index);
   const isSaved = savedBuyers.includes(buyer.id);
   
-  // Safely extract rationale text to ensure we're always dealing with strings
-  const getRationaleText = (rationale: any): string => {
-    if (!rationale) return '';
-    // If rationale is a string, just return it
-    if (typeof rationale === 'string') return rationale;
-    // If rationale is an object with text property, return the text as string
-    if (typeof rationale === 'object' && rationale.text) {
-      return typeof rationale.text === 'string' ? rationale.text : rationale.text?.toString() || '';
-    }
-    // Default case - convert to string or return empty string
-    return rationale.toString ? rationale.toString() : '';
-  };
-  
-  // Get the overall rationale text safely
-  const overallRationaleText = buyer.rationale?.overall ? getRationaleText(buyer.rationale.overall) : '';
-
   // Safely handle employees field
   const getEmployeesDisplay = (employees: any): string => {
     if (employees === null || employees === undefined) return '0';
@@ -70,6 +54,15 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
       return isNaN(parsed) ? '0' : parsed.toLocaleString();
     }
     return '0';
+  };
+
+  // Get combined offering from buyer data
+  const getCombinedOffering = (): string => {
+    if (buyer.combinedOffering) return buyer.combinedOffering;
+    if (buyer.rationale?.overall && typeof buyer.rationale.overall === 'string') {
+      return buyer.rationale.overall;
+    }
+    return 'No offering information available';
   };
 
   return (
@@ -94,12 +87,16 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
         {/* Short Description Column */}
         <TableCell className="text-xs">{buyer.description || 'N/A'}</TableCell>
         
-        {/* Overall Rationale Column */}
-        <RationaleCell 
-          sampleRationale={sampleRationale} 
-          buyerRationale={overallRationaleText}
-          isInTop100={isInTop100}
-        />
+        {/* Combined Offering Column (replacing Overall Rationale) */}
+        <TableCell className="text-xs">
+          {isInTop100 ? (
+            getCombinedOffering()
+          ) : (
+            <span className="italic text-gray-400">
+              N/A - Combined offering available only for the top 100
+            </span>
+          )}
+        </TableCell>
         
         {/* M&A Track Record Column */}
         <MATrackRecordCell 

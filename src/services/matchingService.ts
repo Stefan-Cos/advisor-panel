@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface MatchingBuyer {
@@ -190,9 +189,9 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
   }
 
   return {
-    id: buyer["Buyer Name"] || buyer["Buyer Name2"] || `buyer-${Date.now()}`,
-    external_id: buyer["Buyer Name"] || buyer["Buyer Name2"] || `buyer-${Date.now()}`,
-    name: buyer["Buyer Name"] || buyer["Buyer Name2"] || "Unknown Buyer",
+    id: buyer["Company Name"] || buyer["Buyer Name"] || `buyer-${Date.now()}`,
+    external_id: buyer["Company Name"] || buyer["Buyer Name"] || `buyer-${Date.now()}`,
+    name: buyer["Company Name"] || buyer["Buyer Name"] || "Unknown Company",
     type: 'strategic', // Default to strategic, could be enhanced based on data
     description: buyer["Short Description"] || buyer["Offering Combined"] || 'No description available',
     long_description: buyer["Offering Combined"] || buyer["Short Description"],
@@ -226,7 +225,7 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
     industry_focus: 'N/A',
     industry_preferences: [],
     rationale: {
-      overall: buyer["Overall Rationale"] || 'Strong strategic alignment based on matching criteria.',
+      overall: buyer["Offering Combined"] || 'Strong strategic alignment based on matching criteria.',
       offering: buyer["Offering Rationale"] || 'Good offering alignment.',
       customers: buyer["Customers Rationale"] || 'Customer base aligns well.',
       financialStrength: buyer["Financial Strenght Rationale"] || 'Strong financial profile.',
@@ -238,6 +237,8 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
         financialStrength: buyer["Positioning"] || 68,
         overall: matchScore
       }
-    }
+    },
+    // Add the combined offering for easy access
+    combinedOffering: buyer["Offering Combined"] || 'No offering information available'
   };
 };

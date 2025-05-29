@@ -5,19 +5,19 @@ import { TableHead, TableHeader, TableRow } from "@/components/ui/table";
 const BuyerTableHeader: React.FC = () => {
   return (
     <TableHeader>
-      <TableRow className="bg-blueknight-500">
-        <TableHead className="text-white font-medium w-[120px]">
+      <TableRow>
+        <TableHead className="w-20 text-center sticky left-0 z-20 bg-white">
           Match Score
         </TableHead>
-        <TableHead className="text-white font-medium w-[180px] sticky left-0 z-20 bg-blueknight-500">
+        <TableHead className="w-48 sticky left-20 z-20 bg-white">
           Company Name
         </TableHead>
-        <TableHead className="text-white font-medium w-[120px]">HQ</TableHead>
-        <TableHead className="text-white font-medium w-[120px]">Employees</TableHead>
-        <TableHead className="text-white font-medium w-[250px]">Short Description</TableHead>
-        <TableHead className="text-white font-medium w-[300px]">Overall Rationale</TableHead>
-        <TableHead className="text-white font-medium w-[150px]">M&A Track Record</TableHead>
-        <TableHead className="text-white font-medium w-[80px] text-center">Save</TableHead>
+        <TableHead className="w-32">HQ</TableHead>
+        <TableHead className="w-28">Employees</TableHead>
+        <TableHead className="w-64">Short Description</TableHead>
+        <TableHead className="w-80">Combined Offering</TableHead>
+        <TableHead className="w-32">M&A Track Record</TableHead>
+        <TableHead className="w-20 text-center">Save</TableHead>
       </TableRow>
     </TableHeader>
   );
