@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { X, Search } from 'lucide-react';
 import { Input } from "@/components/ui/input";
@@ -52,11 +51,12 @@ const BlueKnightFilterSidebar: React.FC<BlueKnightFilterSidebarProps> = ({
     });
   };
 
-  const handleNestedFieldChange = (category: string, field: string, value: string) => {
+  const handleNestedFieldChange = (category: 'employees' | 'revenue' | 'cash', field: 'min' | 'max', value: string) => {
+    const currentCategory = filters[category];
     onFiltersChange({
       ...filters,
       [category]: {
-        ...filters[category as keyof FilterState],
+        ...currentCategory,
         [field]: value
       }
     });
