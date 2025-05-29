@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { MatchedBuyersService } from '@/services/matchedBuyersService';
@@ -71,7 +72,8 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     
     try {
       const matchedBuyers = await MatchedBuyersService.getMatchedBuyers();
-      setAllBuyers(matchedBuyers);
+      console.log('Loaded buyers:', matchedBuyers);
+      setAllBuyers(matchedBuyers || []);
     } catch (error) {
       console.error('Error loading matched buyers:', error);
       toast({
@@ -92,7 +94,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
 
   // Apply all filters (search, tab, and advanced filters)
   useEffect(() => {
-    let filtered = allBuyers;
+    let filtered = allBuyers || [];
 
     // Filter by active tab
     filtered = filtered.filter(buyer => buyer.type === activeTab);
@@ -175,12 +177,12 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
       });
     }
 
-    setFilteredBuyers(filtered);
+    setFilteredBuyers(filtered || []);
   }, [allBuyers, activeTab, searchValue, filters]);
   
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
-      setSavedBuyers([...savedBuyers, buyerId]);
+      setSavedBuyers(prev => [...(prev || []), buyerId]);
       const buyer = filteredBuyers.find(b => b.id === buyerId);
       toast({
         title: "Buyer Saved",
@@ -190,11 +192,12 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
   };
 
   const toggleRationale = (buyerId: string) => {
-    setExpandedRationales(prev => 
-      prev.includes(buyerId) 
-        ? prev.filter(id => id !== buyerId) 
-        : [...prev, buyerId]
-    );
+    setExpandedRationales(prev => {
+      const currentExpanded = prev || [];
+      return currentExpanded.includes(buyerId) 
+        ? currentExpanded.filter(id => id !== buyerId) 
+        : [...currentExpanded, buyerId];
+    });
   };
 
   const toggleFilterSidebar = () => {
@@ -262,7 +265,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
             <BuyerTabs 
               activeTab={activeTab} 
               setActiveTab={setActiveTab}
-              buyers={allBuyers}
+              buyers={allBuyers || []}
             />
           </div>
           
@@ -284,9 +287,9 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
             <>
               {activeTab === 'strategic' ? (
                 <StrategicBuyerTable 
-                  buyers={filteredBuyers}
-                  savedBuyers={savedBuyers}
-                  expandedRationales={expandedRationales}
+                  buyers={filteredBuyers || []}
+                  savedBuyers={savedBuyers || []}
+                  expandedRationales={expandedRationales || []}
                   onAddToSaved={handleAddToSaved}
                   toggleRationale={toggleRationale}
                   getMATrackRecordColor={getMATrackRecordColor}
@@ -294,9 +297,9 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
                 />
               ) : (
                 <PEBuyerTable
-                  buyers={filteredBuyers}
-                  savedBuyers={savedBuyers}
-                  expandedRationales={expandedRationales}
+                  buyers={filteredBuyers || []}
+                  savedBuyers={savedBuyers || []}
+                  expandedRationales={expandedRationales || []}
                   onAddToSaved={handleAddToSaved}
                   toggleRationale={toggleRationale}
                   listingId={listingId}
