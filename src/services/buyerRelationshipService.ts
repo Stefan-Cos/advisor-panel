@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -24,6 +23,19 @@ function normalizeWebsite(website: string | null | undefined): string {
   return normalized;
 }
 
+// Define explicit types to avoid deep instantiation
+interface RelationshipStats {
+  totalMatching: number;
+  linkedRecords: number;
+  unlinkedRecords: number;
+  linkageRate: number;
+}
+
+interface UpdateResult {
+  updated: number;
+  errors: string[];
+}
+
 /**
  * Service for managing relationships between matching records and buyers
  */
@@ -32,7 +44,7 @@ export class BuyerRelationshipService {
   /**
    * Updates buyer relationships using website matching first, then name matching
    */
-  static async updateAllRelationships(): Promise<{ updated: number; errors: string[] }> {
+  static async updateAllRelationships(): Promise<UpdateResult> {
     try {
       console.log('Starting comprehensive buyer relationship update...');
       
@@ -61,7 +73,7 @@ export class BuyerRelationshipService {
   /**
    * Updates buyer relationships using website matching
    */
-  static async updateRelationshipsByWebsite(): Promise<{ updated: number; errors: string[] }> {
+  static async updateRelationshipsByWebsite(): Promise<UpdateResult> {
     try {
       console.log('Starting website-based buyer relationship update...');
       
@@ -143,7 +155,7 @@ export class BuyerRelationshipService {
   /**
    * Updates buyer relationships using name matching (fallback method)
    */
-  static async updateRelationshipsByName(): Promise<{ updated: number; errors: string[] }> {
+  static async updateRelationshipsByName(): Promise<UpdateResult> {
     try {
       console.log('Starting name-based buyer relationship update...');
       
@@ -232,20 +244,22 @@ export class BuyerRelationshipService {
   /**
    * Gets statistics about the current relationship state
    */
-  static async getRelationshipStats() {
+  static async getRelationshipStats(): Promise<RelationshipStats> {
     try {
-      // Use simple manual counting to avoid TypeScript deep instantiation issues
-      const { data: totalData, error: totalError } = await supabase
+      // Use explicit any type for Supabase results to avoid deep instantiation
+      const totalQuery: Promise<any> = supabase
         .from('matching')
-        .select('id');
+        .select('id', { count: 'exact', head: true });
       
-      const { data: linkedData, error: linkedError } = await supabase
+      const linkedQuery: Promise<any> = supabase
         .from('matching')
-        .select('id')
+        .select('id', { count: 'exact', head: true })
         .not('buyer_id', 'is', null);
       
-      if (totalError || linkedError) {
-        console.error('Error getting relationship stats:', totalError || linkedError);
+      const [totalResult, linkedResult] = await Promise.all([totalQuery, linkedQuery]);
+      
+      if (totalResult.error || linkedResult.error) {
+        console.error('Error getting relationship stats:', totalResult.error || linkedResult.error);
         return {
           totalMatching: 0,
           linkedRecords: 0,
@@ -254,16 +268,17 @@ export class BuyerRelationshipService {
         };
       }
       
-      const totalMatching: number = totalData?.length || 0;
-      const linkedRecords: number = linkedData?.length || 0;
+      // Explicitly type the numbers
+      const totalMatching: number = totalResult.count ?? 0;
+      const linkedRecords: number = linkedResult.count ?? 0;
       const unlinkedRecords: number = totalMatching - linkedRecords;
-      const linkageRate: number = totalMatching ? (linkedRecords / totalMatching * 100) : 0;
+      const linkageRate: number = totalMatching > 0 ? Math.round((linkedRecords / totalMatching * 100) * 100) / 100 : 0;
       
       return {
         totalMatching,
         linkedRecords,
         unlinkedRecords,
-        linkageRate: Math.round(linkageRate * 100) / 100
+        linkageRate
       };
     } catch (error) {
       console.error('Error getting relationship stats:', error);
