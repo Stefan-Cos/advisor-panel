@@ -21,6 +21,7 @@ export interface MatchingBuyer {
   "Total III": string;
   "Company Name": string;
   buyerrr?: string;
+  buyer_id?: string; // New field for foreign key relationship
 }
 
 export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
@@ -103,41 +104,41 @@ export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
   }
 };
 
-// New function to get linked buyer data by merging matching and buyers tables
+// Enhanced function to get linked buyer data using the new foreign key relationship
 export const getLinkedBuyerData = async () => {
   try {
-    console.log('Fetching linked buyer data from both tables...');
+    console.log('Fetching linked buyer data using foreign key relationships...');
     
-    // Get all matching records
-    const matchingBuyers = await getBuyersFromMatching();
+    // Get matching records with their linked buyers using the new buyer_id foreign key
+    const { data: matchingWithBuyers, error: matchingError } = await supabase
+      .from('matching')
+      .select(`
+        *,
+        buyers!buyer_id (*)
+      `)
+      .order('Total III', { ascending: false, nullsFirst: false });
     
-    if (matchingBuyers.length === 0) {
-      console.log('No matching data found, returning empty array');
-      return [];
+    if (matchingError) {
+      console.error('Error fetching linked data:', matchingError);
+      // Fallback to old method if new relationship fails
+      return await getLinkedBuyerDataFallback();
     }
     
-    // Get all buyers from the buyers table
-    const { data: buyersData, error: buyersError } = await supabase
-      .from('buyers')
-      .select('*');
+    console.log(`Found ${matchingWithBuyers?.length || 0} matching records with buyer relationships`);
     
-    if (buyersError) {
-      console.error('Error fetching buyers table:', buyersError);
-      return matchingBuyers.map(buyer => transformMatchingBuyerToComponentFormat(buyer));
+    if (!matchingWithBuyers || matchingWithBuyers.length === 0) {
+      console.log('No linked data found, falling back to name-based matching');
+      return await getLinkedBuyerDataFallback();
     }
     
-    console.log(`Found ${buyersData?.length || 0} buyers in buyers table`);
-    
-    // Link matching data with buyers data
-    const linkedData = matchingBuyers.map(matchingBuyer => {
-      // Try to find matching buyer by name
-      const linkedBuyer = buyersData?.find(buyer => {
-        const matchingName = matchingBuyer["Company Name"] || matchingBuyer["Buyer Name"] || '';
-        return buyer.name.toLowerCase().trim() === matchingName.toLowerCase().trim();
-      });
+    // Transform the linked data
+    const linkedData = matchingWithBuyers.map(matchingRecord => {
+      const matchingBuyer = matchingRecord as MatchingBuyer;
+      const linkedBuyer = matchingRecord.buyers;
       
       if (linkedBuyer) {
-        console.log(`Linked matching record "${matchingBuyer["Company Name"]}" with buyer "${linkedBuyer.name}"`);
+        console.log(`Successfully linked matching record "${matchingBuyer["Company Name"]}" with buyer "${linkedBuyer.name}"`);
+        
         // Merge the data, prioritizing matching table for scores and rationale
         return {
           ...linkedBuyer,
@@ -163,17 +164,90 @@ export const getLinkedBuyerData = async () => {
           combinedOffering: matchingBuyer["Offering Combined"] || 'No offering information available'
         };
       } else {
-        console.log(`No buyer found for matching record "${matchingBuyer["Company Name"]}", using transformed data`);
-        // If no buyer found, use transformed matching data
+        console.log(`No linked buyer found for matching record "${matchingBuyer["Company Name"]}", using transformed data`);
         return transformMatchingBuyerToComponentFormat(matchingBuyer);
       }
     });
     
-    console.log(`Successfully linked ${linkedData.length} buyer records`);
+    console.log(`Successfully linked ${linkedData.length} buyer records using foreign key relationships`);
     return linkedData;
     
   } catch (error) {
     console.error('Error in getLinkedBuyerData:', error);
+    // Fallback to old method if there's an error
+    return await getLinkedBuyerDataFallback();
+  }
+};
+
+// Fallback function that uses the old name-based matching approach
+const getLinkedBuyerDataFallback = async () => {
+  try {
+    console.log('Using fallback name-based matching...');
+    
+    // Get all matching records
+    const matchingBuyers = await getBuyersFromMatching();
+    
+    if (matchingBuyers.length === 0) {
+      console.log('No matching data found, returning empty array');
+      return [];
+    }
+    
+    // Get all buyers from the buyers table
+    const { data: buyersData, error: buyersError } = await supabase
+      .from('buyers')
+      .select('*');
+    
+    if (buyersError) {
+      console.error('Error fetching buyers table:', buyersError);
+      return matchingBuyers.map(buyer => transformMatchingBuyerToComponentFormat(buyer));
+    }
+    
+    console.log(`Found ${buyersData?.length || 0} buyers in buyers table`);
+    
+    // Link matching data with buyers data using name matching
+    const linkedData = matchingBuyers.map(matchingBuyer => {
+      // Try to find matching buyer by name
+      const linkedBuyer = buyersData?.find(buyer => {
+        const matchingName = matchingBuyer["Company Name"] || matchingBuyer["Buyer Name"] || '';
+        return buyer.name.toLowerCase().trim() === matchingName.toLowerCase().trim();
+      });
+      
+      if (linkedBuyer) {
+        console.log(`Linked matching record "${matchingBuyer["Company Name"]}" with buyer "${linkedBuyer.name}" via name matching`);
+        // Merge the data, prioritizing matching table for scores and rationale
+        return {
+          ...linkedBuyer,
+          matching_score: parseMatchScore(matchingBuyer["Total III"]),
+          rationale: {
+            overall: matchingBuyer["Overall Rationale"] || 'Strong strategic alignment based on matching criteria.',
+            offering: matchingBuyer["Offering Rationale"] || 'Good offering alignment.',
+            customers: matchingBuyer["Customers Rationale"] || 'Customer base aligns well.',
+            financialStrength: matchingBuyer["Financial Strenght Rationale"] || 'Strong financial profile.',
+            previousTransactions: matchingBuyer["Prev Transactions Rationale"] || 'Good transaction history.',
+            scores: {
+              offering: matchingBuyer["Offering"] || 75,
+              customers: matchingBuyer["Customers"] || 65,
+              previousTransactions: matchingBuyer["Sector"] || 70,
+              financialStrength: matchingBuyer["Positioning"] || 68,
+              overall: parseMatchScore(matchingBuyer["Total III"])
+            }
+          },
+          description: matchingBuyer["Short Description"] || linkedBuyer.description,
+          offering: matchingBuyer["Offering Combined"] || linkedBuyer.offering,
+          website: matchingBuyer["Company Website"] || linkedBuyer.website,
+          combinedOffering: matchingBuyer["Offering Combined"] || 'No offering information available'
+        };
+      } else {
+        console.log(`No buyer found for matching record "${matchingBuyer["Company Name"]}" via name matching, using transformed data`);
+        return transformMatchingBuyerToComponentFormat(matchingBuyer);
+      }
+    });
+    
+    console.log(`Successfully linked ${linkedData.length} buyer records via fallback method`);
+    return linkedData;
+    
+  } catch (error) {
+    console.error('Error in getLinkedBuyerDataFallback:', error);
     return [];
   }
 };
@@ -257,4 +331,25 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
     // Add the combined offering for easy access
     combinedOffering: buyer["Offering Combined"] || 'No offering information available'
   };
+};
+
+// New function to update buyer relationships in the matching table
+export const updateMatchingBuyerRelationships = async () => {
+  try {
+    console.log('Updating matching table buyer relationships...');
+    
+    // Call the database function to update relationships
+    const { data, error } = await supabase.rpc('find_and_update_buyer_relationships');
+    
+    if (error) {
+      console.error('Error updating buyer relationships:', error);
+      return false;
+    }
+    
+    console.log('Successfully updated buyer relationships');
+    return true;
+  } catch (error) {
+    console.error('Exception updating buyer relationships:', error);
+    return false;
+  }
 };

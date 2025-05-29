@@ -225,6 +225,7 @@ export type Database = {
           ebitda: string | null
           employee_history: Json | null
           employees: number | null
+          external_company_name: string | null
           external_id: string
           financing_status: string | null
           fiscal_period: string | null
@@ -326,6 +327,7 @@ export type Database = {
           ebitda?: string | null
           employee_history?: Json | null
           employees?: number | null
+          external_company_name?: string | null
           external_id: string
           financing_status?: string | null
           fiscal_period?: string | null
@@ -427,6 +429,7 @@ export type Database = {
           ebitda?: string | null
           employee_history?: Json | null
           employees?: number | null
+          external_company_name?: string | null
           external_id?: string
           financing_status?: string | null
           fiscal_period?: string | null
@@ -608,6 +611,7 @@ export type Database = {
         Row: {
           "Buyer Name": string | null
           "Buyer Name2": string | null
+          buyer_id: string | null
           buyerrr: string | null
           "Company Name": string | null
           "Company Website": string | null
@@ -630,6 +634,7 @@ export type Database = {
         Insert: {
           "Buyer Name"?: string | null
           "Buyer Name2"?: string | null
+          buyer_id?: string | null
           buyerrr?: string | null
           "Company Name"?: string | null
           "Company Website"?: string | null
@@ -652,6 +657,7 @@ export type Database = {
         Update: {
           "Buyer Name"?: string | null
           "Buyer Name2"?: string | null
+          buyer_id?: string | null
           buyerrr?: string | null
           "Company Name"?: string | null
           "Company Website"?: string | null
@@ -671,7 +677,15 @@ export type Database = {
           "Total III"?: string | null
           "Use Case"?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "matching_buyer_id_fkey"
+            columns: ["buyer_id"]
+            isOneToOne: false
+            referencedRelation: "buyers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       projects: {
         Row: {
@@ -1063,7 +1077,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      find_buyer_by_name: {
+        Args: { company_name: string }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never
