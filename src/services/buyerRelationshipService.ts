@@ -20,7 +20,7 @@ export class BuyerRelationshipService {
         .insert({
           buyer_id: buyerId,
           project_id: projectId,
-          relationship_type: 'saved',
+          buyer_data: {},
           notes: notes || null
         });
       

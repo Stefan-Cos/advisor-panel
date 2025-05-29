@@ -140,7 +140,7 @@ export class MatchedBuyersService {
         }
       }));
       
-      // Remove duplicates based on buyer_table_id and company name
+      // Remove duplicates based on buyer_table_id, company name, and buyer_table_name
       const uniqueBuyers = this.removeDuplicates(transformedBuyers);
       
       console.log(`Removed ${transformedBuyers.length - uniqueBuyers.length} duplicates, returning ${uniqueBuyers.length} unique buyers`);
@@ -154,19 +154,30 @@ export class MatchedBuyersService {
   }
   
   /**
-   * Remove duplicate buyers based on ID and name
+   * Remove duplicate buyers based on ID and company name
    */
   private static removeDuplicates(buyers: Buyer[]): Buyer[] {
     const seen = new Set<string>();
     const uniqueBuyers: Buyer[] = [];
     
     for (const buyer of buyers) {
-      // Create a unique key based on buyer ID and name (normalized)
+      // Create multiple unique keys to check for duplicates
       const normalizedName = buyer.name?.toLowerCase().trim() || '';
-      const uniqueKey = `${buyer.id || 'no-id'}-${normalizedName}`;
+      const buyerId = buyer.id || 'no-id';
       
-      if (!seen.has(uniqueKey)) {
-        seen.add(uniqueKey);
+      // Create unique keys for different scenarios
+      const uniqueKeys = [
+        `id-${buyerId}`,
+        `name-${normalizedName}`,
+        `id-name-${buyerId}-${normalizedName}`
+      ];
+      
+      // Check if any of the unique keys have been seen before
+      const isDuplicate = uniqueKeys.some(key => seen.has(key));
+      
+      if (!isDuplicate && normalizedName !== '') {
+        // Add all unique keys to the seen set
+        uniqueKeys.forEach(key => seen.add(key));
         uniqueBuyers.push(buyer);
       }
     }
