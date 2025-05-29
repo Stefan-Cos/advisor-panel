@@ -18,6 +18,7 @@ export interface Buyer {
   sector?: string; // Added for backward compatibility
   maTrackRecord?: string; // Added for backward compatibility
   offering?: string;
+  combinedOffering?: string; // Added for combined offering from matching table
   sectors?: string[];
   customers?: string;
   rationale: {
