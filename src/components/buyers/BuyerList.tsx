@@ -74,10 +74,6 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
           </div>
         </div>
         
-        <div className="mb-4">
-          <BuyerSearch searchValue={searchValue} onSearchChange={setSearchValue} />
-        </div>
-        
         {showFilters && (
           <BuyerFilter onFilterApply={handleFilterApply} onClose={() => setShowFilters(false)} />
         )}
@@ -90,6 +86,8 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
             onAddToSaved={handleAddToSaved}
             toggleRationale={toggleRationale}
             getMATrackRecordColor={getMATrackRecordColor}
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
           />
         ) : (
           <PEBuyerTable
@@ -98,6 +96,8 @@ const BuyerList: React.FC<BuyerListProps> = ({ listingId }) => {
             expandedRationales={expandedRationales}
             onAddToSaved={handleAddToSaved}
             toggleRationale={toggleRationale}
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
           />
         )}
         

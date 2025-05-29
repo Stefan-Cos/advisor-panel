@@ -35,9 +35,15 @@ const BuyerTables: React.FC<BuyerTablesProps> = ({
   toggleRationale,
   handleAddToSaved
 }) => {
-  const filteredBuyers = buyers.filter(buyer => 
-    buyer.name.toLowerCase().includes(companyNameSearch.toLowerCase())
-  );
+  // Filter buyers by company name search
+  const filteredBuyers = buyers.filter(buyer => {
+    if (!companyNameSearch) return true;
+    const searchTerm = companyNameSearch.toLowerCase();
+    const buyerName = (buyer.name || '').toLowerCase();
+    const buyerCompanyName = (buyer.company_name || '').toLowerCase();
+    
+    return buyerName.includes(searchTerm) || buyerCompanyName.includes(searchTerm);
+  });
 
   // Function to determine color based on M&A track record
   const getMATrackRecordColor = (record: string): string => {
@@ -125,6 +131,12 @@ const BuyerTables: React.FC<BuyerTablesProps> = ({
           </Table>
         </div>
       </ScrollArea>
+      
+      {formattedBuyers.length === 0 && companyNameSearch && (
+        <div className="text-center py-8 text-gray-500">
+          No buyers found matching "{companyNameSearch}"
+        </div>
+      )}
     </>
   );
 };
