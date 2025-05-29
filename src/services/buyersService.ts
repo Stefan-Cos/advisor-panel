@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { getBuyersFromMatching, transformMatchingBuyerToComponentFormat } from './matchingService';
 
@@ -118,7 +119,7 @@ export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<Databas
           id: transformed.id,
           external_id: transformed.id,
           name: transformed.name,
-          type: type, // Use the requested type
+          type: type as 'strategic' | 'pe', // Properly cast the type
           description: transformed.description,
           long_description: transformed.longDescription,
           hq: transformed.hq,
@@ -153,7 +154,7 @@ export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<Databas
           rationale: transformed.rationale,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        };
+        } as DatabaseBuyer;
       });
       
       console.log(`Loaded ${transformedBuyers.length} buyers from matching table for type: ${type}`);
@@ -192,7 +193,7 @@ export const getAllBuyers = async (): Promise<DatabaseBuyer[]> => {
           id: transformed.id,
           external_id: transformed.id,
           name: transformed.name,
-          type: 'strategic', // Default type since matching table doesn't specify
+          type: 'strategic' as 'strategic' | 'pe', // Properly cast the type
           description: transformed.description,
           long_description: transformed.longDescription,
           hq: transformed.hq,
@@ -227,7 +228,7 @@ export const getAllBuyers = async (): Promise<DatabaseBuyer[]> => {
           rationale: transformed.rationale,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        };
+        } as DatabaseBuyer;
       });
       
       console.log(`Loaded ${transformedBuyers.length} buyers from matching table`);
