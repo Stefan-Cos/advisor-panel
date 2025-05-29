@@ -21,7 +21,19 @@ interface FilterState {
     min: string;
     max: string;
   };
+  revenue: {
+    min: string;
+    max: string;
+  };
+  cash: {
+    min: string;
+    max: string;
+  };
+  isPEVCBacked: string;
+  minimumFitScore: string;
   offering: string;
+  sectors: string;
+  customers: string;
 }
 
 const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
@@ -39,7 +51,19 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
       min: '',
       max: ''
     },
-    offering: ''
+    revenue: {
+      min: '',
+      max: ''
+    },
+    cash: {
+      min: '',
+      max: ''
+    },
+    isPEVCBacked: '',
+    minimumFitScore: '',
+    offering: '',
+    sectors: '',
+    customers: ''
   });
   
   // Load buyer data from the new matched_buyers table
@@ -90,19 +114,61 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
       });
     }
 
-    if (filters.employees.min || filters.employees.max) {
+    if (filters.employees.min) {
       filtered = filtered.filter(buyer => {
         const employees = buyer.employees || 0;
-        const min = filters.employees.min ? parseInt(filters.employees.min) : 0;
-        const max = filters.employees.max ? parseInt(filters.employees.max) : Infinity;
-        return employees >= min && employees <= max;
+        const min = parseInt(filters.employees.min);
+        return employees >= min;
+      });
+    }
+
+    if (filters.revenue.min) {
+      filtered = filtered.filter(buyer => {
+        const revenue = buyer.revenue || 0;
+        const min = parseFloat(filters.revenue.min) * 1000000; // Convert to actual value
+        return revenue >= min;
+      });
+    }
+
+    if (filters.cash.min) {
+      filtered = filtered.filter(buyer => {
+        const cash = buyer.cash || 0;
+        const min = parseFloat(filters.cash.min) * 1000000; // Convert to actual value
+        return cash >= min;
+      });
+    }
+
+    if (filters.isPEVCBacked) {
+      const isPEVCBacked = filters.isPEVCBacked === 'true';
+      filtered = filtered.filter(buyer => buyer.isPEVCBacked === isPEVCBacked);
+    }
+
+    if (filters.minimumFitScore) {
+      const minScore = parseInt(filters.minimumFitScore);
+      filtered = filtered.filter(buyer => {
+        const score = buyer.matchingScore || 0;
+        return score >= minScore;
       });
     }
 
     if (filters.offering) {
       filtered = filtered.filter(buyer => {
-        const combinedOffering = buyer.combinedOffering || buyer.rationale?.overall || '';
+        const combinedOffering = buyer.combinedOffering || buyer.offering || buyer.rationale?.overall || '';
         return combinedOffering.toLowerCase().includes(filters.offering.toLowerCase());
+      });
+    }
+
+    if (filters.sectors) {
+      filtered = filtered.filter(buyer => {
+        const sectors = buyer.sectors?.join(' ') || buyer.sector || '';
+        return sectors.toLowerCase().includes(filters.sectors.toLowerCase());
+      });
+    }
+
+    if (filters.customers) {
+      filtered = filtered.filter(buyer => {
+        const customers = buyer.customers || buyer.rationale?.customers || '';
+        return customers.toLowerCase().includes(filters.customers.toLowerCase());
       });
     }
 
@@ -146,7 +212,19 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
         min: '',
         max: ''
       },
-      offering: ''
+      revenue: {
+        min: '',
+        max: ''
+      },
+      cash: {
+        min: '',
+        max: ''
+      },
+      isPEVCBacked: '',
+      minimumFitScore: '',
+      offering: '',
+      sectors: '',
+      customers: ''
     });
     toast({
       title: "Filters Cleared",
@@ -175,7 +253,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
       />
 
       {/* Main content with conditional left margin */}
-      <div className={`transition-all duration-300 ${filterVisible ? 'ml-[300px]' : 'ml-0'}`}>
+      <div className={`transition-all duration-300 ${filterVisible ? 'ml-[280px]' : 'ml-0'}`}>
         <div className="bg-white shadow-sm rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <BuyerTabs 
