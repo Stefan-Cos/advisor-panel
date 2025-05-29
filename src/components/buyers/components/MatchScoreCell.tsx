@@ -7,10 +7,28 @@ interface MatchScoreCellProps {
 }
 
 const MatchScoreCell: React.FC<MatchScoreCellProps> = ({ matchingScore }) => {
+  // Add debugging to see what we're receiving
+  console.log('MatchScoreCell received matchingScore:', matchingScore, 'type:', typeof matchingScore);
+  
+  // Handle various input types and normalize to nearest 100s
+  let numericScore = 0;
+  if (typeof matchingScore === 'number' && !isNaN(matchingScore)) {
+    numericScore = matchingScore;
+  } else if (typeof matchingScore === 'string') {
+    // Remove commas and parse
+    const cleaned = matchingScore.replace(/,/g, '');
+    const parsed = parseFloat(cleaned);
+    if (!isNaN(parsed)) {
+      numericScore = parsed;
+    }
+  }
+  
   // Normalize to nearest 100s for display
-  const normalizedScore = Math.round(matchingScore / 100) * 100;
+  const normalizedScore = Math.round(numericScore / 100) * 100;
   const maxScore = 2000; // Approximate max based on console logs showing scores around 1800-1900
-  const percentage = Math.min((matchingScore / maxScore) * 100, 100);
+  const percentage = Math.min((numericScore / maxScore) * 100, 100);
+  
+  console.log('MatchScoreCell computed:', { numericScore, normalizedScore, percentage });
   
   return (
     <TableCell className="text-xs">
