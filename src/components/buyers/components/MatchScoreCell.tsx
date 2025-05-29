@@ -7,8 +7,8 @@ interface MatchScoreCellProps {
 }
 
 const MatchScoreCell: React.FC<MatchScoreCellProps> = ({ matchingScore }) => {
-  // For Total III scores, we display them as actual numbers, not percentages
-  const displayScore = Math.round(matchingScore);
+  // Normalize to nearest 100s for display
+  const normalizedScore = Math.round(matchingScore / 100) * 100;
   const maxScore = 2000; // Approximate max based on console logs showing scores around 1800-1900
   const percentage = Math.min((matchingScore / maxScore) * 100, 100);
   
@@ -22,7 +22,7 @@ const MatchScoreCell: React.FC<MatchScoreCellProps> = ({ matchingScore }) => {
               style={{ width: `${percentage}%` }}
             />
           </div>
-          <span className="text-xs font-medium text-blueknight-500">{displayScore}</span>
+          <span className="text-xs font-medium text-blueknight-500">{normalizedScore}</span>
         </div>
       </div>
     </TableCell>
