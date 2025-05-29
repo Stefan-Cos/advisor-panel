@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { analyzeCompanyWebsite } from '@/services/companyProfilingService';
 
@@ -13,6 +14,27 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
   const [animatingFields, setAnimatingFields] = useState<string[]>([]);
   const [analysisComplete, setAnalysisComplete] = useState(false);
 
+  const isErrorResponse = (value: string): boolean => {
+    if (!value || typeof value !== 'string') return false;
+    
+    const errorIndicators = [
+      'Both Groq and OpenAI failed',
+      '429 Too Many Requests',
+      'Client error',
+      'Error',
+      'error',
+      'failed',
+      'No data available',
+      'n/a',
+      'none',
+      '(no output)',
+      '(no data)',
+      'agnostic'
+    ];
+    
+    return errorIndicators.some(indicator => value.includes(indicator));
+  };
+
   const extractCompanyDataFromResponse = (data: any) => {
     console.log('Extracting data from API response:', data);
     
@@ -20,9 +42,19 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
     if (data.groq_responses) {
       const responses = data.groq_responses;
       
+      // Check if any of the responses contain error messages
+      const hasErrors = Object.values(responses).some((value: any) => 
+        typeof value === 'string' && isErrorResponse(value)
+      );
+      
+      if (hasErrors) {
+        console.log('API responses contain errors, skipping form population');
+        return null; // Don't populate form with error data
+      }
+      
       // Extract company name from existing formData or try to parse from description
       let extractedCompanyName = formData.companyName;
-      if (responses.Company_Description && !extractedCompanyName) {
+      if (responses.Company_Description && !extractedCompanyName && !isErrorResponse(responses.Company_Description)) {
         // Try to extract company name from the first sentence
         const firstSentence = responses.Company_Description.split('.')[0];
         const words = firstSentence.split(' ');
@@ -33,13 +65,13 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
 
       // Parse industry categories
       const industries = [];
-      if (responses.Industry_Category) {
+      if (responses.Industry_Category && !isErrorResponse(responses.Industry_Category)) {
         industries.push(responses.Industry_Category);
       }
 
       // Parse product/service keywords
       const productTags = [];
-      if (responses["Product/Service_Keywords"]) {
+      if (responses["Product/Service_Keywords"] && !isErrorResponse(responses["Product/Service_Keywords"])) {
         const keywords = responses["Product/Service_Keywords"].split(';')
           .map(keyword => keyword.trim())
           .filter(keyword => keyword.length > 0);
@@ -48,7 +80,7 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
 
       // Parse delivery method from Go-To-Market info
       const deliveryMethods = [];
-      if (responses["Go-To-Market/Delivery_Method"]) {
+      if (responses["Go-To-Market/Delivery_Method"] && !isErrorResponse(responses["Go-To-Market/Delivery_Method"])) {
         const gtmText = responses["Go-To-Market/Delivery_Method"].toLowerCase();
         if (gtmText.includes('software') || gtmText.includes('saas')) {
           deliveryMethods.push("Cloud-based");
@@ -60,7 +92,7 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
 
       // Parse supply chain role
       const supplyChainRoles = [];
-      if (responses["Company_Position_in_Supply_Chain"]) {
+      if (responses["Company_Position_in_Supply_Chain"] && !isErrorResponse(responses["Company_Position_in_Supply_Chain"])) {
         const positionText = responses["Company_Position_in_Supply_Chain"].toLowerCase();
         if (positionText.includes('software')) {
           supplyChainRoles.push("Software Provider");
@@ -72,10 +104,10 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
 
       // Parse functional categories/use cases
       const useCases = [];
-      if (responses.Functional_Category) {
+      if (responses.Functional_Category && !isErrorResponse(responses.Functional_Category)) {
         useCases.push(responses.Functional_Category);
       }
-      if (responses["Use_Cases_and_End_Users"]) {
+      if (responses["Use_Cases_and_End_Users"] && !isErrorResponse(responses["Use_Cases_and_End_Users"])) {
         // Extract key use cases from the text
         const useCaseText = responses["Use_Cases_and_End_Users"];
         if (useCaseText.includes('sales coaching')) {
@@ -91,13 +123,13 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
 
       // Parse target customer industries
       const customerIndustries = [];
-      if (responses.Target_Customer_Industries) {
+      if (responses.Target_Customer_Industries && !isErrorResponse(responses.Target_Customer_Industries)) {
         customerIndustries.push(responses.Target_Customer_Industries);
       }
 
       // Parse customer type
       const customerTypes = [];
-      if (responses.Target_Customer_Type) {
+      if (responses.Target_Customer_Type && !isErrorResponse(responses.Target_Customer_Type)) {
         const typeText = responses.Target_Customer_Type.toLowerCase();
         if (typeText.includes('large enterprises')) {
           customerTypes.push("Enterprise");
@@ -109,18 +141,28 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
 
       return {
         companyName: extractedCompanyName,
-        description: responses.Company_Description || `${extractedCompanyName} provides innovative solutions in their industry.`,
+        description: (responses.Company_Description && !isErrorResponse(responses.Company_Description)) 
+          ? responses.Company_Description 
+          : `${extractedCompanyName} provides innovative solutions in their industry.`,
         industry: industries.length > 0 ? industries : ["Technology"],
-        offering: responses.Company_Offering || "Software solutions and services",
+        offering: (responses.Company_Offering && !isErrorResponse(responses.Company_Offering)) 
+          ? responses.Company_Offering 
+          : "Software solutions and services",
         productTags: productTags.length > 0 ? productTags : ["Platform", "Software"],
         deliveryMethod: deliveryMethods.length > 0 ? deliveryMethods : ["Cloud-based"],
         supplyChainRole: supplyChainRoles.length > 0 ? supplyChainRoles : ["Software Provider"],
         useCase: useCases.length > 0 ? useCases : ["Business Solutions"],
         // Problem & Use Case section
-        problemSolved: responses["Problem_Solved_Market_Pain_Point"] || "",
-        useCases: responses["Use_Cases_and_End_Users"] || "",
+        problemSolved: (responses["Problem_Solved_Market_Pain_Point"] && !isErrorResponse(responses["Problem_Solved_Market_Pain_Point"])) 
+          ? responses["Problem_Solved_Market_Pain_Point"] 
+          : "",
+        useCases: (responses["Use_Cases_and_End_Users"] && !isErrorResponse(responses["Use_Cases_and_End_Users"])) 
+          ? responses["Use_Cases_and_End_Users"] 
+          : "",
         // Target Customer section
-        targetCustomers: responses.Target_Customer_Description || "",
+        targetCustomers: (responses.Target_Customer_Description && !isErrorResponse(responses.Target_Customer_Description)) 
+          ? responses.Target_Customer_Description 
+          : "",
         customerType: customerTypes.length > 0 ? customerTypes : ["Enterprise"],
         customerIndustries: customerIndustries.length > 0 ? customerIndustries : ["Technology"]
       };
@@ -217,14 +259,24 @@ export const useCompanyAnalysis = ({ formData, setFormData, nextStep }: UseCompa
         
         // Extract and populate form data from the API response
         const extractedData = extractCompanyDataFromResponse(scrapedData);
-        console.log('Extracted data:', extractedData);
         
-        // Update form data with extracted information
-        setFormData(prev => ({
-          ...prev,
-          website,
-          ...extractedData
-        }));
+        if (extractedData) {
+          console.log('Extracted data:', extractedData);
+          
+          // Update form data with extracted information
+          setFormData(prev => ({
+            ...prev,
+            website,
+            ...extractedData
+          }));
+        } else {
+          console.log('API returned errors, not updating form data');
+          // Just set the website without other data
+          setFormData(prev => ({
+            ...prev,
+            website
+          }));
+        }
       }
     } catch (error) {
       console.error('Analysis failed:', error);
