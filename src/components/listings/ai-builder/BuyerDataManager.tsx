@@ -198,24 +198,53 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       // Create sensible defaults based on field type
       switch (fieldName) {
         case 'employees':
-          // Default to small company size
           console.log(`Setting ${fieldName} to default: 50`);
           return 50;
         
         case 'matching_score':
-          // Default to neutral score
           console.log(`Setting ${fieldName} to default: 50`);
           return 50;
         
         case 'year_founded':
-          // Default to reasonable company age (20 years ago)
           const defaultYear = new Date().getFullYear() - 20;
           console.log(`Setting ${fieldName} to default: ${defaultYear}`);
           return defaultYear;
         
         default:
-          // For unknown integer fields, return null
           console.log(`Setting unknown integer field ${fieldName} to null`);
+          return null;
+      }
+    }
+    
+    // Check for PostgreSQL integer limits to prevent overflow
+    const MAX_INTEGER = 2147483647;
+    const MIN_INTEGER = -2147483648;
+    
+    if (intValue > MAX_INTEGER || intValue < MIN_INTEGER) {
+      console.warn(`Integer value ${intValue} for ${fieldName} exceeds PostgreSQL integer limits - creating safe default`);
+      
+      switch (fieldName) {
+        case 'employees':
+          // Large employee number, cap at reasonable maximum
+          const cappedEmployees = Math.min(intValue, 999999);
+          console.log(`Capping employees from ${intValue} to ${cappedEmployees}`);
+          return cappedEmployees;
+        
+        case 'matching_score':
+          // Matching score should be 0-100, so this is likely an error
+          console.log(`Invalid matching score ${intValue}, setting to 50`);
+          return 50;
+        
+        case 'year_founded':
+          // Year founded can't be this large, likely an error
+          const currentYear = new Date().getFullYear();
+          const safeYear = Math.min(intValue, currentYear);
+          console.log(`Capping year_founded from ${intValue} to ${safeYear}`);
+          return safeYear;
+        
+        default:
+          // For other fields, return null to avoid database errors
+          console.log(`Large integer ${intValue} for ${fieldName} set to null`);
           return null;
       }
     }
@@ -439,7 +468,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     let recordsWithDefaults = 0;
 
     try {
-      console.log('=== ENHANCED CSV PARSING WITH DEFAULTS START ===');
+      console.log('=== ENHANCED CSV PARSING WITH INTEGER OVERFLOW PROTECTION START ===');
       console.log('File details:', {
         name: uploadFile.name,
         size: uploadFile.size,
@@ -491,7 +520,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       console.log('Data rows to process:', dataRows.length);
 
       if (selectedTable === 'buyers') {
-        // Process buyers data with enhanced validation and defaults
+        // Process buyers data with enhanced validation and integer overflow protection
         const buyersData = dataRows.map((line, index) => {
           processedRecords++;
           let hasDefaults = false;
@@ -514,7 +543,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
             if (!rawValue || rawValue === 'null' || rawValue === 'undefined') return;
 
             try {
-              // Enhanced field processing with defaults
+              // Enhanced field processing with integer overflow protection
               if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
                    'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
                    'all_industries', 'verticals', 'target_customers_industries'].includes(dbField)) {
@@ -530,9 +559,9 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                 }
               }
               else if (['employees', 'matching_score', 'year_founded'].includes(dbField)) {
-                const originalValue = buyerData[dbField];
+                const originalValue = rawValue;
                 buyerData[dbField] = validateIntegerField(rawValue, dbField);
-                if (originalValue !== buyerData[dbField] && rawValue && rawValue !== 'null') {
+                if (buyerData[dbField] !== parseInt(originalValue.replace(/[,$]/g, '')) && originalValue && originalValue !== 'null') {
                   hasDefaults = true;
                 }
               }
@@ -658,7 +687,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
               switch (header) {
                 case 'employees':
                 case 'matching_score':
-                  buyerData[header] = value ? parseInt(sanitizeTextField(value)) : null;
+                  buyerData[header] = validateIntegerField(value, header);
                   break;
                 case 'revenue':
                 case 'cash':
@@ -820,8 +849,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
             Upload Data to {currentConfig.name}
           </CardTitle>
           <CardDescription className="text-xs">
-            Upload a CSV file with enhanced parsing for better text field mapping. 
-            Supports multiple delimiters (comma, semicolon, tab, pipe) and various encodings.
+            Upload a CSV file with enhanced parsing and integer overflow protection. 
+            Large numbers exceeding PostgreSQL limits will be automatically handled.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -843,7 +872,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
               onChange={(e) => setUploadFile(e.target.files?.[0] || null)}
             />
             <div className="text-xs text-gray-500">
-              Enhanced CSV parsing with automatic delimiter detection, encoding support, and robust text field mapping.
+              Enhanced CSV parsing with integer overflow protection and automatic data type validation.
             </div>
           </div>
 
