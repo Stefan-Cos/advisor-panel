@@ -105,19 +105,22 @@ export class BuyerRelationshipService {
     linkageRate: number;
   }> {
     try {
-      // Get total matching records - use simpler query structure
-      const totalQuery = await supabase
+      // Use separate simple queries to avoid complex type inference
+      const { data: allRecords } = await supabase
         .from('matching')
-        .select('id', { count: 'exact', head: true });
+        .select('buyer_id');
       
-      // Get linked records - use simpler query structure  
-      const linkedQuery = await supabase
-        .from('matching')
-        .select('id', { count: 'exact', head: true })
-        .not('buyer_id', 'is', null);
+      if (!allRecords) {
+        return {
+          totalMatching: 0,
+          linkedRecords: 0,
+          unlinkedRecords: 0,
+          linkageRate: 0
+        };
+      }
       
-      const totalCount = totalQuery.count || 0;
-      const linkedCount = linkedQuery.count || 0;
+      const totalCount = allRecords.length;
+      const linkedCount = allRecords.filter(record => record.buyer_id !== null).length;
       const unlinkedRecords = totalCount - linkedCount;
       const linkageRate = totalCount ? (linkedCount / totalCount * 100) : 0;
       
