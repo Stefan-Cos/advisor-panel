@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
-import { getBuyersByType, transformDatabaseBuyerToComponentFormat } from '@/services/buyersService';
+import { MatchedBuyersService } from '@/services/matchedBuyersService';
 import { Buyer } from './types/BuyerTypes';
 import BuyerTabs from './components/BuyerTabs';
 import StrategicBuyerTable from './components/StrategicBuyerTable';
@@ -12,36 +13,38 @@ interface BuyerListNewProps {
 
 const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
   const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
-  const [buyers, setBuyers] = useState<Buyer[]>([]);
+  const [allBuyers, setAllBuyers] = useState<Buyer[]>([]);
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // Load buyer data
+  // Load buyer data from the new matched_buyers table
   const loadBuyerData = async () => {
     setIsLoading(true);
     
     try {
-      const databaseBuyers = await getBuyersByType(activeTab);
-      const transformedBuyers = databaseBuyers.map(transformDatabaseBuyerToComponentFormat);
-      setBuyers(transformedBuyers);
+      const matchedBuyers = await MatchedBuyersService.getMatchedBuyers();
+      setAllBuyers(matchedBuyers);
     } catch (error) {
-      console.error('Error loading buyers:', error);
+      console.error('Error loading matched buyers:', error);
       toast({
         title: "Error",
         description: "Failed to load buyer data. Please try again.",
         variant: "destructive"
       });
-      setBuyers([]);
+      setAllBuyers([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Load data when component mounts or tab changes
+  // Load data when component mounts
   useEffect(() => {
     loadBuyerData();
-  }, [activeTab]);
+  }, []);
+
+  // Filter buyers by active tab
+  const buyers = allBuyers.filter(buyer => buyer.type === activeTab);
 
   // Toggle rationale expansion
   const toggleRationale = (buyerId: string) => {
@@ -85,7 +88,7 @@ const BuyerListNew: React.FC<BuyerListNewProps> = ({ listingId }) => {
           <BuyerTabs 
             activeTab={activeTab} 
             setActiveTab={setActiveTab}
-            buyers={buyers}
+            buyers={allBuyers}
           />
         </div>
         

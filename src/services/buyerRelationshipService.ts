@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 /**
@@ -23,17 +24,17 @@ function normalizeWebsite(website: string | null | undefined): string {
   return normalized;
 }
 
-// Define explicit types to avoid deep instantiation
+// Simplified types to avoid deep instantiation
+interface UpdateResult {
+  updated: number;
+  errors: string[];
+}
+
 interface RelationshipStats {
   totalMatching: number;
   linkedRecords: number;
   unlinkedRecords: number;
   linkageRate: number;
-}
-
-interface UpdateResult {
-  updated: number;
-  errors: string[];
 }
 
 /**
@@ -246,7 +247,7 @@ export class BuyerRelationshipService {
    */
   static async getRelationshipStats(): Promise<RelationshipStats> {
     try {
-      // Simple counting approach to avoid TypeScript deep instantiation
+      // Get total count
       const { count: totalCount } = await supabase
         .from('matching')
         .select('*', { count: 'exact', head: true });
