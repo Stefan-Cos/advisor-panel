@@ -98,50 +98,25 @@ export class BuyerRelationshipService {
   /**
    * Gets statistics about the current relationship state
    */
-  static async getRelationshipStats(): Promise<{
-    totalMatching: number;
-    linkedRecords: number;
-    unlinkedRecords: number;
-    linkageRate: number;
-  }> {
+  static async getRelationshipStats() {
     try {
-      // Explicitly type the response to avoid type inference issues
-      type MatchingRecord = {
-        buyer_id: string | null;
-      };
-      
-      const { data: allRecords, error } = await supabase
+      // Get total matching records
+      const { count: totalMatching } = await supabase
         .from('matching')
-        .select('buyer_id')
-        .returns<MatchingRecord[]>();
+        .select('*', { count: 'exact', head: true });
       
-      if (error) {
-        console.error('Error fetching matching records:', error);
-        return {
-          totalMatching: 0,
-          linkedRecords: 0,
-          unlinkedRecords: 0,
-          linkageRate: 0
-        };
-      }
+      // Get linked records
+      const { count: linkedRecords } = await supabase
+        .from('matching')
+        .select('*', { count: 'exact', head: true })
+        .not('buyer_id', 'is', null);
       
-      if (!allRecords) {
-        return {
-          totalMatching: 0,
-          linkedRecords: 0,
-          unlinkedRecords: 0,
-          linkageRate: 0
-        };
-      }
-      
-      const totalCount = allRecords.length;
-      const linkedCount = allRecords.filter((record: MatchingRecord) => record.buyer_id !== null).length;
-      const unlinkedRecords = totalCount - linkedCount;
-      const linkageRate = totalCount ? (linkedCount / totalCount * 100) : 0;
+      const unlinkedRecords = (totalMatching || 0) - (linkedRecords || 0);
+      const linkageRate = totalMatching ? (linkedRecords || 0) / totalMatching * 100 : 0;
       
       return {
-        totalMatching: totalCount,
-        linkedRecords: linkedCount,
+        totalMatching: totalMatching || 0,
+        linkedRecords: linkedRecords || 0,
         unlinkedRecords,
         linkageRate: Math.round(linkageRate * 100) / 100
       };
