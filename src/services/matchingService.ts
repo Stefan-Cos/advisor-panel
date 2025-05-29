@@ -8,6 +8,10 @@ export { transformMatchingBuyerToComponentFormat } from './matching/transformer'
 export { normalizeWebsite, parseMatchScore } from './matching/utils';
 
 // Legacy exports for backward compatibility
+import { MatchingDataService } from './matching/dataService';
+import { MatchingLinkingService } from './matching/linkingService';
+import { MatchingRelationshipService } from './matching/relationshipService';
+
 export const getBuyersFromMatching = MatchingDataService.getBuyersFromMatching;
 export const getLinkedBuyerData = MatchingLinkingService.getLinkedBuyerData;
 export const updateMatchingBuyerRelationships = MatchingRelationshipService.updateMatchingBuyerRelationships;
