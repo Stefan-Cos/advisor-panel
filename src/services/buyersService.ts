@@ -1,5 +1,5 @@
-
 import { supabase } from "@/integrations/supabase/client";
+import { getBuyersFromMatching, transformMatchingBuyerToComponentFormat } from './matchingService';
 
 export interface DatabaseBuyer {
   id: string;
@@ -107,7 +107,60 @@ export interface DatabaseBuyer {
 
 export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<DatabaseBuyer[]> => {
   try {
-    // Use direct table access with type assertion as workaround
+    // First try to get buyers from the matching table
+    const matchingBuyers = await getBuyersFromMatching();
+    
+    if (matchingBuyers.length > 0) {
+      // Transform matching buyers to DatabaseBuyer format
+      const transformedBuyers = matchingBuyers.map(buyer => {
+        const transformed = transformMatchingBuyerToComponentFormat(buyer);
+        return {
+          id: transformed.id,
+          external_id: transformed.id,
+          name: transformed.name,
+          type: type, // Use the requested type
+          description: transformed.description,
+          long_description: transformed.longDescription,
+          hq: transformed.hq,
+          location: transformed.location,
+          employees: transformed.employees,
+          revenue: transformed.revenue,
+          cash: transformed.cash,
+          reported_date: transformed.reportedDate,
+          is_pe_vc_backed: transformed.isPEVCBacked,
+          is_public: transformed.isPublic,
+          website: transformed.website,
+          sector: transformed.sector,
+          ma_track_record: transformed.maTrackRecord,
+          offering: transformed.offering,
+          sectors: transformed.sectors,
+          customers: transformed.customers,
+          matching_score: transformed.matchingScore,
+          status: transformed.status,
+          primary_industries: transformed.primaryIndustries,
+          keywords: transformed.keywords,
+          target_customer_types: transformed.targetCustomerTypes,
+          parent_company: transformed.parentCompany,
+          aum: transformed.aum,
+          investments: transformed.investments,
+          previous_acquisitions: transformed.previousAcquisitions,
+          investment_type: transformed.investmentType,
+          geography: transformed.geography,
+          investment_size: transformed.investmentSize,
+          ebitda: transformed.ebitda,
+          industry_focus: transformed.industryFocus,
+          industry_preferences: transformed.industryPreferences,
+          rationale: transformed.rationale,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+      });
+      
+      console.log(`Loaded ${transformedBuyers.length} buyers from matching table for type: ${type}`);
+      return transformedBuyers;
+    }
+    
+    // Fallback to original buyers table if matching table is empty
     const { data, error } = await (supabase as any)
       .from('buyers')
       .select('*')
@@ -122,14 +175,66 @@ export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<Databas
     return data || [];
   } catch (error) {
     console.error('Error in getBuyersByType:', error);
-    // Return empty array as fallback
     return [];
   }
 };
 
 export const getAllBuyers = async (): Promise<DatabaseBuyer[]> => {
   try {
-    // Use direct table access with type assertion as workaround
+    // First try to get buyers from the matching table
+    const matchingBuyers = await getBuyersFromMatching();
+    
+    if (matchingBuyers.length > 0) {
+      // Transform matching buyers to DatabaseBuyer format
+      const transformedBuyers = matchingBuyers.map(buyer => {
+        const transformed = transformMatchingBuyerToComponentFormat(buyer);
+        return {
+          id: transformed.id,
+          external_id: transformed.id,
+          name: transformed.name,
+          type: 'strategic', // Default type since matching table doesn't specify
+          description: transformed.description,
+          long_description: transformed.longDescription,
+          hq: transformed.hq,
+          location: transformed.location,
+          employees: transformed.employees,
+          revenue: transformed.revenue,
+          cash: transformed.cash,
+          reported_date: transformed.reportedDate,
+          is_pe_vc_backed: transformed.isPEVCBacked,
+          is_public: transformed.isPublic,
+          website: transformed.website,
+          sector: transformed.sector,
+          ma_track_record: transformed.maTrackRecord,
+          offering: transformed.offering,
+          sectors: transformed.sectors,
+          customers: transformed.customers,
+          matching_score: transformed.matchingScore,
+          status: transformed.status,
+          primary_industries: transformed.primaryIndustries,
+          keywords: transformed.keywords,
+          target_customer_types: transformed.targetCustomerTypes,
+          parent_company: transformed.parentCompany,
+          aum: transformed.aum,
+          investments: transformed.investments,
+          previous_acquisitions: transformed.previousAcquisitions,
+          investment_type: transformed.investmentType,
+          geography: transformed.geography,
+          investment_size: transformed.investmentSize,
+          ebitda: transformed.ebitda,
+          industry_focus: transformed.industryFocus,
+          industry_preferences: transformed.industryPreferences,
+          rationale: transformed.rationale,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+      });
+      
+      console.log(`Loaded ${transformedBuyers.length} buyers from matching table`);
+      return transformedBuyers;
+    }
+    
+    // Fallback to original buyers table if matching table is empty
     const { data, error } = await (supabase as any)
       .from('buyers')
       .select('*')
