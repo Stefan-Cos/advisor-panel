@@ -30,6 +30,15 @@ interface AiBuyerBuilderProps {
   listingId: string;
 }
 
+// Helper function to safely convert numeric values for database storage
+const safeNumericValue = (value: any): number | null => {
+  if (value === null || value === undefined || value === '') return null;
+  const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+  if (isNaN(num)) return null;
+  // Cap values to fit within database constraints (precision 5, scale 2 = max 999.99)
+  return Math.min(Math.max(num, -999.99), 999.99);
+};
+
 const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
   const [activeTab, setActiveTab] = useState<string>("scoring");
   const [filterVisible, setFilterVisible] = useState<boolean>(false);
@@ -211,11 +220,11 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
           location: buyer.location || buyer.hq || 'N/A',
           website: buyer.website || 'N/A',
           
-          // Financial data
+          // Financial data - using safe numeric conversion
           employees: buyer.employees || 0,
-          revenue: buyer.revenue || 0,
-          cash: buyer.cash || 0,
-          aum: buyer.aum || 0,
+          revenue: safeNumericValue(buyer.revenue),
+          cash: safeNumericValue(buyer.cash),
+          aum: safeNumericValue(buyer.aum),
           ebitda: buyer.ebitda || 'N/A',
           
           // Descriptions
@@ -262,7 +271,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
 
-          // New columns from migration - using proper property names
+          // New columns from migration - using proper property names and safe numeric conversion
           year_founded: buyer.yearFounded || null,
           company_pbid: buyer.companyPbid || 'N/A',
           website_https: buyer.websiteHttps || buyer.website || 'N/A',
@@ -278,8 +287,8 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
           ownership_status: buyer.ownershipStatus || 'N/A',
           active_investors: buyer.activeInvestors || 'N/A',
           employee_history: buyer.employeeHistory || null,
-          net_income: buyer.netIncome || 0,
-          net_debt: buyer.netDebt || 0,
+          net_income: safeNumericValue(buyer.netIncome),
+          net_debt: safeNumericValue(buyer.netDebt),
           fiscal_period: buyer.fiscalPeriod || 'N/A',
           financing_status: buyer.financingStatus || 'N/A',
           last_financing_date: buyer.lastFinancingDate || null,
@@ -388,7 +397,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     });
   };
 
-  // Handle saving a search - now saves flattened data to individual columns
+  // Handle saving a search - now saves flattened data to individual columns with safe numeric handling
   const handleSaveSearch = async (searchName: string) => {
     console.log('=== SAVE SEARCH BUTTON CLICKED ===');
     console.log('Search Name:', searchName);
@@ -425,9 +434,9 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
             location: buyer.location,
             website: buyer.website,
             employees: buyer.employees,
-            revenue: buyer.revenue,
-            cash: buyer.cash,
-            aum: buyer.aum,
+            revenue: buyer.revenue, // Already processed with safeNumericValue
+            cash: buyer.cash, // Already processed with safeNumericValue
+            aum: buyer.aum, // Already processed with safeNumericValue
             ebitda: buyer.ebitda,
             description: buyer.description,
             long_description: buyer.long_description,
