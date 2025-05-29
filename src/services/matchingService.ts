@@ -93,7 +93,7 @@ export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
     console.log(`Successfully fetched ${sortedData?.length || 0} records from matching table:`, sortedData);
     console.log('=== END MATCHING SERVICE DEBUGGING ===');
     return sortedData || [];
-  } catch (error) {
+  } catch (error: any) {
     console.error('Exception in getBuyersFromMatching:', error);
     console.log('Exception details:', {
       name: error.name,
@@ -134,7 +134,7 @@ export const getLinkedBuyerData = async () => {
     // Transform the linked data
     const linkedData = matchingWithBuyers.map(matchingRecord => {
       const matchingBuyer = matchingRecord as MatchingBuyer;
-      const linkedBuyer = matchingRecord.buyers;
+      const linkedBuyer = (matchingRecord as any).buyers;
       
       if (linkedBuyer) {
         console.log(`Successfully linked matching record "${matchingBuyer["Company Name"]}" with buyer "${linkedBuyer.name}"`);
@@ -333,21 +333,17 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
   };
 };
 
-// New function to update buyer relationships in the matching table
+// Updated function to use the BuyerRelationshipService
 export const updateMatchingBuyerRelationships = async () => {
   try {
-    console.log('Updating matching table buyer relationships...');
+    console.log('Updating matching table buyer relationships using BuyerRelationshipService...');
     
-    // Call the database function to update relationships
-    const { data, error } = await supabase.rpc('find_and_update_buyer_relationships');
+    // Import the service dynamically to avoid circular dependencies
+    const { BuyerRelationshipService } = await import('./buyerRelationshipService');
+    const result = await BuyerRelationshipService.updateAllRelationships();
     
-    if (error) {
-      console.error('Error updating buyer relationships:', error);
-      return false;
-    }
-    
-    console.log('Successfully updated buyer relationships');
-    return true;
+    console.log(`Updated ${result.updated} relationships with ${result.errors.length} errors`);
+    return result.updated > 0;
   } catch (error) {
     console.error('Exception updating buyer relationships:', error);
     return false;

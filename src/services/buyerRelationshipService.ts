@@ -58,7 +58,7 @@ export class BuyerRelationshipService {
               console.log(`Successfully linked "${companyName}" to buyer ${buyerId}`);
             }
           }
-        } catch (error) {
+        } catch (error: any) {
           errors.push(`Exception processing record: ${error.message}`);
         }
       }
@@ -66,7 +66,7 @@ export class BuyerRelationshipService {
       console.log(`Bulk update completed: ${updated} updated, ${errors.length} errors`);
       return { updated, errors };
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error in bulk relationship update:', error);
       return { updated: 0, errors: [error.message] };
     }
@@ -98,12 +98,7 @@ export class BuyerRelationshipService {
   /**
    * Gets statistics about the current relationship state
    */
-  static async getRelationshipStats(): Promise<{
-    totalMatching: number;
-    linkedRecords: number;
-    unlinkedRecords: number;
-    linkageRate: number;
-  }> {
+  static async getRelationshipStats() {
     try {
       // Get total matching records
       const { count: totalMatching } = await supabase
