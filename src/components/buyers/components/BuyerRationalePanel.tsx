@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Buyer } from '../types/BuyerTypes';
 
@@ -154,6 +153,8 @@ const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
             </h4>
             <p className="text-sm text-gray-700">{buyer.rationale?.financialStrength || 'Financial profile indicates strong acquisition capability.'}</p>
           </div>
+          {/* Temporarily commented out overall rationale section */}
+          {/* 
           <div>
             <h4 className="text-sm font-semibold text-blue-700 mb-1 flex items-center">
               <span className={`text-sm font-medium ${getMatchScoreColor(scores.overall)} mr-2`}>
@@ -163,6 +164,7 @@ const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
             </h4>
             <p className="text-sm text-gray-700">{buyer.rationale?.overall || `This ${buyer.type === 'strategic' ? 'company' : 'fund'} shows strong potential as an acquisition target based on industry alignment and strategic fit.`}</p>
           </div>
+          */}
         </div>
       </div>
     </div>

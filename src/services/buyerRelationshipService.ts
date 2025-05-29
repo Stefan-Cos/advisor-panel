@@ -1,5 +1,72 @@
-
 import { supabase } from "@/integrations/supabase/client";
+import { Buyer } from '@/components/buyers/types/BuyerTypes';
+
+// Simplified interface to avoid deep type instantiation
+interface SimpleBuyer {
+  id: string;
+  external_id?: string;
+  name: string;
+  type: string;
+  description?: string;
+  longDescription?: string;
+  hq?: string;
+  location?: string;
+  employees?: number;
+  revenue?: number;
+  cash?: number;
+  reportedDate?: string;
+  isPEVCBacked?: boolean;
+  isPublic?: boolean;
+  website?: string;
+  sector?: string;
+  maTrackRecord?: string;
+  offering?: string;
+  sectors?: string[];
+  customers?: string;
+  matchingScore?: number;
+  status?: string;
+  primaryIndustries?: string[];
+  keywords?: string[];
+  targetCustomerTypes?: string[];
+  parentCompany?: string;
+  aum?: number;
+  investments?: string;
+  previousAcquisitions?: string;
+  investmentType?: string[];
+  geography?: string[];
+  investmentSize?: string;
+  ebitda?: string;
+  industryFocus?: string;
+  industryPreferences?: string[];
+  combinedOffering?: string;
+  rationale?: {
+    overall?: string;
+    offering?: string;
+    customers?: string;
+    financialStrength?: string;
+    previousTransactions?: string;
+    scores?: {
+      offering?: number;
+      customers?: number;
+      previousTransactions?: number;
+      financialStrength?: number;
+      overall?: number;
+    };
+  };
+}
+
+export interface SavedBuyer {
+  id: string;
+  project_id: string;
+  buyer_id: string;
+  buyer_name: string;
+  buyer_type: string;
+  buyer_data: SimpleBuyer;
+  saved_at: string;
+  updated_at: string;
+  rank?: number | null;
+  feedback?: string | null;
+}
 
 /**
  * Normalizes a website URL for comparison

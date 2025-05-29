@@ -528,22 +528,6 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                       </div>
                       <p className="text-sm text-gray-700">{buyer.buyer_data?.rationale?.offering || 'No rationale provided'}</p>
                     </div>
-
-                    <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-sm font-medium flex items-center">
-                          <span className="text-indigo-600 font-medium mr-2">{getRationaleScore(buyer.id, 'overall')}%</span>
-                          Overall Rationale
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
-                        <div 
-                          className="bg-indigo-500 h-1.5 rounded-full" 
-                          style={{ width: `${getRationaleScore(buyer.id, 'overall')}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-sm text-gray-700">{buyer.buyer_data?.rationale?.overall || 'No rationale provided'}</p>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
