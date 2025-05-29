@@ -108,8 +108,11 @@ export interface DatabaseBuyer {
 
 export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<DatabaseBuyer[]> => {
   try {
+    console.log(`Fetching buyers for type: ${type}`);
+    
     // First try to get buyers from the matching table
     const matchingBuyers = await getBuyersFromMatching();
+    console.log(`Got ${matchingBuyers.length} buyers from matching table`);
     
     if (matchingBuyers.length > 0) {
       // Transform matching buyers to DatabaseBuyer format
@@ -157,11 +160,12 @@ export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<Databas
         } as DatabaseBuyer;
       });
       
-      console.log(`Loaded ${transformedBuyers.length} buyers from matching table for type: ${type}`);
+      console.log(`Successfully transformed ${transformedBuyers.length} buyers from matching table for type: ${type}`);
       return transformedBuyers;
     }
     
     // Fallback to original buyers table if matching table is empty
+    console.log('Matching table is empty, falling back to buyers table');
     const { data, error } = await (supabase as any)
       .from('buyers')
       .select('*')
@@ -173,6 +177,7 @@ export const getBuyersByType = async (type: 'strategic' | 'pe'): Promise<Databas
       throw error;
     }
     
+    console.log(`Fetched ${data?.length || 0} buyers from buyers table`);
     return data || [];
   } catch (error) {
     console.error('Error in getBuyersByType:', error);

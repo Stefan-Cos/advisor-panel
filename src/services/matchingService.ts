@@ -26,20 +26,23 @@ export interface MatchingBuyer {
 
 export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
   try {
+    console.log('Attempting to fetch from matching table...');
+    
     const { data, error } = await supabase
       .from('matching')
       .select('*')
-      .order('"Match Socre"', { ascending: false, nullsFirst: false });
+      .order('Match Socre', { ascending: false, nullsFirst: false });
     
     if (error) {
       console.error('Error fetching buyers from matching table:', error);
-      throw error;
+      return []; // Return empty array instead of throwing to allow fallback
     }
     
+    console.log(`Successfully fetched ${data?.length || 0} records from matching table:`, data);
     return data || [];
   } catch (error) {
-    console.error('Error in getBuyersFromMatching:', error);
-    return [];
+    console.error('Exception in getBuyersFromMatching:', error);
+    return []; // Return empty array to allow fallback to buyers table
   }
 };
 
