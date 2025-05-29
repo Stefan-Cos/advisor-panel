@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
-import { getBuyersByType, transformDatabaseBuyerToComponentFormat } from '@/services/buyersService';
+import { getBuyersFromMatching, transformMatchingBuyerToComponentFormat } from '@/services/matchingService';
 import { Buyer } from './types/BuyerTypes';
 import BuyerTabs from './components/BuyerTabs';
 import StrategicBuyerTable from './components/StrategicBuyerTable';
@@ -88,14 +88,39 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     setIsLoading(true);
     
     try {
-      const databaseBuyers = await getBuyersByType(activeTab);
-      const transformedBuyers = databaseBuyers.map(transformDatabaseBuyerToComponentFormat);
-      setBuyers(transformedBuyers);
+      console.log('Loading buyers from matching table...');
+      const matchingBuyers = await getBuyersFromMatching();
+      console.log(`Fetched ${matchingBuyers.length} records from matching table`);
+      
+      if (matchingBuyers.length === 0) {
+        console.warn('No records found in matching table');
+        setBuyers([]);
+        return;
+      }
+      
+      // Transform matching buyers to component format
+      const transformedBuyers = matchingBuyers.map(transformMatchingBuyerToComponentFormat);
+      console.log(`Transformed ${transformedBuyers.length} buyers for display`);
+      
+      // Filter by type if needed
+      const filteredBuyers = transformedBuyers.filter(buyer => {
+        if (activeTab === 'pe') {
+          // For PE buyers, look for PE-specific indicators
+          return buyer.type === 'pe' || 
+                 buyer.name?.toLowerCase().includes('fund') ||
+                 buyer.name?.toLowerCase().includes('capital') ||
+                 buyer.name?.toLowerCase().includes('partners') ||
+                 buyer.parent_company?.toLowerCase().includes('fund');
+        }
+        return true; // Include all for strategic
+      });
+      
+      setBuyers(filteredBuyers);
     } catch (error) {
-      console.error('Error loading buyers:', error);
+      console.error('Error loading buyers from matching table:', error);
       toast({
         title: "Error",
-        description: "Failed to load buyer data. Please try again.",
+        description: "Failed to load buyer data from matching table. Please try again.",
         variant: "destructive"
       });
       setBuyers([]);
@@ -120,7 +145,6 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     );
   };
 
-  // Handle saving a buyer
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
       setSavedBuyers(prev => [...prev, buyerId]);
@@ -132,7 +156,6 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     }
   };
 
-  // Function to determine color based on M&A track record
   const getMATrackRecordColor = (record: string): string => {
     switch (record.toLowerCase()) {
       case 'high':
@@ -146,21 +169,17 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     }
   };
 
-  // Toggle filter sidebar
   const toggleFilterSidebar = () => {
     setFilterVisible(!filterVisible);
   };
 
-  // Handler for filter application
   const handleFilterApply = () => {
-    // This would normally filter the data based on selected filters
     toast({
       title: "Filters Applied",
       description: "Your filters have been applied to the buyer list."
     });
   };
 
-  // Create a mock scoring configuration for the animation
   const mockScoringConfig = {
     offering: { enabled: true, weight: 80 },
     problemSolved: { enabled: true, weight: 90 },
