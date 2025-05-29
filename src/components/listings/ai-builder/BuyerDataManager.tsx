@@ -670,7 +670,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                   buyerData[header] = sanitizeTextField(value).toLowerCase() === 'true';
                   break;
                 case 'reported_date':
-                  buyerData[header] = validateDateField(value) || new Date().toISOString().split('T')[0];
+                  buyerData[header] = validateDateField(value, header) || new Date().toISOString().split('T')[0];
                   break;
                 default:
                   buyerData[header] = sanitizeTextField(value) || null;
