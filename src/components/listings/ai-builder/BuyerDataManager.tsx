@@ -140,49 +140,111 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     const numValue = parseFloat(cleanValue);
     
     if (isNaN(numValue)) {
-      console.warn(`Invalid numeric value for ${fieldName}:`, value);
+      console.warn(`Invalid numeric value for ${fieldName}: "${value}" - setting to null`);
       return null;
     }
     
     return numValue;
   };
 
-  const validateDateField = (value: string): string | null => {
+  const validateDateField = (value: string, fieldName: string): string | null => {
     if (!value || value === 'null' || value === 'undefined') {
       return null;
     }
     
+    // Try to parse the date
     const date = new Date(value);
     if (isNaN(date.getTime())) {
-      console.warn(`Invalid date value:`, value);
-      return null;
+      console.warn(`Invalid date value for ${fieldName}: "${value}" - creating default`);
+      
+      // Create sensible defaults based on field type
+      const currentDate = new Date().toISOString().split('T')[0];
+      
+      switch (fieldName) {
+        case 'reported_date':
+        case 'last_update_date':
+        case 'analyzed_at':
+          // For recent data fields, use current date
+          console.log(`Setting ${fieldName} to current date: ${currentDate}`);
+          return currentDate;
+        
+        case 'last_financing_date':
+          // For financing dates, use null (no recent financing)
+          console.log(`Setting ${fieldName} to null (no recent financing)`);
+          return null;
+        
+        default:
+          // For unknown date fields, use current date as safe default
+          console.log(`Setting unknown date field ${fieldName} to current date: ${currentDate}`);
+          return currentDate;
+      }
     }
     
+    // Valid date - return ISO format
     return date.toISOString().split('T')[0];
   };
 
-  const handleDownloadTemplate = () => {
-    const config = tableConfigs[selectedTable as keyof typeof tableConfigs];
+  const validateIntegerField = (value: string, fieldName: string): number | null => {
+    if (!value || value === 'null' || value === 'undefined' || value.toLowerCase() === 'nan') {
+      return null;
+    }
     
-    // Create CSV content with headers and sample data
-    const headerRow = config.headers.join(',');
-    const dataRows = config.sampleData.map(row => row.join(','));
-    const csvContent = [headerRow, ...dataRows].join('\n');
+    const cleanValue = value.replace(/[,$]/g, '');
+    const intValue = parseInt(cleanValue);
+    
+    if (isNaN(intValue)) {
+      console.warn(`Invalid integer value for ${fieldName}: "${value}" - creating default`);
+      
+      // Create sensible defaults based on field type
+      switch (fieldName) {
+        case 'employees':
+          // Default to small company size
+          console.log(`Setting ${fieldName} to default: 50`);
+          return 50;
+        
+        case 'matching_score':
+          // Default to neutral score
+          console.log(`Setting ${fieldName} to default: 50`);
+          return 50;
+        
+        case 'year_founded':
+          // Default to reasonable company age (20 years ago)
+          const defaultYear = new Date().getFullYear() - 20;
+          console.log(`Setting ${fieldName} to default: ${defaultYear}`);
+          return defaultYear;
+        
+        default:
+          // For unknown integer fields, return null
+          console.log(`Setting unknown integer field ${fieldName} to null`);
+          return null;
+      }
+    }
+    
+    return intValue;
+  };
 
-    // Create and download file
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.href = url;
-    link.setAttribute('download', `${selectedTable}_template.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    toast({
-      title: "Template Downloaded",
-      description: `${config.name} template with ${config.headers.length} fields has been downloaded successfully.`
-    });
+  const validateTextField = (value: string, fieldName: string, isRequired: boolean = false): string => {
+    const cleaned = sanitizeTextField(value);
+    
+    if ((!cleaned || cleaned.trim() === '') && isRequired) {
+      console.warn(`Empty required field ${fieldName} - creating default`);
+      
+      // Create defaults for required fields
+      switch (fieldName) {
+        case 'name':
+          return 'Unknown Company';
+        case 'external_id':
+          return `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        case 'type':
+          return 'strategic';
+        case 'status':
+          return 'active';
+        default:
+          return `Default ${fieldName}`;
+      }
+    }
+    
+    return cleaned || '';
   };
 
   // Enhanced CSV parser specifically for comma-delimited files with proper quote handling
@@ -338,6 +400,30 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     };
   };
 
+  const handleDownloadTemplate = () => {
+    const config = tableConfigs[selectedTable as keyof typeof tableConfigs];
+    
+    // Create CSV content with headers and sample data
+    const headerRow = config.headers.join(',');
+    const dataRows = config.sampleData.map(row => row.join(','));
+    const csvContent = [headerRow, ...dataRows].join('\n');
+
+    // Create and download file
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.href = url;
+    link.setAttribute('download', `${selectedTable}_template.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    toast({
+      title: "Template Downloaded",
+      description: `${config.name} template with ${config.headers.length} fields has been downloaded successfully.`
+    });
+  };
+
   const handleFileUpload = async () => {
     if (!uploadFile) {
       toast({
@@ -349,9 +435,11 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
     }
 
     setUploading(true);
+    let processedRecords = 0;
+    let recordsWithDefaults = 0;
 
     try {
-      console.log('=== ENHANCED CSV PARSING START ===');
+      console.log('=== ENHANCED CSV PARSING WITH DEFAULTS START ===');
       console.log('File details:', {
         name: uploadFile.name,
         size: uploadFile.size,
@@ -403,8 +491,11 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
       console.log('Data rows to process:', dataRows.length);
 
       if (selectedTable === 'buyers') {
-        // Process buyers data with enhanced parsing
+        // Process buyers data with enhanced validation and defaults
         const buyersData = dataRows.map((line, index) => {
+          processedRecords++;
+          let hasDefaults = false;
+          
           if (index % 100 === 0) {
             console.log(`Processing row ${index + 1}/${dataRows.length}`);
           }
@@ -414,16 +505,16 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
           
           const buyerData: any = {};
 
-          // Map values using the header mapping
+          // Map values using the header mapping with enhanced validation
           Object.entries(headerValidation.mapping).forEach(([csvIndex, dbField]) => {
-            const index = parseInt(csvIndex);
-            if (index >= values.length) return;
+            const fieldIndex = parseInt(csvIndex);
+            if (fieldIndex >= values.length) return;
             
-            const rawValue = values[index];
+            const rawValue = values[fieldIndex];
             if (!rawValue || rawValue === 'null' || rawValue === 'undefined') return;
 
             try {
-              // Enhanced field processing based on type
+              // Enhanced field processing with defaults
               if (['sectors', 'primary_industries', 'keywords', 'target_customer_types', 
                    'investment_type', 'geography', 'industry_preferences', 'product_service_tags',
                    'all_industries', 'verticals', 'target_customers_industries'].includes(dbField)) {
@@ -439,22 +530,25 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                 }
               }
               else if (['employees', 'matching_score', 'year_founded'].includes(dbField)) {
-                const numValue = parseInt(sanitizeTextField(rawValue));
-                buyerData[dbField] = isNaN(numValue) ? null : numValue;
+                const originalValue = buyerData[dbField];
+                buyerData[dbField] = validateIntegerField(rawValue, dbField);
+                if (originalValue !== buyerData[dbField] && rawValue && rawValue !== 'null') {
+                  hasDefaults = true;
+                }
               }
               else if (['revenue', 'cash', 'aum', 'net_income', 'net_debt'].includes(dbField)) {
-                const cleanValue = sanitizeTextField(rawValue).replace(/[,$]/g, '');
-                const numValue = parseFloat(cleanValue);
-                buyerData[dbField] = isNaN(numValue) ? null : numValue;
+                buyerData[dbField] = validateNumericField(rawValue, dbField);
               }
               else if (['is_public', 'is_pe_vc_backed'].includes(dbField)) {
                 const cleanValue = sanitizeTextField(rawValue).toLowerCase();
                 buyerData[dbField] = cleanValue === 'true' || cleanValue === '1' || cleanValue === 'yes';
               }
               else if (['reported_date', 'last_financing_date', 'last_update_date', 'analyzed_at'].includes(dbField)) {
-                const cleanValue = sanitizeTextField(rawValue);
-                const date = new Date(cleanValue);
-                buyerData[dbField] = isNaN(date.getTime()) ? null : date.toISOString().split('T')[0];
+                const originalValue = rawValue;
+                buyerData[dbField] = validateDateField(rawValue, dbField);
+                if (originalValue && originalValue !== 'null' && buyerData[dbField] !== new Date(originalValue).toISOString().split('T')[0]) {
+                  hasDefaults = true;
+                }
               }
               else if (['rationale', 'employee_history'].includes(dbField)) {
                 const cleanValue = sanitizeTextField(rawValue);
@@ -469,22 +563,36 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
                 }
               }
               else {
-                buyerData[dbField] = sanitizeTextField(rawValue);
+                // For required text fields
+                const isRequired = ['name', 'external_id', 'type'].includes(dbField);
+                const originalValue = rawValue;
+                buyerData[dbField] = validateTextField(rawValue, dbField, isRequired);
+                if (isRequired && originalValue && originalValue !== buyerData[dbField]) {
+                  hasDefaults = true;
+                }
               }
             } catch (error) {
               console.warn(`Error processing field ${dbField} for row ${index}:`, error);
+              hasDefaults = true;
             }
           });
 
-          // Set required defaults
+          // Set required defaults if not already set
           if (!buyerData.external_id) {
-            buyerData.external_id = `upload_${Date.now()}_${index}`;
+            buyerData.external_id = validateTextField('', 'external_id', true);
+            hasDefaults = true;
           }
           if (!buyerData.name) {
-            buyerData.name = 'Unknown Company';
+            buyerData.name = validateTextField('', 'name', true);
+            hasDefaults = true;
           }
           if (!buyerData.type) {
-            buyerData.type = 'strategic';
+            buyerData.type = validateTextField('', 'type', true);
+            hasDefaults = true;
+          }
+
+          if (hasDefaults) {
+            recordsWithDefaults++;
           }
 
           return buyerData;
@@ -492,6 +600,7 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
 
         console.log('Sample processed buyer:', buyersData[0]);
         console.log('Total buyers to insert:', buyersData.length);
+        console.log('Records with default values applied:', recordsWithDefaults);
 
         // Insert into buyers table
         const { error } = await supabase
@@ -505,8 +614,8 @@ const BuyerDataManager: React.FC<BuyerDataManagerProps> = ({
 
         console.log('=== CSV UPLOAD SUCCESS ===');
         toast({
-          title: "Upload Successful",
-          description: `Successfully uploaded ${buyersData.length} buyers to the database with enhanced parsing.`
+          title: "Upload Successful", 
+          description: `Successfully uploaded ${buyersData.length} buyers. ${recordsWithDefaults} records had default values applied for faulty data.`
         });
 
       } else {
