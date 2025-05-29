@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { MatchedBuyersService } from '@/services/matchedBuyersService';
@@ -98,12 +97,18 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     // Filter by active tab
     filtered = filtered.filter(buyer => buyer.type === activeTab);
 
-    // Filter by search value
+    // Filter by search value - now properly searching company name
     if (searchValue) {
-      filtered = filtered.filter(buyer => 
-        buyer.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        buyer.description?.toLowerCase().includes(searchValue.toLowerCase())
-      );
+      const searchTerm = searchValue.toLowerCase().trim();
+      filtered = filtered.filter(buyer => {
+        const buyerName = (buyer.name || '').toLowerCase();
+        const companyName = (buyer.company_name || '').toLowerCase();
+        const description = (buyer.description || '').toLowerCase();
+        
+        return buyerName.includes(searchTerm) || 
+               companyName.includes(searchTerm) || 
+               description.includes(searchTerm);
+      });
     }
 
     // Apply advanced filters
