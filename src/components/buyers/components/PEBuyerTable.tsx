@@ -2,6 +2,7 @@
 import React from 'react';
 import { Table, TableBody } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
 import BuyerTableHeader from './BuyerTableHeader';
 import BuyerTableRow from './BuyerTableRow';
 
@@ -13,6 +14,8 @@ interface PEBuyerTableProps {
   toggleRationale: (buyerId: string) => void;
   showDescription?: boolean;
   listingId?: string;
+  searchValue?: string;
+  onSearchChange?: (value: string) => void;
 }
 
 const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
@@ -22,7 +25,9 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
   onAddToSaved,
   toggleRationale,
   showDescription = true,
-  listingId
+  listingId,
+  searchValue = '',
+  onSearchChange
 }) => {
   // Function to determine color based on M&A track record
   const getMATrackRecordColor = (record: string): string => {
@@ -50,7 +55,6 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
       }
     }
     
-    // Handle EBITDA safely - check if it's a string before using split
     let cashValue = 0;
     if (buyer.ebitda) {
       if (typeof buyer.ebitda === 'string' && buyer.ebitda.includes(' - ')) {
@@ -62,24 +66,20 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
       cashValue = buyer.cash;
     }
     
-    // Handle employees field safely - ensure it's always a number
     let employeesValue = 0;
     if (buyer.employees) {
       employeesValue = typeof buyer.employees === 'number' ? buyer.employees : 0;
     } else if (buyer.aum) {
-      // For PE funds, use AUM as employee count if available
       employeesValue = typeof buyer.aum === 'number' ? buyer.aum : 0;
     }
     
-    // Ensure rationale properties are properly formatted for rendering
     let formattedRationale = buyer.rationale;
     if (formattedRationale) {
-      // Make sure all nested objects with text/score are properly handled
       const processRationaleField = (field: any) => {
         if (field && typeof field === 'object' && 'text' in field && 'score' in field) {
           return {
             ...field,
-            text: field.text?.toString() || '', // Ensure text is a string
+            text: field.text?.toString() || '',
           };
         }
         return field;
@@ -96,27 +96,48 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
     
     return {
       ...buyer,
-      hq: buyer.location || buyer.hq || '', // Map location to hq for consistency
-      employees: employeesValue, // Ensure this is always a number
+      hq: buyer.location || buyer.hq || '',
+      employees: employeesValue,
       revenue: revenueValue,
       cash: cashValue,
-      reportedDate: buyer.reportedDate || new Date().toISOString().substring(0, 10), // Add a placeholder date
+      reportedDate: buyer.reportedDate || new Date().toISOString().substring(0, 10),
       isPEVCBacked: buyer.isPEVCBacked !== undefined ? buyer.isPEVCBacked : true,
       isPublic: buyer.isPublic !== undefined ? buyer.isPublic : false,
       rationale: formattedRationale,
-      description: buyer.description || '', // Ensure description is always a string
-      maTrackRecord: buyer.maTrackRecord || buyer.ma_track_record || 'N/A', // Handle both field names
+      description: buyer.description || '',
+      maTrackRecord: buyer.maTrackRecord || buyer.ma_track_record || 'N/A',
     };
+  });
+
+  // Filter buyers by search value
+  const filteredBuyers = formattedBuyers.filter(buyer => {
+    if (!searchValue) return true;
+    const searchTerm = searchValue.toLowerCase();
+    const buyerName = (buyer.name || '').toLowerCase();
+    const buyerCompanyName = (buyer.company_name || '').toLowerCase();
+    
+    return buyerName.includes(searchTerm) || buyerCompanyName.includes(searchTerm);
   });
 
   return (
     <div>
+      {onSearchChange && (
+        <div className="mb-4">
+          <Input
+            placeholder="Search company names..."
+            value={searchValue}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="max-w-xs"
+          />
+        </div>
+      )}
+      
       <ScrollArea className="h-[600px] w-full mt-6" orientation="both">
         <div className="min-w-max">
           <Table>
             <BuyerTableHeader />
             <TableBody>
-              {formattedBuyers.map((buyer, index) => (
+              {filteredBuyers.map((buyer, index) => (
                 <BuyerTableRow
                   key={buyer.id}
                   buyer={buyer}
@@ -134,6 +155,12 @@ const PEBuyerTable: React.FC<PEBuyerTableProps> = ({
           </Table>
         </div>
       </ScrollArea>
+      
+      {filteredBuyers.length === 0 && searchValue && (
+        <div className="text-center py-8 text-gray-500">
+          No buyers found matching "{searchValue}"
+        </div>
+      )}
     </div>
   );
 };
