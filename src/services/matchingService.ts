@@ -21,7 +21,8 @@ export interface MatchingBuyer {
   "Total III": string;
   "Company Name": string;
   buyerrr?: string;
-  buyer_id?: string; // New field for foreign key relationship
+  buyer_id?: string;
+  website_alpha?: string;
 }
 
 export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
@@ -48,7 +49,7 @@ export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
         details: error.details,
         hint: error.hint
       });
-      return []; // Return empty array instead of throwing to allow fallback
+      return [];
     }
     
     if (!data || data.length === 0) {
@@ -87,7 +88,7 @@ export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
     const sortedData = data?.sort((a, b) => {
       const scoreA = parseMatchScore(a["Total III"]);
       const scoreB = parseMatchScore(b["Total III"]);
-      return scoreB - scoreA; // Descending order
+      return scoreB - scoreA;
     });
     
     console.log(`Successfully fetched ${sortedData?.length || 0} records from matching table:`, sortedData);
@@ -100,16 +101,16 @@ export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
       message: error.message,
       stack: error.stack
     });
-    return []; // Return empty array to allow fallback to buyers table
+    return [];
   }
 };
 
-// Enhanced function to get linked buyer data using the new foreign key relationship
+// Enhanced function to get linked buyer data using improved website and name matching
 export const getLinkedBuyerData = async () => {
   try {
-    console.log('Fetching linked buyer data using foreign key relationships...');
+    console.log('Fetching linked buyer data using improved matching strategies...');
     
-    // Get matching records with their linked buyers using the new buyer_id foreign key
+    // First, try to get matching records with their linked buyers using the buyer_id foreign key
     const { data: matchingWithBuyers, error: matchingError } = await supabase
       .from('matching')
       .select(`
@@ -124,14 +125,14 @@ export const getLinkedBuyerData = async () => {
       return await getLinkedBuyerDataFallback();
     }
     
-    console.log(`Found ${matchingWithBuyers?.length || 0} matching records with buyer relationships`);
+    console.log(`Found ${matchingWithBuyers?.length || 0} matching records`);
     
     if (!matchingWithBuyers || matchingWithBuyers.length === 0) {
-      console.log('No linked data found, falling back to name-based matching');
+      console.log('No linked data found, falling back to manual matching');
       return await getLinkedBuyerDataFallback();
     }
     
-    // Transform the linked data
+    // Transform the data, handling both linked and unlinked records
     const linkedData = matchingWithBuyers.map(matchingRecord => {
       const matchingBuyer = matchingRecord as MatchingBuyer;
       const linkedBuyer = (matchingRecord as any).buyers;
@@ -160,7 +161,7 @@ export const getLinkedBuyerData = async () => {
           // Update description if matching has better info
           description: matchingBuyer["Short Description"] || linkedBuyer.description,
           offering: matchingBuyer["Offering Combined"] || linkedBuyer.offering,
-          website: matchingBuyer["Company Website"] || linkedBuyer.website,
+          website: matchingBuyer["Company Website"] || matchingBuyer.website_alpha || linkedBuyer.website,
           combinedOffering: matchingBuyer["Offering Combined"] || 'No offering information available'
         };
       } else {
@@ -169,12 +170,11 @@ export const getLinkedBuyerData = async () => {
       }
     });
     
-    console.log(`Successfully linked ${linkedData.length} buyer records using foreign key relationships`);
+    console.log(`Successfully processed ${linkedData.length} buyer records using improved matching`);
     return linkedData;
     
   } catch (error) {
     console.error('Error in getLinkedBuyerData:', error);
-    // Fallback to old method if there's an error
     return await getLinkedBuyerDataFallback();
   }
 };
@@ -182,7 +182,7 @@ export const getLinkedBuyerData = async () => {
 // Fallback function that uses the old name-based matching approach
 const getLinkedBuyerDataFallback = async () => {
   try {
-    console.log('Using fallback name-based matching...');
+    console.log('Using fallback manual matching...');
     
     // Get all matching records
     const matchingBuyers = await getBuyersFromMatching();
@@ -204,17 +204,30 @@ const getLinkedBuyerDataFallback = async () => {
     
     console.log(`Found ${buyersData?.length || 0} buyers in buyers table`);
     
-    // Link matching data with buyers data using name matching
+    // Link matching data with buyers data using improved matching
     const linkedData = matchingBuyers.map(matchingBuyer => {
-      // Try to find matching buyer by name
-      const linkedBuyer = buyersData?.find(buyer => {
-        const matchingName = matchingBuyer["Company Name"] || matchingBuyer["Buyer Name"] || '';
-        return buyer.name.toLowerCase().trim() === matchingName.toLowerCase().trim();
+      // Try website matching first
+      let linkedBuyer = buyersData?.find(buyer => {
+        const matchingWebsite1 = normalizeWebsite(matchingBuyer.website_alpha);
+        const matchingWebsite2 = normalizeWebsite(matchingBuyer["Company Website"]);
+        const buyerWebsite1 = normalizeWebsite(buyer.website);
+        const buyerWebsite2 = normalizeWebsite(buyer.website_https);
+        
+        return (matchingWebsite1 && (matchingWebsite1 === buyerWebsite1 || matchingWebsite1 === buyerWebsite2)) ||
+               (matchingWebsite2 && (matchingWebsite2 === buyerWebsite1 || matchingWebsite2 === buyerWebsite2));
       });
       
+      // If no website match, try name matching
+      if (!linkedBuyer) {
+        linkedBuyer = buyersData?.find(buyer => {
+          const matchingName = matchingBuyer["Company Name"] || matchingBuyer["Buyer Name"] || '';
+          return buyer.name.toLowerCase().trim() === matchingName.toLowerCase().trim();
+        });
+      }
+      
       if (linkedBuyer) {
-        console.log(`Linked matching record "${matchingBuyer["Company Name"]}" with buyer "${linkedBuyer.name}" via name matching`);
-        // Merge the data, prioritizing matching table for scores and rationale
+        console.log(`Linked matching record "${matchingBuyer["Company Name"]}" with buyer "${linkedBuyer.name}"`);
+        // ... keep existing code (merge logic)
         return {
           ...linkedBuyer,
           matching_score: parseMatchScore(matchingBuyer["Total III"]),
@@ -234,11 +247,11 @@ const getLinkedBuyerDataFallback = async () => {
           },
           description: matchingBuyer["Short Description"] || linkedBuyer.description,
           offering: matchingBuyer["Offering Combined"] || linkedBuyer.offering,
-          website: matchingBuyer["Company Website"] || linkedBuyer.website,
+          website: matchingBuyer["Company Website"] || matchingBuyer.website_alpha || linkedBuyer.website,
           combinedOffering: matchingBuyer["Offering Combined"] || 'No offering information available'
         };
       } else {
-        console.log(`No buyer found for matching record "${matchingBuyer["Company Name"]}" via name matching, using transformed data`);
+        console.log(`No buyer found for matching record "${matchingBuyer["Company Name"]}", using transformed data`);
         return transformMatchingBuyerToComponentFormat(matchingBuyer);
       }
     });
@@ -251,6 +264,27 @@ const getLinkedBuyerDataFallback = async () => {
     return [];
   }
 };
+
+// Website normalization function (same as in buyerRelationshipService)
+function normalizeWebsite(website: string | null | undefined): string {
+  if (!website) return '';
+  
+  let normalized = website.toLowerCase().trim();
+  
+  // Remove protocol
+  normalized = normalized.replace(/^https?:\/\//, '');
+  
+  // Remove www prefix
+  normalized = normalized.replace(/^www\./, '');
+  
+  // Remove trailing slash and path
+  normalized = normalized.split('/')[0];
+  
+  // Remove common subdomains that might vary
+  normalized = normalized.replace(/^(app|admin|portal|dashboard)\./, '');
+  
+  return normalized;
+}
 
 // Helper function to parse match score from Total III - preserving actual values
 const parseMatchScore = (scoreStr: string | undefined): number => {
@@ -268,13 +302,13 @@ const parseMatchScore = (scoreStr: string | undefined): number => {
 
 export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): any => {
   // Parse match score from Total III field - keep actual value
-  let matchScore = 0; // default
+  let matchScore = 0;
   if (buyer["Total III"]) {
     const scoreStr = buyer["Total III"].toString();
     const cleanedScore = scoreStr.replace(/,/g, '');
     const parsed = parseFloat(cleanedScore);
     if (!isNaN(parsed)) {
-      matchScore = parsed; // Keep the actual score, don't convert to percentage
+      matchScore = parsed;
     }
   }
 
@@ -282,24 +316,24 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
     id: buyer["Company Name"] || buyer["Buyer Name"] || `buyer-${Date.now()}`,
     external_id: buyer["Company Name"] || buyer["Buyer Name"] || `buyer-${Date.now()}`,
     name: buyer["Company Name"] || buyer["Buyer Name"] || "Unknown Company",
-    type: 'strategic', // Default to strategic, could be enhanced based on data
+    type: 'strategic',
     description: buyer["Short Description"] || buyer["Offering Combined"] || 'No description available',
     long_description: buyer["Offering Combined"] || buyer["Short Description"],
-    hq: 'N/A', // Not available in matching table
-    location: 'N/A', // Not available in matching table
-    employees: 0, // Not available in matching table
-    revenue: 0, // Not available in matching table
-    cash: 0, // Not available in matching table
+    hq: 'N/A',
+    location: 'N/A',
+    employees: 0,
+    revenue: 0,
+    cash: 0,
     reported_date: new Date().toISOString().split('T')[0],
     is_pe_vc_backed: false,
     is_public: false,
-    website: buyer["Company Website"] || buyer["Company Name"] || 'N/A',
+    website: buyer["Company Website"] || buyer.website_alpha || buyer["Company Name"] || 'N/A',
     sector: 'N/A',
     ma_track_record: 'N/A',
     offering: buyer["Offering Combined"] || buyer["Short Description"] || 'N/A',
     sectors: [],
     customers: 'N/A',
-    matching_score: matchScore, // Use actual Total III score
+    matching_score: matchScore,
     status: 'active',
     primary_industries: [],
     keywords: [],
@@ -325,18 +359,17 @@ export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): a
         customers: buyer["Customers"] || 65,
         previousTransactions: buyer["Sector"] || 70,
         financialStrength: buyer["Positioning"] || 68,
-        overall: matchScore // Use actual score here too
+        overall: matchScore
       }
     },
-    // Add the combined offering for easy access
     combinedOffering: buyer["Offering Combined"] || 'No offering information available'
   };
 };
 
-// Updated function to use the BuyerRelationshipService
+// Updated function to use the improved BuyerRelationshipService
 export const updateMatchingBuyerRelationships = async () => {
   try {
-    console.log('Updating matching table buyer relationships using BuyerRelationshipService...');
+    console.log('Updating matching table buyer relationships using improved BuyerRelationshipService...');
     
     // Import the service dynamically to avoid circular dependencies
     const { BuyerRelationshipService } = await import('./buyerRelationshipService');

@@ -2,16 +2,150 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
+ * Normalizes a website URL for comparison
+ */
+function normalizeWebsite(website: string | null | undefined): string {
+  if (!website) return '';
+  
+  let normalized = website.toLowerCase().trim();
+  
+  // Remove protocol
+  normalized = normalized.replace(/^https?:\/\//, '');
+  
+  // Remove www prefix
+  normalized = normalized.replace(/^www\./, '');
+  
+  // Remove trailing slash and path
+  normalized = normalized.split('/')[0];
+  
+  // Remove common subdomains that might vary
+  normalized = normalized.replace(/^(app|admin|portal|dashboard)\./, '');
+  
+  return normalized;
+}
+
+/**
  * Service for managing relationships between matching records and buyers
  */
 export class BuyerRelationshipService {
   
   /**
-   * Updates buyer relationships for all matching records that don't have a buyer_id set
+   * Updates buyer relationships using website matching first, then name matching
    */
   static async updateAllRelationships(): Promise<{ updated: number; errors: string[] }> {
     try {
-      console.log('Starting bulk update of buyer relationships...');
+      console.log('Starting comprehensive buyer relationship update...');
+      
+      let totalUpdated = 0;
+      const allErrors: string[] = [];
+      
+      // First, try website-based matching
+      const websiteResult = await this.updateRelationshipsByWebsite();
+      totalUpdated += websiteResult.updated;
+      allErrors.push(...websiteResult.errors);
+      
+      // Then, try name-based matching for remaining unlinked records
+      const nameResult = await this.updateRelationshipsByName();
+      totalUpdated += nameResult.updated;
+      allErrors.push(...nameResult.errors);
+      
+      console.log(`Total relationships updated: ${totalUpdated}, Total errors: ${allErrors.length}`);
+      return { updated: totalUpdated, errors: allErrors };
+      
+    } catch (error: any) {
+      console.error('Error in comprehensive relationship update:', error);
+      return { updated: 0, errors: [error.message] };
+    }
+  }
+  
+  /**
+   * Updates buyer relationships using website matching
+   */
+  static async updateRelationshipsByWebsite(): Promise<{ updated: number; errors: string[] }> {
+    try {
+      console.log('Starting website-based buyer relationship update...');
+      
+      // Get all matching records without buyer_id that have website data
+      const { data: unmatchedRecords, error: fetchError } = await supabase
+        .from('matching')
+        .select('*')
+        .is('buyer_id', null)
+        .or('website_alpha.neq.null,Company Website.neq.null');
+      
+      if (fetchError) {
+        throw fetchError;
+      }
+      
+      console.log(`Found ${unmatchedRecords?.length || 0} unmatched records with website data`);
+      
+      let updated = 0;
+      const errors: string[] = [];
+      
+      // Get all buyers with their website data for comparison
+      const { data: allBuyers, error: buyersError } = await supabase
+        .from('buyers')
+        .select('id, name, website, website_https');
+      
+      if (buyersError) {
+        throw buyersError;
+      }
+      
+      console.log(`Found ${allBuyers?.length || 0} buyers to match against`);
+      
+      // Process each unmatched record
+      for (const record of unmatchedRecords || []) {
+        try {
+          const matchingWebsite = normalizeWebsite(record['website_alpha'] || record['Company Website']);
+          
+          if (!matchingWebsite) {
+            console.log(`No website data for matching record: ${record['Company Name']}`);
+            continue;
+          }
+          
+          // Find buyer by website match
+          const matchedBuyer = allBuyers?.find(buyer => {
+            const buyerWebsite1 = normalizeWebsite(buyer.website);
+            const buyerWebsite2 = normalizeWebsite(buyer.website_https);
+            
+            return buyerWebsite1 === matchingWebsite || buyerWebsite2 === matchingWebsite;
+          });
+          
+          if (matchedBuyer) {
+            // Update the matching record with the found buyer_id
+            const { error: updateError } = await supabase
+              .from('matching')
+              .update({ buyer_id: matchedBuyer.id })
+              .eq('Company Name', record['Company Name']);
+            
+            if (updateError) {
+              errors.push(`Error updating record for "${record['Company Name']}": ${updateError.message}`);
+            } else {
+              updated++;
+              console.log(`Successfully linked "${record['Company Name']}" to buyer "${matchedBuyer.name}" via website match`);
+            }
+          } else {
+            console.log(`No buyer found for website "${matchingWebsite}" (${record['Company Name']})`);
+          }
+        } catch (error: any) {
+          errors.push(`Exception processing record: ${error.message}`);
+        }
+      }
+      
+      console.log(`Website-based update completed: ${updated} updated, ${errors.length} errors`);
+      return { updated, errors };
+      
+    } catch (error: any) {
+      console.error('Error in website-based relationship update:', error);
+      return { updated: 0, errors: [error.message] };
+    }
+  }
+  
+  /**
+   * Updates buyer relationships using name matching (fallback method)
+   */
+  static async updateRelationshipsByName(): Promise<{ updated: number; errors: string[] }> {
+    try {
+      console.log('Starting name-based buyer relationship update...');
       
       // Get all matching records without buyer_id
       const { data: unmatchedRecords, error: fetchError } = await supabase
@@ -24,12 +158,12 @@ export class BuyerRelationshipService {
         throw fetchError;
       }
       
-      console.log(`Found ${unmatchedRecords?.length || 0} unmatched records`);
+      console.log(`Found ${unmatchedRecords?.length || 0} unmatched records for name-based matching`);
       
       let updated = 0;
       const errors: string[] = [];
       
-      // Process each record
+      // Process each record using the existing database function
       for (const record of unmatchedRecords || []) {
         try {
           const companyName = record['Company Name'] || record['Buyer Name'];
@@ -55,7 +189,7 @@ export class BuyerRelationshipService {
               errors.push(`Error updating record for "${companyName}": ${updateError.message}`);
             } else {
               updated++;
-              console.log(`Successfully linked "${companyName}" to buyer ${buyerId}`);
+              console.log(`Successfully linked "${companyName}" to buyer ${buyerId} via name match`);
             }
           }
         } catch (error: any) {
@@ -63,11 +197,11 @@ export class BuyerRelationshipService {
         }
       }
       
-      console.log(`Bulk update completed: ${updated} updated, ${errors.length} errors`);
+      console.log(`Name-based update completed: ${updated} updated, ${errors.length} errors`);
       return { updated, errors };
       
     } catch (error: any) {
-      console.error('Error in bulk relationship update:', error);
+      console.error('Error in name-based relationship update:', error);
       return { updated: 0, errors: [error.message] };
     }
   }
@@ -100,23 +234,34 @@ export class BuyerRelationshipService {
    */
   static async getRelationshipStats() {
     try {
-      // Get total matching records
-      const { count: totalMatching } = await supabase
+      // Use simpler queries to avoid TypeScript deep instantiation error
+      const { data: totalData, error: totalError } = await supabase
         .from('matching')
-        .select('*', { count: 'exact', head: true });
+        .select('id');
       
-      // Get linked records
-      const { count: linkedRecords } = await supabase
+      const { data: linkedData, error: linkedError } = await supabase
         .from('matching')
-        .select('*', { count: 'exact', head: true })
+        .select('id')
         .not('buyer_id', 'is', null);
       
-      const unlinkedRecords = (totalMatching || 0) - (linkedRecords || 0);
-      const linkageRate = totalMatching ? (linkedRecords || 0) / totalMatching * 100 : 0;
+      if (totalError || linkedError) {
+        console.error('Error getting relationship stats:', totalError || linkedError);
+        return {
+          totalMatching: 0,
+          linkedRecords: 0,
+          unlinkedRecords: 0,
+          linkageRate: 0
+        };
+      }
+      
+      const totalMatching = totalData?.length || 0;
+      const linkedRecords = linkedData?.length || 0;
+      const unlinkedRecords = totalMatching - linkedRecords;
+      const linkageRate = totalMatching ? (linkedRecords / totalMatching * 100) : 0;
       
       return {
-        totalMatching: totalMatching || 0,
-        linkedRecords: linkedRecords || 0,
+        totalMatching,
+        linkedRecords,
         unlinkedRecords,
         linkageRate: Math.round(linkageRate * 100) / 100
       };

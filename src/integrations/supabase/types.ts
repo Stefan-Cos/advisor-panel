@@ -630,6 +630,7 @@ export type Database = {
           "Short Description": string | null
           "Total III": string | null
           "Use Case": number | null
+          website_alpha: string | null
         }
         Insert: {
           "Buyer Name"?: string | null
@@ -653,6 +654,7 @@ export type Database = {
           "Short Description"?: string | null
           "Total III"?: string | null
           "Use Case"?: number | null
+          website_alpha?: string | null
         }
         Update: {
           "Buyer Name"?: string | null
@@ -676,6 +678,7 @@ export type Database = {
           "Short Description"?: string | null
           "Total III"?: string | null
           "Use Case"?: number | null
+          website_alpha?: string | null
         }
         Relationships: [
           {
