@@ -1,9 +1,7 @@
 
 import React from 'react';
-import {
-  Command,
-  CommandInput
-} from "@/components/ui/command";
+import { Search } from 'lucide-react';
+import { Input } from "@/components/ui/input";
 
 interface BuyerSearchProps {
   searchValue: string;
@@ -13,14 +11,16 @@ interface BuyerSearchProps {
 const BuyerSearch: React.FC<BuyerSearchProps> = ({ searchValue, onSearchChange }) => {
   return (
     <div className="mb-4">
-      <Command className="rounded-lg border shadow-md">
-        <CommandInput 
-          placeholder="Search by company name..." 
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Input
+          type="text"
+          placeholder="Search by company name..."
           value={searchValue}
-          onValueChange={onSearchChange}
-          className="h-11"
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="pl-10 h-11"
         />
-      </Command>
+      </div>
     </div>
   );
 };
