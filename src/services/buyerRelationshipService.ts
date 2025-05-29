@@ -234,28 +234,51 @@ export class BuyerRelationshipService {
    */
   static async getRelationshipStats() {
     try {
-      // Use simple count queries to avoid TypeScript deep instantiation issues
-      const { count: totalCount, error: totalError } = await supabase
-        .from('matching')
-        .select('*', { count: 'exact', head: true });
+      // Use direct queries with explicit typing to avoid deep instantiation issues
+      const totalResult = await supabase.rpc('count_matching_records');
+      const linkedResult = await supabase.rpc('count_linked_records');
       
-      const { count: linkedCount, error: linkedError } = await supabase
-        .from('matching')
-        .select('*', { count: 'exact', head: true })
-        .not('buyer_id', 'is', null);
-      
-      if (totalError || linkedError) {
-        console.error('Error getting relationship stats:', totalError || linkedError);
+      // Fallback to manual counting if RPC functions don't exist
+      if (totalResult.error || linkedResult.error) {
+        console.log('RPC functions not available, using manual counting...');
+        
+        // Get total count manually
+        const { data: totalData, error: totalError } = await supabase
+          .from('matching')
+          .select('id');
+        
+        // Get linked count manually  
+        const { data: linkedData, error: linkedError } = await supabase
+          .from('matching')
+          .select('id')
+          .not('buyer_id', 'is', null);
+        
+        if (totalError || linkedError) {
+          console.error('Error getting relationship stats:', totalError || linkedError);
+          return {
+            totalMatching: 0,
+            linkedRecords: 0,
+            unlinkedRecords: 0,
+            linkageRate: 0
+          };
+        }
+        
+        const totalMatching = totalData?.length || 0;
+        const linkedRecords = linkedData?.length || 0;
+        const unlinkedRecords = totalMatching - linkedRecords;
+        const linkageRate = totalMatching ? (linkedRecords / totalMatching * 100) : 0;
+        
         return {
-          totalMatching: 0,
-          linkedRecords: 0,
-          unlinkedRecords: 0,
-          linkageRate: 0
+          totalMatching,
+          linkedRecords,
+          unlinkedRecords,
+          linkageRate: Math.round(linkageRate * 100) / 100
         };
       }
       
-      const totalMatching = totalCount || 0;
-      const linkedRecords = linkedCount || 0;
+      // Use RPC results if available
+      const totalMatching = totalResult.data || 0;
+      const linkedRecords = linkedResult.data || 0;
       const unlinkedRecords = totalMatching - linkedRecords;
       const linkageRate = totalMatching ? (linkedRecords / totalMatching * 100) : 0;
       
