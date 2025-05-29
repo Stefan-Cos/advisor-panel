@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 
 export interface MatchingBuyer {
@@ -31,7 +32,7 @@ export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
     const { data, error } = await supabase
       .from('matching')
       .select('*')
-      .order('Match Socre', { ascending: false, nullsFirst: false });
+      .order('Total III', { ascending: false, nullsFirst: false });
     
     console.log('Supabase query result:');
     console.log('- Error:', error);
@@ -72,7 +73,7 @@ export const getBuyersFromMatching = async (): Promise<MatchingBuyer[]> => {
       
       // Check for specific expected columns
       const expectedColumns = [
-        'Buyer Name', 'Company Name', 'Match Socre', 'Short Description',
+        'Buyer Name', 'Company Name', 'Total III', 'Short Description',
         'Overall Rationale', 'Offering Combined', 'Company Website'
       ];
       
@@ -125,16 +126,16 @@ export const getLinkedBuyerData = async () => {
     const linkedData = matchingBuyers.map(matchingBuyer => {
       // Try to find matching buyer by name
       const linkedBuyer = buyersData?.find(buyer => {
-        const matchingName = matchingBuyer["Buyer Name"] || matchingBuyer["Company Name"] || '';
+        const matchingName = matchingBuyer["Company Name"] || matchingBuyer["Buyer Name"] || '';
         return buyer.name.toLowerCase().trim() === matchingName.toLowerCase().trim();
       });
       
       if (linkedBuyer) {
-        console.log(`Linked matching record "${matchingBuyer["Buyer Name"]}" with buyer "${linkedBuyer.name}"`);
+        console.log(`Linked matching record "${matchingBuyer["Company Name"]}" with buyer "${linkedBuyer.name}"`);
         // Merge the data, prioritizing matching table for scores and rationale
         return {
           ...linkedBuyer,
-          matching_score: parseMatchScore(matchingBuyer["Match Socre"]),
+          matching_score: parseMatchScore(matchingBuyer["Total III"]),
           rationale: {
             overall: matchingBuyer["Overall Rationale"] || 'Strong strategic alignment based on matching criteria.',
             offering: matchingBuyer["Offering Rationale"] || 'Good offering alignment.',
@@ -146,16 +147,17 @@ export const getLinkedBuyerData = async () => {
               customers: matchingBuyer["Customers"] || 65,
               previousTransactions: matchingBuyer["Sector"] || 70,
               financialStrength: matchingBuyer["Positioning"] || 68,
-              overall: parseMatchScore(matchingBuyer["Match Socre"])
+              overall: parseMatchScore(matchingBuyer["Total III"])
             }
           },
           // Update description if matching has better info
           description: matchingBuyer["Short Description"] || linkedBuyer.description,
           offering: matchingBuyer["Offering Combined"] || linkedBuyer.offering,
-          website: matchingBuyer["Company Website"] || linkedBuyer.website
+          website: matchingBuyer["Company Website"] || linkedBuyer.website,
+          combinedOffering: matchingBuyer["Offering Combined"] || 'No offering information available'
         };
       } else {
-        console.log(`No buyer found for matching record "${matchingBuyer["Buyer Name"]}", using transformed data`);
+        console.log(`No buyer found for matching record "${matchingBuyer["Company Name"]}", using transformed data`);
         // If no buyer found, use transformed matching data
         return transformMatchingBuyerToComponentFormat(matchingBuyer);
       }
@@ -170,21 +172,38 @@ export const getLinkedBuyerData = async () => {
   }
 };
 
-// Helper function to parse match score
+// Helper function to parse match score from Total III
 const parseMatchScore = (scoreStr: string | undefined): number => {
   if (!scoreStr) return 75;
-  const parsed = parseFloat(scoreStr.toString().replace('%', ''));
-  return isNaN(parsed) ? 75 : Math.round(parsed);
+  
+  // Remove commas and parse as number
+  const cleanedScore = scoreStr.toString().replace(/,/g, '');
+  const parsed = parseFloat(cleanedScore);
+  
+  if (isNaN(parsed)) return 75;
+  
+  // Convert to percentage if it's a large number (like 1,500)
+  if (parsed > 100) {
+    return Math.min(Math.round(parsed / 20), 100); // Scale down large numbers to percentage
+  }
+  
+  return Math.round(parsed);
 };
 
 export const transformMatchingBuyerToComponentFormat = (buyer: MatchingBuyer): any => {
-  // Parse match score - handle both string and number formats
+  // Parse match score from Total III field
   let matchScore = 75; // default
-  if (buyer["Match Socre"]) {
-    const scoreStr = buyer["Match Socre"].toString();
-    const parsed = parseFloat(scoreStr.replace('%', ''));
+  if (buyer["Total III"]) {
+    const scoreStr = buyer["Total III"].toString();
+    const cleanedScore = scoreStr.replace(/,/g, '');
+    const parsed = parseFloat(cleanedScore);
     if (!isNaN(parsed)) {
-      matchScore = Math.round(parsed);
+      // Convert to percentage if it's a large number
+      if (parsed > 100) {
+        matchScore = Math.min(Math.round(parsed / 20), 100);
+      } else {
+        matchScore = Math.round(parsed);
+      }
     }
   }
 
