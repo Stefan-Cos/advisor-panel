@@ -140,12 +140,38 @@ export class MatchedBuyersService {
         }
       }));
       
-      return transformedBuyers;
+      // Remove duplicates based on buyer_table_id and company name
+      const uniqueBuyers = this.removeDuplicates(transformedBuyers);
+      
+      console.log(`Removed ${transformedBuyers.length - uniqueBuyers.length} duplicates, returning ${uniqueBuyers.length} unique buyers`);
+      
+      return uniqueBuyers;
       
     } catch (error: any) {
       console.error('Exception in getMatchedBuyers:', error);
       return [];
     }
+  }
+  
+  /**
+   * Remove duplicate buyers based on ID and name
+   */
+  private static removeDuplicates(buyers: Buyer[]): Buyer[] {
+    const seen = new Set<string>();
+    const uniqueBuyers: Buyer[] = [];
+    
+    for (const buyer of buyers) {
+      // Create a unique key based on buyer ID and name (normalized)
+      const normalizedName = buyer.name?.toLowerCase().trim() || '';
+      const uniqueKey = `${buyer.id || 'no-id'}-${normalizedName}`;
+      
+      if (!seen.has(uniqueKey)) {
+        seen.add(uniqueKey);
+        uniqueBuyers.push(buyer);
+      }
+    }
+    
+    return uniqueBuyers;
   }
   
   /**
