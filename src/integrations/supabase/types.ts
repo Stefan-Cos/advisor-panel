@@ -604,6 +604,75 @@ export type Database = {
         }
         Relationships: []
       }
+      matching: {
+        Row: {
+          "Buyer Name": string | null
+          "Buyer Name2": string | null
+          buyerrr: string | null
+          "Company Name": string | null
+          "Company Website": string | null
+          Customers: number | null
+          "Customers Rationale": string | null
+          "Financial Strenght Rationale": string | null
+          "Match Socre": string | null
+          Offering: number | null
+          "Offering Combined": string | null
+          "Offering Rationale": string | null
+          "Overall Rationale": string | null
+          Positioning: number | null
+          "Prev Transactions Rationale": string | null
+          "Problem Solved": number | null
+          Sector: number | null
+          "Short Description": string | null
+          "Total III": string | null
+          "Use Case": number | null
+        }
+        Insert: {
+          "Buyer Name"?: string | null
+          "Buyer Name2"?: string | null
+          buyerrr?: string | null
+          "Company Name"?: string | null
+          "Company Website"?: string | null
+          Customers?: number | null
+          "Customers Rationale"?: string | null
+          "Financial Strenght Rationale"?: string | null
+          "Match Socre"?: string | null
+          Offering?: number | null
+          "Offering Combined"?: string | null
+          "Offering Rationale"?: string | null
+          "Overall Rationale"?: string | null
+          Positioning?: number | null
+          "Prev Transactions Rationale"?: string | null
+          "Problem Solved"?: number | null
+          Sector?: number | null
+          "Short Description"?: string | null
+          "Total III"?: string | null
+          "Use Case"?: number | null
+        }
+        Update: {
+          "Buyer Name"?: string | null
+          "Buyer Name2"?: string | null
+          buyerrr?: string | null
+          "Company Name"?: string | null
+          "Company Website"?: string | null
+          Customers?: number | null
+          "Customers Rationale"?: string | null
+          "Financial Strenght Rationale"?: string | null
+          "Match Socre"?: string | null
+          Offering?: number | null
+          "Offering Combined"?: string | null
+          "Offering Rationale"?: string | null
+          "Overall Rationale"?: string | null
+          Positioning?: number | null
+          "Prev Transactions Rationale"?: string | null
+          "Problem Solved"?: number | null
+          Sector?: number | null
+          "Short Description"?: string | null
+          "Total III"?: string | null
+          "Use Case"?: number | null
+        }
+        Relationships: []
+      }
       projects: {
         Row: {
           acquisition_reason: string | null
