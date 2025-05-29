@@ -32,10 +32,17 @@ const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
+            <h4 className="text-sm font-semibold text-gray-700 mb-1">Short Description</h4>
+            <p className="text-sm text-gray-600">{buyer.description || "Not provided"}</p>
+          </div>
+          
+          <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-1">Long Description</h4>
             <p className="text-sm text-gray-600">{buyer.longDescription || "Not provided"}</p>
           </div>
+        </div>
         
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-1">Primary Industries</h4>
             <div className="flex flex-wrap gap-1 mt-1">
@@ -46,9 +53,7 @@ const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
               )) || "Not provided"}
             </div>
           </div>
-        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-1">Keywords</h4>
             <div className="flex flex-wrap gap-1 mt-1">
@@ -59,7 +64,9 @@ const BuyerRationalePanel: React.FC<BuyerRationalePanelProps> = ({ buyer }) => {
               )) || "Not provided"}
             </div>
           </div>
+        </div>
         
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-1">Target Customer Types</h4>
             <p className="text-sm text-gray-600">

@@ -447,11 +447,20 @@ const SavedList: React.FC<SavedListProps> = ({ listingId }) => {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
+                        <h4 className="text-sm font-medium text-gray-700 mb-2">Short Description</h4>
+                        <p className="text-sm text-gray-600">
+                          {buyer.buyer_data?.description || "Not provided"}
+                        </p>
+                      </div>
+                      <div>
                         <h4 className="text-sm font-medium text-gray-700 mb-2">Long Description</h4>
                         <p className="text-sm text-gray-600">
                           {buyer.buyer_data?.longDescription || "Not provided"}
                         </p>
                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                       <div>
                         <h4 className="text-sm font-medium text-gray-700 mb-2">Primary Industries</h4>
                         <div className="flex flex-wrap gap-1 mt-1">
