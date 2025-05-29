@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { getBuyersFromMatching, transformMatchingBuyerToComponentFormat } from '@/services/matchingService';
@@ -88,36 +87,69 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     setIsLoading(true);
     
     try {
+      console.log('=== BLUEKNIGHT LIST DATA DEBUGGING ===');
       console.log('Loading buyers from matching table...');
+      
       const matchingBuyers = await getBuyersFromMatching();
       console.log(`Fetched ${matchingBuyers.length} records from matching table`);
       
+      // Log the raw data structure from matching table
+      console.log('Raw matching table data structure:', matchingBuyers);
+      if (matchingBuyers.length > 0) {
+        console.log('First record structure:', matchingBuyers[0]);
+        console.log('Available fields in first record:', Object.keys(matchingBuyers[0]));
+      }
+      
       if (matchingBuyers.length === 0) {
         console.warn('No records found in matching table');
+        console.log('Components needed: Empty state message or fallback data');
         setBuyers([]);
         return;
       }
       
       // Transform matching buyers to component format
-      const transformedBuyers = matchingBuyers.map(transformMatchingBuyerToComponentFormat);
+      console.log('Transforming buyers to component format...');
+      const transformedBuyers = matchingBuyers.map((buyer, index) => {
+        console.log(`Transforming buyer ${index + 1}:`, buyer);
+        const transformed = transformMatchingBuyerToComponentFormat(buyer);
+        console.log(`Transformed buyer ${index + 1}:`, transformed);
+        return transformed;
+      });
+      
       console.log(`Transformed ${transformedBuyers.length} buyers for display`);
+      console.log('Transformed buyers structure:', transformedBuyers);
       
       // Filter by type if needed
       const filteredBuyers = transformedBuyers.filter(buyer => {
         if (activeTab === 'pe') {
           // For PE buyers, look for PE-specific indicators
-          return buyer.type === 'pe' || 
+          const isPE = buyer.type === 'pe' || 
                  buyer.name?.toLowerCase().includes('fund') ||
                  buyer.name?.toLowerCase().includes('capital') ||
                  buyer.name?.toLowerCase().includes('partners') ||
                  buyer.parent_company?.toLowerCase().includes('fund');
+          console.log(`Buyer "${buyer.name}" is PE:`, isPE);
+          return isPE;
         }
         return true; // Include all for strategic
       });
       
+      console.log(`Filtered ${filteredBuyers.length} buyers for ${activeTab} tab`);
+      console.log('Final buyers data for components:', filteredBuyers);
+      
+      // Log what components will be used
+      console.log('Components needed:');
+      console.log('- BuyerTabs component');
+      console.log(`- ${activeTab === 'strategic' ? 'StrategicBuyerTable' : 'PEBuyerTable'} component`);
+      console.log('- BuyerTableRow components for each buyer');
+      console.log('- Various cell components (MatchScoreCell, CompanyNameCell, etc.)');
+      
       setBuyers(filteredBuyers);
+      console.log('=== END BLUEKNIGHT LIST DATA DEBUGGING ===');
+      
     } catch (error) {
       console.error('Error loading buyers from matching table:', error);
+      console.log('Components needed: Error state message');
       toast({
         title: "Error",
         description: "Failed to load buyer data from matching table. Please try again.",
@@ -132,6 +164,7 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
   // When tab changes, refresh the data
   useEffect(() => {
     if (!isFirstVisit) {
+      console.log(`Tab changed to: ${activeTab}, reloading data...`);
       loadBuyerData();
     }
   }, [activeTab]);
