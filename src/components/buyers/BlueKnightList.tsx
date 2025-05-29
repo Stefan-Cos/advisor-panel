@@ -8,20 +8,39 @@ import BuyerSearch from './components/BuyerSearch';
 import StrategicBuyerTable from './components/StrategicBuyerTable';
 import PEBuyerTable from './components/PEBuyerTable';
 import FilterSidebarToggle from '../listings/ai-builder/FilterSidebarToggle';
+import BlueKnightFilterSidebar from './components/BlueKnightFilterSidebar';
 import { getMATrackRecordColor } from './utils/buyerUtils';
 
 interface BlueKnightListProps {
   listingId: string;
 }
 
+interface FilterState {
+  hq: string;
+  employees: {
+    min: string;
+    max: string;
+  };
+  offering: string;
+}
+
 const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
   const [activeTab, setActiveTab] = useState<'strategic' | 'pe'>('strategic');
   const [allBuyers, setAllBuyers] = useState<Buyer[]>([]);
+  const [filteredBuyers, setFilteredBuyers] = useState<Buyer[]>([]);
   const [savedBuyers, setSavedBuyers] = useState<string[]>([]);
   const [expandedRationales, setExpandedRationales] = useState<string[]>([]);
   const [searchValue, setSearchValue] = useState('');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [filterVisible, setFilterVisible] = useState(false);
+  const [filters, setFilters] = useState<FilterState>({
+    hq: '',
+    employees: {
+      min: '',
+      max: ''
+    },
+    offering: ''
+  });
   
   // Load buyer data from the new matched_buyers table
   const loadBuyerData = async () => {
@@ -48,14 +67,47 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
     loadBuyerData();
   }, []);
 
-  // Filter buyers by active tab and search
-  const filteredBuyers = allBuyers
-    .filter(buyer => buyer.type === activeTab)
-    .filter(buyer => 
-      searchValue === '' || 
-      buyer.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-      buyer.description?.toLowerCase().includes(searchValue.toLowerCase())
-    );
+  // Apply all filters (search, tab, and advanced filters)
+  useEffect(() => {
+    let filtered = allBuyers;
+
+    // Filter by active tab
+    filtered = filtered.filter(buyer => buyer.type === activeTab);
+
+    // Filter by search value
+    if (searchValue) {
+      filtered = filtered.filter(buyer => 
+        buyer.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+        buyer.description?.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    }
+
+    // Apply advanced filters
+    if (filters.hq) {
+      filtered = filtered.filter(buyer => {
+        const location = buyer.location || buyer.hq || '';
+        return location.toLowerCase().includes(filters.hq.toLowerCase());
+      });
+    }
+
+    if (filters.employees.min || filters.employees.max) {
+      filtered = filtered.filter(buyer => {
+        const employees = buyer.employees || 0;
+        const min = filters.employees.min ? parseInt(filters.employees.min) : 0;
+        const max = filters.employees.max ? parseInt(filters.employees.max) : Infinity;
+        return employees >= min && employees <= max;
+      });
+    }
+
+    if (filters.offering) {
+      filtered = filtered.filter(buyer => {
+        const combinedOffering = buyer.combinedOffering || buyer.rationale?.overall || '';
+        return combinedOffering.toLowerCase().includes(filters.offering.toLowerCase());
+      });
+    }
+
+    setFilteredBuyers(filtered);
+  }, [allBuyers, activeTab, searchValue, filters]);
   
   const handleAddToSaved = (buyerId: string) => {
     if (!savedBuyers.includes(buyerId)) {
@@ -85,7 +137,21 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
       title: "Filters Applied",
       description: "Your search filters have been applied successfully."
     });
-    setFilterVisible(false);
+  };
+
+  const handleClearFilters = () => {
+    setFilters({
+      hq: '',
+      employees: {
+        min: '',
+        max: ''
+      },
+      offering: ''
+    });
+    toast({
+      title: "Filters Cleared",
+      description: "All filters have been cleared."
+    });
   };
 
   return (
@@ -96,6 +162,16 @@ const BlueKnightList: React.FC<BlueKnightListProps> = ({ listingId }) => {
         toggleFilterSidebar={toggleFilterSidebar}
         onFilterApply={handleFilterApply}
         position="left"
+      />
+
+      {/* Custom Filter Sidebar */}
+      <BlueKnightFilterSidebar
+        isVisible={filterVisible}
+        onClose={() => setFilterVisible(false)}
+        filters={filters}
+        onFiltersChange={setFilters}
+        onApplyFilters={handleFilterApply}
+        onClearFilters={handleClearFilters}
       />
 
       {/* Main content with conditional left margin */}
