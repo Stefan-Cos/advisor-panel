@@ -6,10 +6,13 @@ const BuyerTableHeader: React.FC = () => {
   return (
     <TableHeader>
       <TableRow className="bg-[#001437] hover:bg-[#001437]">
+        {/* Temporarily hidden Match Score column */}
+        {/* 
         <TableHead className="w-20 text-center sticky left-0 z-20 bg-[#001437] text-white font-medium">
           Match Score
         </TableHead>
-        <TableHead className="w-48 sticky left-20 z-20 bg-[#001437] text-white font-medium">
+        */}
+        <TableHead className="w-48 sticky left-0 z-20 bg-[#001437] text-white font-medium">
           Company Name
         </TableHead>
         <TableHead className="w-32 text-white font-medium">HQ</TableHead>

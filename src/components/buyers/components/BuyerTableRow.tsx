@@ -68,10 +68,12 @@ const BuyerTableRow: React.FC<BuyerTableRowProps> = ({
   return (
     <>
       <TableRow className={`hover:bg-gray-50 text-xs ${isSaved ? 'bg-green-50' : ''}`}>
-        {/* Match Score Column */}
+        {/* Temporarily hidden Match Score Column */}
+        {/* 
         <MatchScoreCell matchingScore={buyer.matchingScore} />
+        */}
         
-        {/* Company Name Column */}
+        {/* Company Name Column - now sticky left-0 since match score is hidden */}
         <CompanyNameCell 
           name={buyer.name} 
           isSaved={isSaved}
