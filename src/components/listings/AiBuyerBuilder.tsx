@@ -20,6 +20,7 @@ import {
   saveBuyer,
   getSavedBuyers,
   createBuyerSearchResults,
+  deleteSavedBuyerSearch,
   BuyerSearchConfig
 } from '@/services/buyerSearchService';
 
@@ -522,6 +523,23 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
     }
   };
 
+  // Handle deleting a saved search
+  const handleDeleteSavedSearch = async (searchId: string) => {
+    try {
+      await deleteSavedBuyerSearch(searchId);
+      await loadSavedSearches(); // Reload the list
+      
+      // If the deleted search was currently selected, clear the selection
+      if (selectedSavedSearch === searchId) {
+        setSelectedSavedSearch(null);
+        setSavedSearchResults([]);
+      }
+    } catch (error) {
+      console.error('Error deleting saved search:', error);
+      throw error; // Re-throw to let the component handle the error toast
+    }
+  };
+
   // Handle reconfiguring the AI settings
   const handleReconfigure = () => {
     setShowMatches(false);
@@ -600,6 +618,7 @@ const AiBuyerBuilder: React.FC<AiBuyerBuilderProps> = ({ listingId }) => {
               <SavedSearchesList 
                 savedSearches={savedSearches}
                 onSelectSearch={handleLoadSavedSearch}
+                onDeleteSearch={handleDeleteSavedSearch}
               />
             )}
           </TabsContent>

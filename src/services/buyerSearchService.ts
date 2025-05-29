@@ -154,6 +154,30 @@ export const getSavedBuyerSearches = async (projectId: string) => {
   return data;
 };
 
+export const deleteSavedBuyerSearch = async (searchId: string) => {
+  // First delete all related buyer search results
+  const { error: resultsError } = await supabase
+    .from('buyer_search_results')
+    .delete()
+    .eq('saved_search_id', searchId);
+
+  if (resultsError) {
+    console.error('Error deleting buyer search results:', resultsError);
+    throw resultsError;
+  }
+
+  // Then delete the saved search itself
+  const { error } = await supabase
+    .from('saved_buyer_searches')
+    .delete()
+    .eq('id', searchId);
+
+  if (error) {
+    console.error('Error deleting saved buyer search:', error);
+    throw error;
+  }
+};
+
 // Buyer Search Results operations - Updated to use flattened columns
 export const createBuyerSearchResults = async (results: BuyerSearchResult[]) => {
   const flattenedResults = results.map(result => ({
