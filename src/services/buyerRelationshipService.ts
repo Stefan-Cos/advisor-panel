@@ -235,17 +235,13 @@ export class BuyerRelationshipService {
   static async getRelationshipStats() {
     try {
       // Use simpler queries to avoid TypeScript deep instantiation error
-      const { data: totalData, error: totalError } = await supabase
-        .from('matching')
-        .select('id');
+      const [totalResult, linkedResult] = await Promise.all([
+        supabase.from('matching').select('id', { count: 'exact', head: true }),
+        supabase.from('matching').select('id', { count: 'exact', head: true }).not('buyer_id', 'is', null)
+      ]);
       
-      const { data: linkedData, error: linkedError } = await supabase
-        .from('matching')
-        .select('id')
-        .not('buyer_id', 'is', null);
-      
-      if (totalError || linkedError) {
-        console.error('Error getting relationship stats:', totalError || linkedError);
+      if (totalResult.error || linkedResult.error) {
+        console.error('Error getting relationship stats:', totalResult.error || linkedResult.error);
         return {
           totalMatching: 0,
           linkedRecords: 0,
@@ -254,8 +250,8 @@ export class BuyerRelationshipService {
         };
       }
       
-      const totalMatching = totalData?.length || 0;
-      const linkedRecords = linkedData?.length || 0;
+      const totalMatching = totalResult.count || 0;
+      const linkedRecords = linkedResult.count || 0;
       const unlinkedRecords = totalMatching - linkedRecords;
       const linkageRate = totalMatching ? (linkedRecords / totalMatching * 100) : 0;
       
