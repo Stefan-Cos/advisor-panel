@@ -151,28 +151,33 @@ const BuyersTable: React.FC<BuyersTableProps> = ({ aiConfig }) => {
                 <TableHead className="min-w-[120px]">HQ</TableHead>
                 <TableHead className="min-w-[100px]">Industry</TableHead>
                 <TableHead className="min-w-[200px]">Summary</TableHead>
-                <TableHead className="min-w-[150px]">Strategic Buyer 1: Name</TableHead>
-                <TableHead className="min-w-[120px]">Strategic Buyer 1: HQ</TableHead>
-                <TableHead className="min-w-[100px]">Strategic Buyer 1: Revenue</TableHead>
-                <TableHead className="min-w-[100px]">Strategic Buyer 1: Employees</TableHead>
-                <TableHead className="min-w-[150px]">Strategic Buyer 1: Offering</TableHead>
-                <TableHead className="min-w-[150px]">Strategic Buyer 1: Problem Solved</TableHead>
-                <TableHead className="min-w-[120px]">Strategic Buyer 1: Use Case</TableHead>
-                <TableHead className="min-w-[120px]">Strategic Buyer 1: Customers</TableHead>
-                <TableHead className="min-w-[120px]">Strategic Buyer 1: Delivery</TableHead>
-                <TableHead className="min-w-[150px]">Strategic Buyer 1: Supply Chain Role</TableHead>
-                <TableHead className="min-w-[150px]">PE Buyer 1: Name</TableHead>
-                <TableHead className="min-w-[120px]">PE Buyer 1: HQ</TableHead>
-                <TableHead className="min-w-[100px]">PE Buyer 1: AUM</TableHead>
-                <TableHead className="min-w-[150px]">PE Buyer 2: Name</TableHead>
-                <TableHead className="min-w-[120px]">PE Buyer 2: HQ</TableHead>
-                <TableHead className="min-w-[100px]">PE Buyer 2: AUM</TableHead>
-                <TableHead className="min-w-[150px]">PE Buyer 3: Name</TableHead>
-                <TableHead className="min-w-[120px]">PE Buyer 3: HQ</TableHead>
-                <TableHead className="min-w-[100px]">PE Buyer 3: AUM</TableHead>
-                <TableHead className="min-w-[150px]">PE Buyer 4: Name</TableHead>
-                <TableHead className="min-w-[120px]">PE Buyer 4: HQ</TableHead>
-                <TableHead className="min-w-[100px]">PE Buyer 4: AUM</TableHead>
+                
+                {/* Strategic Buyer columns with blue theme */}
+                <TableHead className="min-w-[150px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: Name</TableHead>
+                <TableHead className="min-w-[120px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: HQ</TableHead>
+                <TableHead className="min-w-[100px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: Revenue</TableHead>
+                <TableHead className="min-w-[100px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: Employees</TableHead>
+                <TableHead className="min-w-[150px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: Offering</TableHead>
+                <TableHead className="min-w-[150px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: Problem Solved</TableHead>
+                <TableHead className="min-w-[120px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: Use Case</TableHead>
+                <TableHead className="min-w-[120px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: Customers</TableHead>
+                <TableHead className="min-w-[120px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: Delivery</TableHead>
+                <TableHead className="min-w-[150px] bg-blue-50 text-blue-700 font-semibold">Strategic Buyer 1: Supply Chain Role</TableHead>
+                
+                {/* PE Buyer columns with different colors */}
+                <TableHead className="min-w-[150px] bg-green-50 text-green-700 font-semibold">PE Buyer 1: Name</TableHead>
+                <TableHead className="min-w-[120px] bg-green-50 text-green-700 font-semibold">PE Buyer 1: HQ</TableHead>
+                <TableHead className="min-w-[100px] bg-green-50 text-green-700 font-semibold">PE Buyer 1: AUM</TableHead>
+                <TableHead className="min-w-[150px] bg-purple-50 text-purple-700 font-semibold">PE Buyer 2: Name</TableHead>
+                <TableHead className="min-w-[120px] bg-purple-50 text-purple-700 font-semibold">PE Buyer 2: HQ</TableHead>
+                <TableHead className="min-w-[100px] bg-purple-50 text-purple-700 font-semibold">PE Buyer 2: AUM</TableHead>
+                <TableHead className="min-w-[150px] bg-orange-50 text-orange-700 font-semibold">PE Buyer 3: Name</TableHead>
+                <TableHead className="min-w-[120px] bg-orange-50 text-orange-700 font-semibold">PE Buyer 3: HQ</TableHead>
+                <TableHead className="min-w-[100px] bg-orange-50 text-orange-700 font-semibold">PE Buyer 3: AUM</TableHead>
+                <TableHead className="min-w-[150px] bg-pink-50 text-pink-700 font-semibold">PE Buyer 4: Name</TableHead>
+                <TableHead className="min-w-[120px] bg-pink-50 text-pink-700 font-semibold">PE Buyer 4: HQ</TableHead>
+                <TableHead className="min-w-[100px] bg-pink-50 text-pink-700 font-semibold">PE Buyer 4: AUM</TableHead>
+                
                 <TableHead className="w-20 sticky right-0 bg-white border-l">Save</TableHead>
               </TableRow>
             </TableHeader>
@@ -185,31 +190,31 @@ const BuyersTable: React.FC<BuyersTableProps> = ({ aiConfig }) => {
                   <TableCell>{transaction.industry}</TableCell>
                   <TableCell className="max-w-[200px]">{transaction.summary}</TableCell>
                   
-                  {/* Strategic Buyer 1 columns */}
-                  <TableCell>{transaction.strategicBuyer1?.name || '-'}</TableCell>
-                  <TableCell>{transaction.strategicBuyer1?.hq || '-'}</TableCell>
-                  <TableCell>{transaction.strategicBuyer1?.revenue || '-'}</TableCell>
-                  <TableCell>{transaction.strategicBuyer1?.employees || '-'}</TableCell>
-                  <TableCell>{transaction.strategicBuyer1?.offering || '-'}</TableCell>
-                  <TableCell>{transaction.strategicBuyer1?.problemSolved || '-'}</TableCell>
-                  <TableCell>{transaction.strategicBuyer1?.useCase || '-'}</TableCell>
-                  <TableCell>{transaction.strategicBuyer1?.customers || '-'}</TableCell>
-                  <TableCell>{transaction.strategicBuyer1?.deliveryOfOffering || '-'}</TableCell>
-                  <TableCell>{transaction.strategicBuyer1?.supplyChainRole || '-'}</TableCell>
+                  {/* Strategic Buyer 1 columns with blue background */}
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.name || '-'}</TableCell>
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.hq || '-'}</TableCell>
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.revenue || '-'}</TableCell>
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.employees || '-'}</TableCell>
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.offering || '-'}</TableCell>
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.problemSolved || '-'}</TableCell>
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.useCase || '-'}</TableCell>
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.customers || '-'}</TableCell>
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.deliveryOfOffering || '-'}</TableCell>
+                  <TableCell className="bg-blue-25">{transaction.strategicBuyer1?.supplyChainRole || '-'}</TableCell>
                   
-                  {/* PE Buyers columns */}
-                  <TableCell>{transaction.peBuyers[0]?.name || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[0]?.hq || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[0]?.aum || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[1]?.name || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[1]?.hq || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[1]?.aum || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[2]?.name || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[2]?.hq || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[2]?.aum || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[3]?.name || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[3]?.hq || '-'}</TableCell>
-                  <TableCell>{transaction.peBuyers[3]?.aum || '-'}</TableCell>
+                  {/* PE Buyers columns with different colored backgrounds */}
+                  <TableCell className="bg-green-25">{transaction.peBuyers[0]?.name || '-'}</TableCell>
+                  <TableCell className="bg-green-25">{transaction.peBuyers[0]?.hq || '-'}</TableCell>
+                  <TableCell className="bg-green-25">{transaction.peBuyers[0]?.aum || '-'}</TableCell>
+                  <TableCell className="bg-purple-25">{transaction.peBuyers[1]?.name || '-'}</TableCell>
+                  <TableCell className="bg-purple-25">{transaction.peBuyers[1]?.hq || '-'}</TableCell>
+                  <TableCell className="bg-purple-25">{transaction.peBuyers[1]?.aum || '-'}</TableCell>
+                  <TableCell className="bg-orange-25">{transaction.peBuyers[2]?.name || '-'}</TableCell>
+                  <TableCell className="bg-orange-25">{transaction.peBuyers[2]?.hq || '-'}</TableCell>
+                  <TableCell className="bg-orange-25">{transaction.peBuyers[2]?.aum || '-'}</TableCell>
+                  <TableCell className="bg-pink-25">{transaction.peBuyers[3]?.name || '-'}</TableCell>
+                  <TableCell className="bg-pink-25">{transaction.peBuyers[3]?.hq || '-'}</TableCell>
+                  <TableCell className="bg-pink-25">{transaction.peBuyers[3]?.aum || '-'}</TableCell>
                   
                   <TableCell className="sticky right-0 bg-white border-l">
                     <Button
