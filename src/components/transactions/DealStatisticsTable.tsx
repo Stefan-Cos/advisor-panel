@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Star, StarIcon } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
@@ -160,99 +160,102 @@ const DealStatisticsTable: React.FC<DealStatisticsTableProps> = ({ aiConfig }) =
   }
 
   return (
-    <ScrollArea className="h-[600px] w-full">
-      <div className="min-w-max">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-16">Rank</TableHead>
-              <TableHead>Seller Name</TableHead>
-              <TableHead>HQ</TableHead>
-              <TableHead>Industry</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Keywords</TableHead>
-              <TableHead>Offering</TableHead>
-              <TableHead>Offering Score</TableHead>
-              <TableHead>Problem Solved</TableHead>
-              <TableHead>Problem Score</TableHead>
-              <TableHead>Use Case</TableHead>
-              <TableHead>Use Case Score</TableHead>
-              <TableHead>Customers</TableHead>
-              <TableHead>Customer Type</TableHead>
-              <TableHead>Customer Industries</TableHead>
-              <TableHead>Customer Score</TableHead>
-              <TableHead>Delivery</TableHead>
-              <TableHead>Supply Chain Role</TableHead>
-              <TableHead>Deal Date</TableHead>
-              <TableHead>Deal Type</TableHead>
-              <TableHead>EV</TableHead>
-              <TableHead>Revenue</TableHead>
-              <TableHead>Employees</TableHead>
-              <TableHead>Save</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell className="font-medium">#{transaction.matchRank}</TableCell>
-                <TableCell className="font-medium">{transaction.sellerName}</TableCell>
-                <TableCell>{transaction.hq}</TableCell>
-                <TableCell>{transaction.industry}</TableCell>
-                <TableCell className="max-w-xs truncate">{transaction.shortDescription}</TableCell>
-                <TableCell>{transaction.offeringKeywords}</TableCell>
-                <TableCell>{transaction.offering}</TableCell>
-                <TableCell>
-                  <Badge className={getScoreColor(transaction.offeringScore)}>
-                    {transaction.offeringScore}
-                  </Badge>
-                </TableCell>
-                <TableCell>{transaction.problemSolved}</TableCell>
-                <TableCell>
-                  <Badge className={getScoreColor(transaction.problemSolvedScore)}>
-                    {transaction.problemSolvedScore}
-                  </Badge>
-                </TableCell>
-                <TableCell>{transaction.useCase}</TableCell>
-                <TableCell>
-                  <Badge className={getScoreColor(transaction.useCaseScore)}>
-                    {transaction.useCaseScore}
-                  </Badge>
-                </TableCell>
-                <TableCell>{transaction.customers}</TableCell>
-                <TableCell>{transaction.customerType}</TableCell>
-                <TableCell>{transaction.customerIndustries}</TableCell>
-                <TableCell>
-                  <Badge className={getScoreColor(transaction.customersScore)}>
-                    {transaction.customersScore}
-                  </Badge>
-                </TableCell>
-                <TableCell>{transaction.deliveryOfOffering}</TableCell>
-                <TableCell>{transaction.supplyChainRole}</TableCell>
-                <TableCell>{new Date(transaction.dealDate).toLocaleDateString()}</TableCell>
-                <TableCell>{transaction.dealType}</TableCell>
-                <TableCell className="font-medium">{transaction.ev}</TableCell>
-                <TableCell>{transaction.revenue}</TableCell>
-                <TableCell>{transaction.employees}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleSave(transaction.id)}
-                    className="p-1"
-                  >
-                    {transaction.isSaved ? (
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ) : (
-                      <StarIcon className="h-4 w-4" />
-                    )}
-                  </Button>
-                </TableCell>
+    <div className="w-full">
+      <ScrollArea className="h-[600px] w-full">
+        <div className="min-w-[2000px]">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-16 sticky left-0 bg-white border-r">Rank</TableHead>
+                <TableHead className="min-w-[150px]">Seller Name</TableHead>
+                <TableHead className="min-w-[120px]">HQ</TableHead>
+                <TableHead className="min-w-[100px]">Industry</TableHead>
+                <TableHead className="min-w-[200px]">Description</TableHead>
+                <TableHead className="min-w-[150px]">Keywords</TableHead>
+                <TableHead className="min-w-[150px]">Offering</TableHead>
+                <TableHead className="min-w-[100px]">Offering Score</TableHead>
+                <TableHead className="min-w-[150px]">Problem Solved</TableHead>
+                <TableHead className="min-w-[100px]">Problem Score</TableHead>
+                <TableHead className="min-w-[120px]">Use Case</TableHead>
+                <TableHead className="min-w-[100px]">Use Case Score</TableHead>
+                <TableHead className="min-w-[120px]">Customers</TableHead>
+                <TableHead className="min-w-[100px]">Customer Type</TableHead>
+                <TableHead className="min-w-[150px]">Customer Industries</TableHead>
+                <TableHead className="min-w-[100px]">Customer Score</TableHead>
+                <TableHead className="min-w-[120px]">Delivery</TableHead>
+                <TableHead className="min-w-[150px]">Supply Chain Role</TableHead>
+                <TableHead className="min-w-[100px]">Deal Date</TableHead>
+                <TableHead className="min-w-[100px]">Deal Type</TableHead>
+                <TableHead className="min-w-[100px]">EV</TableHead>
+                <TableHead className="min-w-[100px]">Revenue</TableHead>
+                <TableHead className="min-w-[100px]">Employees</TableHead>
+                <TableHead className="w-20 sticky right-0 bg-white border-l">Save</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </ScrollArea>
+            </TableHeader>
+            <TableBody>
+              {transactions.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell className="font-medium sticky left-0 bg-white border-r">#{transaction.matchRank}</TableCell>
+                  <TableCell className="font-medium">{transaction.sellerName}</TableCell>
+                  <TableCell>{transaction.hq}</TableCell>
+                  <TableCell>{transaction.industry}</TableCell>
+                  <TableCell className="max-w-[200px] truncate">{transaction.shortDescription}</TableCell>
+                  <TableCell>{transaction.offeringKeywords}</TableCell>
+                  <TableCell>{transaction.offering}</TableCell>
+                  <TableCell>
+                    <Badge className={getScoreColor(transaction.offeringScore)}>
+                      {transaction.offeringScore}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{transaction.problemSolved}</TableCell>
+                  <TableCell>
+                    <Badge className={getScoreColor(transaction.problemSolvedScore)}>
+                      {transaction.problemSolvedScore}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{transaction.useCase}</TableCell>
+                  <TableCell>
+                    <Badge className={getScoreColor(transaction.useCaseScore)}>
+                      {transaction.useCaseScore}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{transaction.customers}</TableCell>
+                  <TableCell>{transaction.customerType}</TableCell>
+                  <TableCell>{transaction.customerIndustries}</TableCell>
+                  <TableCell>
+                    <Badge className={getScoreColor(transaction.customersScore)}>
+                      {transaction.customersScore}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{transaction.deliveryOfOffering}</TableCell>
+                  <TableCell>{transaction.supplyChainRole}</TableCell>
+                  <TableCell>{new Date(transaction.dealDate).toLocaleDateString()}</TableCell>
+                  <TableCell>{transaction.dealType}</TableCell>
+                  <TableCell className="font-medium">{transaction.ev}</TableCell>
+                  <TableCell>{transaction.revenue}</TableCell>
+                  <TableCell>{transaction.employees}</TableCell>
+                  <TableCell className="sticky right-0 bg-white border-l">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSave(transaction.id)}
+                      className="p-1"
+                    >
+                      {transaction.isSaved ? (
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      ) : (
+                        <StarIcon className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </div>
   );
 };
 

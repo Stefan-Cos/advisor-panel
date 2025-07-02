@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Star, StarIcon } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
@@ -140,96 +140,99 @@ const BuyersTable: React.FC<BuyersTableProps> = ({ aiConfig }) => {
   }
 
   return (
-    <ScrollArea className="h-[600px] w-full">
-      <div className="min-w-max">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-16">Rank</TableHead>
-              <TableHead>Seller Name</TableHead>
-              <TableHead>HQ</TableHead>
-              <TableHead>Industry</TableHead>
-              <TableHead>Summary</TableHead>
-              <TableHead>Strategic Buyer 1: Name</TableHead>
-              <TableHead>Strategic Buyer 1: HQ</TableHead>
-              <TableHead>Strategic Buyer 1: Revenue</TableHead>
-              <TableHead>Strategic Buyer 1: Employees</TableHead>
-              <TableHead>Strategic Buyer 1: Offering</TableHead>
-              <TableHead>Strategic Buyer 1: Problem Solved</TableHead>
-              <TableHead>Strategic Buyer 1: Use Case</TableHead>
-              <TableHead>Strategic Buyer 1: Customers</TableHead>
-              <TableHead>Strategic Buyer 1: Delivery</TableHead>
-              <TableHead>Strategic Buyer 1: Supply Chain Role</TableHead>
-              <TableHead>PE Buyer 1: Name</TableHead>
-              <TableHead>PE Buyer 1: HQ</TableHead>
-              <TableHead>PE Buyer 1: AUM</TableHead>
-              <TableHead>PE Buyer 2: Name</TableHead>
-              <TableHead>PE Buyer 2: HQ</TableHead>
-              <TableHead>PE Buyer 2: AUM</TableHead>
-              <TableHead>PE Buyer 3: Name</TableHead>
-              <TableHead>PE Buyer 3: HQ</TableHead>
-              <TableHead>PE Buyer 3: AUM</TableHead>
-              <TableHead>PE Buyer 4: Name</TableHead>
-              <TableHead>PE Buyer 4: HQ</TableHead>
-              <TableHead>PE Buyer 4: AUM</TableHead>
-              <TableHead>Save</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {transactions.map((transaction) => (
-              <TableRow key={transaction.id}>
-                <TableCell className="font-medium">#{transaction.matchRank}</TableCell>
-                <TableCell className="font-medium">{transaction.sellerName}</TableCell>
-                <TableCell>{transaction.hq}</TableCell>
-                <TableCell>{transaction.industry}</TableCell>
-                <TableCell className="max-w-xs">{transaction.summary}</TableCell>
-                
-                {/* Strategic Buyer 1 columns */}
-                <TableCell>{transaction.strategicBuyer1?.name || '-'}</TableCell>
-                <TableCell>{transaction.strategicBuyer1?.hq || '-'}</TableCell>
-                <TableCell>{transaction.strategicBuyer1?.revenue || '-'}</TableCell>
-                <TableCell>{transaction.strategicBuyer1?.employees || '-'}</TableCell>
-                <TableCell>{transaction.strategicBuyer1?.offering || '-'}</TableCell>
-                <TableCell>{transaction.strategicBuyer1?.problemSolved || '-'}</TableCell>
-                <TableCell>{transaction.strategicBuyer1?.useCase || '-'}</TableCell>
-                <TableCell>{transaction.strategicBuyer1?.customers || '-'}</TableCell>
-                <TableCell>{transaction.strategicBuyer1?.deliveryOfOffering || '-'}</TableCell>
-                <TableCell>{transaction.strategicBuyer1?.supplyChainRole || '-'}</TableCell>
-                
-                {/* PE Buyers columns */}
-                <TableCell>{transaction.peBuyers[0]?.name || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[0]?.hq || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[0]?.aum || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[1]?.name || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[1]?.hq || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[1]?.aum || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[2]?.name || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[2]?.hq || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[2]?.aum || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[3]?.name || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[3]?.hq || '-'}</TableCell>
-                <TableCell>{transaction.peBuyers[3]?.aum || '-'}</TableCell>
-                
-                <TableCell>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleSave(transaction.id)}
-                    className="p-1"
-                  >
-                    {transaction.isSaved ? (
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                    ) : (
-                      <StarIcon className="h-4 w-4" />
-                    )}
-                  </Button>
-                </TableCell>
+    <div className="w-full">
+      <ScrollArea className="h-[600px] w-full">
+        <div className="min-w-[2400px]">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-16 sticky left-0 bg-white border-r">Rank</TableHead>
+                <TableHead className="min-w-[150px]">Seller Name</TableHead>
+                <TableHead className="min-w-[120px]">HQ</TableHead>
+                <TableHead className="min-w-[100px]">Industry</TableHead>
+                <TableHead className="min-w-[200px]">Summary</TableHead>
+                <TableHead className="min-w-[150px]">Strategic Buyer 1: Name</TableHead>
+                <TableHead className="min-w-[120px]">Strategic Buyer 1: HQ</TableHead>
+                <TableHead className="min-w-[100px]">Strategic Buyer 1: Revenue</TableHead>
+                <TableHead className="min-w-[100px]">Strategic Buyer 1: Employees</TableHead>
+                <TableHead className="min-w-[150px]">Strategic Buyer 1: Offering</TableHead>
+                <TableHead className="min-w-[150px]">Strategic Buyer 1: Problem Solved</TableHead>
+                <TableHead className="min-w-[120px]">Strategic Buyer 1: Use Case</TableHead>
+                <TableHead className="min-w-[120px]">Strategic Buyer 1: Customers</TableHead>
+                <TableHead className="min-w-[120px]">Strategic Buyer 1: Delivery</TableHead>
+                <TableHead className="min-w-[150px]">Strategic Buyer 1: Supply Chain Role</TableHead>
+                <TableHead className="min-w-[150px]">PE Buyer 1: Name</TableHead>
+                <TableHead className="min-w-[120px]">PE Buyer 1: HQ</TableHead>
+                <TableHead className="min-w-[100px]">PE Buyer 1: AUM</TableHead>
+                <TableHead className="min-w-[150px]">PE Buyer 2: Name</TableHead>
+                <TableHead className="min-w-[120px]">PE Buyer 2: HQ</TableHead>
+                <TableHead className="min-w-[100px]">PE Buyer 2: AUM</TableHead>
+                <TableHead className="min-w-[150px]">PE Buyer 3: Name</TableHead>
+                <TableHead className="min-w-[120px]">PE Buyer 3: HQ</TableHead>
+                <TableHead className="min-w-[100px]">PE Buyer 3: AUM</TableHead>
+                <TableHead className="min-w-[150px]">PE Buyer 4: Name</TableHead>
+                <TableHead className="min-w-[120px]">PE Buyer 4: HQ</TableHead>
+                <TableHead className="min-w-[100px]">PE Buyer 4: AUM</TableHead>
+                <TableHead className="w-20 sticky right-0 bg-white border-l">Save</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </ScrollArea>
+            </TableHeader>
+            <TableBody>
+              {transactions.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell className="font-medium sticky left-0 bg-white border-r">#{transaction.matchRank}</TableCell>
+                  <TableCell className="font-medium">{transaction.sellerName}</TableCell>
+                  <TableCell>{transaction.hq}</TableCell>
+                  <TableCell>{transaction.industry}</TableCell>
+                  <TableCell className="max-w-[200px]">{transaction.summary}</TableCell>
+                  
+                  {/* Strategic Buyer 1 columns */}
+                  <TableCell>{transaction.strategicBuyer1?.name || '-'}</TableCell>
+                  <TableCell>{transaction.strategicBuyer1?.hq || '-'}</TableCell>
+                  <TableCell>{transaction.strategicBuyer1?.revenue || '-'}</TableCell>
+                  <TableCell>{transaction.strategicBuyer1?.employees || '-'}</TableCell>
+                  <TableCell>{transaction.strategicBuyer1?.offering || '-'}</TableCell>
+                  <TableCell>{transaction.strategicBuyer1?.problemSolved || '-'}</TableCell>
+                  <TableCell>{transaction.strategicBuyer1?.useCase || '-'}</TableCell>
+                  <TableCell>{transaction.strategicBuyer1?.customers || '-'}</TableCell>
+                  <TableCell>{transaction.strategicBuyer1?.deliveryOfOffering || '-'}</TableCell>
+                  <TableCell>{transaction.strategicBuyer1?.supplyChainRole || '-'}</TableCell>
+                  
+                  {/* PE Buyers columns */}
+                  <TableCell>{transaction.peBuyers[0]?.name || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[0]?.hq || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[0]?.aum || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[1]?.name || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[1]?.hq || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[1]?.aum || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[2]?.name || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[2]?.hq || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[2]?.aum || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[3]?.name || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[3]?.hq || '-'}</TableCell>
+                  <TableCell>{transaction.peBuyers[3]?.aum || '-'}</TableCell>
+                  
+                  <TableCell className="sticky right-0 bg-white border-l">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSave(transaction.id)}
+                      className="p-1"
+                    >
+                      {transaction.isSaved ? (
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                      ) : (
+                        <StarIcon className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+    </div>
   );
 };
 
