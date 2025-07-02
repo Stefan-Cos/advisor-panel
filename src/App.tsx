@@ -12,6 +12,7 @@ import BuyerMandates from './pages/BuyerMandates';
 import Settings from './pages/Settings';
 import NotFound from './pages/NotFound';
 import DataUpload from './pages/DataUpload';
+import PrevTransactions from './pages/PrevTransactions';
 import { Toaster } from './components/ui/toaster';
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ function App() {
             <Route path="/listings/:id/*" element={<ListingDetails />} />
             <Route path="/buyer-preferences" element={<BuyerPreferences />} />
             <Route path="/buyer-mandates" element={<BuyerMandates />} />
+            <Route path="/prev-transactions" element={<PrevTransactions />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/data-upload" element={<DataUpload />} />
             <Route path="*" element={<NotFound />} />

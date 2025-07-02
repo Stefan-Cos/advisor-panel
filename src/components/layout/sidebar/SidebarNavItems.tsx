@@ -6,7 +6,8 @@ import {
   FileText, 
   Settings,
   MessageCircle,
-  Database
+  Database,
+  TrendingUp
 } from 'lucide-react';
 import { useSidebarState } from '@/hooks/useSidebarState';
 import { cn } from '@/lib/utils';
@@ -52,6 +53,11 @@ const SidebarNavItems: React.FC<SidebarNavItemsProps> = ({ collapsed = false, pr
       title: 'Buyer Mandates',
       path: '/buyer-mandates',
       icon: <FileText className="w-5 h-5" />
+    },
+    {
+      title: 'Prev. Transactions',
+      path: '/prev-transactions',
+      icon: <TrendingUp className="w-5 h-5" />
     },
     {
       title: 'Settings',
