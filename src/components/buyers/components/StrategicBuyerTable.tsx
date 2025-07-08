@@ -113,7 +113,7 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
                     <Info className="h-3 w-3" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-64 p-3" align="start">
+                <PopoverContent className="w-64 p-3" align="start" side="top">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-green-800">Your Company Description</h4>
@@ -150,7 +150,7 @@ const StrategicBuyerTable: React.FC<StrategicBuyerTableProps> = ({
                     <Info className="h-3 w-3" />
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-80 p-3" align="start">
+                <PopoverContent className="w-80 p-3" align="start" side="top">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-blue-800">Your Company Offering</h4>
