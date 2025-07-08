@@ -1,4 +1,3 @@
-
 import React from 'react';
 import {
   Table,
@@ -10,7 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Edit3, AlertTriangle } from "lucide-react";
+import { Edit3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import BuyerRationale from './BuyerRationale';
@@ -142,60 +141,57 @@ const BuyerTables: React.FC<BuyerTablesProps> = ({
           className="max-w-xs"
         />
       </div>
-
-      {/* Seller Information Panel - Only show for strategic buyers */}
-      {activeTab === 'strategic' && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-blue-900">Your Seller Profile</h3>
-            <Button
-              onClick={handleEditSeller}
-              variant="outline"
-              size="sm"
-              className="text-blue-700 border-blue-300 hover:bg-blue-100"
-            >
-              <Edit3 className="h-4 w-4 mr-2" />
-              Edit Seller Information
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-            <div>
-              <span className="font-medium text-blue-800">Company:</span>
-              <p className="text-blue-700">{sellerInfo.name}</p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-800">Description:</span>
-              <p className="text-blue-700">{sellerInfo.description}</p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-800">Offering:</span>
-              <p className="text-blue-700">{sellerInfo.offering}</p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-800">Problem Solved:</span>
-              <p className="text-blue-700">{sellerInfo.problemSolved}</p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-800">Use Case:</span>
-              <p className="text-blue-700">{sellerInfo.useCase}</p>
-            </div>
-            <div>
-              <span className="font-medium text-blue-800">Target Customers:</span>
-              <p className="text-blue-700">{sellerInfo.customers}</p>
-            </div>
-          </div>
-          <div className="mt-3 p-2 bg-amber-50 border border-amber-200 rounded flex items-start">
-            <AlertTriangle className="h-4 w-4 text-amber-600 mr-2 mt-0.5 flex-shrink-0" />
-            <p className="text-sm text-amber-800">
-              <strong>Not seeing the right buyers?</strong> The results are based on your seller information above. 
-              Click "Edit Seller Information" to refine your inputs and get better matches.
-            </p>
-          </div>
-        </div>
-      )}
       
       <ScrollArea className="h-[600px] w-full" orientation="both">
         <div className="min-w-max">
+          {/* Seller info headers above specific columns - only for strategic buyers */}
+          {activeTab === 'strategic' && (
+            <div className="flex mb-2">
+              {/* Empty space for Company Name column */}
+              <div className="w-48"></div>
+              {/* Empty space for HQ column */}
+              <div className="w-32"></div>
+              {/* Empty space for Employees column */}
+              <div className="w-28"></div>
+              
+              {/* Seller Description above Short Description column */}
+              <div className="w-64 px-2">
+                <div className="bg-green-50 border border-green-200 rounded p-2 text-xs">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-green-800">Your Description:</span>
+                    <Button
+                      onClick={handleEditSeller}
+                      variant="ghost"
+                      size="sm"
+                      className="h-4 w-4 p-0 text-green-700 hover:bg-green-100"
+                    >
+                      <Edit3 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <p className="text-green-700 leading-tight">{sellerInfo.description}</p>
+                </div>
+              </div>
+              
+              {/* Seller Offering above Combined Offering column */}
+              <div className="w-80 px-2">
+                <div className="bg-blue-50 border border-blue-200 rounded p-2 text-xs">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-medium text-blue-800">Your Offering:</span>
+                    <Button
+                      onClick={handleEditSeller}
+                      variant="ghost"
+                      size="sm"
+                      className="h-4 w-4 p-0 text-blue-700 hover:bg-blue-100"
+                    >
+                      <Edit3 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <p className="text-blue-700 leading-tight">{sellerInfo.offering}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <Table>
             <BuyerTableHeader />
             <TableBody>
